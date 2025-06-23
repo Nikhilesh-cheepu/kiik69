@@ -1,0 +1,259 @@
+.footer {
+  padding: 4rem 2rem 3rem 2rem;
+  background-color: rgba(14, 14, 14, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--white);
+}
+
+.footerContent {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  max-width: 1200px;
+  margin: 0 auto;
+  gap: 2rem;
+}
+
+.logoSection .logo {
+  width: 80px;
+  height: auto;
+}
+
+.contactSection {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  text-align: center;
+}
+
+.contactSection a {
+  color: var(--white);
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.contactSection a:hover {
+  color: var(--red);
+  text-shadow: 0 0 8px rgba(255, 47, 82, 0.7);
+}
+
+.copyrightSection {
+  text-align: right;
+  font-size: 0.9rem;
+}
+
+.instaFollowBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+  background: rgba(255, 47, 82, 1);
+  color: #fff;
+  font-weight: 600;
+  font-size: 1.08rem;
+  border-radius: 99px;
+  padding: 0.7rem 1.4rem;
+  text-decoration: none;
+  box-shadow: 0 0 12px rgba(255, 47, 82, 0.4);
+  transition: box-shadow 0.3s, transform 0.2s;
+  margin-top: 0.7rem;
+}
+
+.instaFollowBtn:hover {
+  box-shadow: 0 0 22px rgba(255, 47, 82, 0.9);
+  transform: scale(1.05);
+}
+
+.instaIcon {
+  width: 1.4em;
+  height: 1.4em;
+  color: #fff;
+  display: inline-block;
+}
+
+@media (max-width: 768px) {
+  .footerContent {
+    flex-direction: column;
+    text-align: center;
+  }
+  .copyrightSection {
+    text-align: center;
+  }
+}
+
+.utilityFooterContent {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  max-width: 1200px;
+  margin: 0 auto;
+  gap: 2.5rem;
+  padding: 0.5rem 0;
+  min-height: 140px;
+}
+
+.utilityLeft {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1.1rem;
+  min-width: 220px;
+  justify-content: flex-end;
+}
+
+.utilityLeft .logo {
+  width: 80px;
+  height: auto;
+}
+
+.copyright {
+  color: var(--white);
+  font-size: 1rem;
+  opacity: 0.8;
+  margin-top: 0.2rem;
+}
+
+.utilityRight {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 1.1rem;
+  min-width: 260px;
+  justify-content: flex-start;
+  height: 100%;
+}
+
+.utilityBtn {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: rgba(255, 255, 255, 0.07);
+  color: var(--white);
+  border-radius: 99px;
+  padding: 0.85rem 1.5rem;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 1.08rem;
+  box-shadow: 0 0 10px rgba(255, 47, 82, 0.12);
+  border: 1px solid rgba(255,255,255,0.08);
+  transition: box-shadow 0.3s, background 0.2s, color 0.2s, transform 0.2s;
+  cursor: pointer;
+  min-width: 320px;
+  max-width: 340px;
+  width: 100%;
+  justify-content: flex-start;
+}
+
+.utilityBtn:hover {
+  background: rgba(255, 47, 82, 0.9);
+  color: #fff;
+  box-shadow: 0 0 22px rgba(255, 47, 82, 0.7);
+  transform: scale(1.04);
+}
+
+.utilityIcon {
+  width: 1.5em;
+  height: 1.5em;
+  color: #fff;
+  flex-shrink: 0;
+  opacity: 0.92;
+}
+
+.utilityTextGroup {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1.2;
+}
+
+.utilityLabel {
+  font-weight: 700;
+  font-size: 1.08rem;
+  color: #fff;
+  margin-bottom: 0.13em;
+}
+
+.utilityDetail {
+  font-size: 0.98rem;
+  color: #e0e0e0;
+  opacity: 0.7;
+  font-weight: 400;
+  margin: 0;
+  letter-spacing: 0.01em;
+}
+
+.aboutUs {
+  font-size: 1rem;
+  color: #fff;
+  opacity: 0.75;
+  max-width: 420px;
+  margin-bottom: 1.5rem;
+  line-height: 1.6;
+  text-align: left;
+}
+
+.logoAboutWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 1.1rem;
+}
+
+.logoAboutWrapper .logo {
+  margin-bottom: 0.2rem;
+}
+
+.logoCopyrightWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+@media (max-width: 900px) {
+  .utilityFooterContent {
+    flex-direction: column;
+    align-items: center;
+    gap: 2.5rem;
+    text-align: center;
+    min-height: 0;
+  }
+  .utilityLeft, .utilityRight {
+    align-items: center;
+    min-width: 0;
+    justify-content: center;
+  }
+  .utilityRight {
+    width: 100%;
+    gap: 1.2rem;
+    align-items: center;
+    order: 1;
+  }
+  .aboutUs {
+    text-align: center;
+    margin: 2rem 0 1.2rem 0;
+    order: 2;
+  }
+  .logoAboutWrapper {
+    align-items: center;
+    justify-content: center;
+    gap: 1.1rem;
+  }
+  .logoCopyrightWrapper {
+    align-items: center;
+    margin-top: 1.2rem;
+  }
+  .utilityBtn {
+    justify-content: center;
+    width: 100%;
+    min-width: 0;
+    max-width: 400px;
+  }
+  .utilityTextGroup {
+    align-items: center;
+  }
+} 

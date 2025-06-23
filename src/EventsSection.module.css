@@ -1,0 +1,283 @@
+/* Section Styling */
+.eventsSection {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 6rem 2rem;
+  background-color: var(--black);
+  position: relative;
+  text-align: center;
+}
+
+.eventsSection::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 80%;
+  height: 80%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, rgba(255, 47, 82, 0.15) 0%, rgba(14, 14, 14, 0) 70%);
+  filter: blur(50px);
+  z-index: 0;
+}
+
+.title {
+  font-size: 3rem;
+  font-weight: 700;
+  color: var(--white);
+  text-shadow: 0 0 15px rgba(255, 255, 255, 0.8), 0 0 25px rgba(255, 47, 82, 0.5);
+  margin-bottom: 3rem;
+  position: relative;
+  z-index: 1;
+}
+
+/* Responsive Grid Container */
+.eventsContainer {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 1200px;
+  position: relative;
+  z-index: 1;
+  margin-bottom: 2rem;
+}
+
+/* Card Wrapper for Glow Effect */
+.cardWrapper {
+  position: relative;
+  width: 100%;
+  height: 280px; /* Match fixed card height */
+}
+
+.cardWrapper::after {
+  content: '';
+  position: absolute;
+  inset: -2px; /* Control the size of the glow */
+  border-radius: 18px; /* Slightly larger than card's border-radius */
+  background: linear-gradient(120deg, rgba(255, 47, 82, 0), rgba(255, 47, 82, 0.4));
+  z-index: -1;
+  filter: blur(10px);
+  transition: opacity 0.4s ease, background 0.4s ease;
+  opacity: 0;
+}
+
+.cardWrapper:hover::after {
+  opacity: 1;
+  background: linear-gradient(120deg, rgba(255, 47, 82, 0.7), rgba(255, 47, 82, 0.3));
+  animation: pulse 2s infinite ease-in-out;
+}
+
+/* Card Flip Container */
+.eventCard {
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  perspective: 1500px;
+}
+
+.cardInner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.7s;
+  transform-style: preserve-3d;
+}
+
+.eventCard:hover .cardInner {
+  transform: rotateY(180deg);
+}
+
+/* Front and Back Faces */
+.cardFace {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  padding: 1rem;
+  overflow: hidden; /* To keep image corners rounded */
+}
+
+.cardFaceFront {
+  justify-content: flex-start; /* Align content to top */
+}
+
+.cardFaceBack {
+  transform: rotateY(180deg);
+  gap: 1.5rem;
+}
+
+.cardFaceBack p {
+  font-size: 1.2rem;
+  font-weight: 500;
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+  padding: 0 1rem;
+}
+
+.joinButton {
+  background: var(--red);
+  color: var(--white);
+  border: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 600;
+  box-shadow: 0 0 15px rgba(255, 47, 82, 0.5);
+  text-decoration: none;
+}
+
+.joinButton:hover {
+  box-shadow: 0 0 25px rgba(255, 47, 82, 1);
+  transform: scale(1.05);
+}
+
+@keyframes pulse {
+  0% { box-shadow: 0 0 15px rgba(255, 47, 82, 0.4); }
+  50% { box-shadow: 0 0 25px rgba(255, 47, 82, 0.8); }
+  100% { box-shadow: 0 0 15px rgba(255, 47, 82, 0.4); }
+}
+
+.eventImage {
+  width: calc(100% + 2rem); /* Overbleed to remove padding effect */
+  height: auto;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  margin: -1rem -1rem 1rem -1rem; /* Pull image to edges */
+  border-radius: 16px 16px 0 0; /* Only top corners rounded */
+}
+
+.cardFaceFront h3 {
+  font-size: 1.2rem;
+  color: var(--red);
+  margin-bottom: 0.3rem;
+  text-shadow: 0 0 5px rgba(255, 47, 82, 0.7);
+}
+
+.cardFaceFront p {
+  font-size: 0.9rem;
+  color: var(--white);
+  margin-bottom: 0;
+}
+
+/* Buttons */
+.seeMoreButton {
+  background: var(--red);
+  color: var(--white);
+  border: none;
+  padding: 0.8rem 2rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 600;
+  box-shadow: 0 0 15px rgba(255, 47, 82, 0.5);
+  position: relative;
+  z-index: 2;
+}
+
+.seeMoreButton:hover {
+  box-shadow: 0 0 25px rgba(255, 47, 82, 1);
+  transform: scale(1.05);
+}
+
+/* Modal Styling */
+.modalBackdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modalContent {
+  background: var(--black);
+  padding: 2rem;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  width: 90%;
+  max-width: 1300px;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 0 40px rgba(255, 47, 82, 0.3);
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 1rem;
+}
+
+.modalTitle {
+  font-size: 2.5rem;
+  color: var(--white);
+  text-shadow: 0 0 15px rgba(255, 47, 82, 0.5);
+}
+
+.closeButton {
+  background: transparent;
+  border: none;
+  color: var(--white);
+  font-size: 2.5rem;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.closeButton:hover {
+  color: var(--red);
+}
+
+.modalGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .modalGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 1024px) {
+  .eventsContainer, .modalGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .title, .modalTitle {
+    font-size: 2rem;
+  }
+  .eventsContainer, .modalGrid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  .cardWrapper {
+    height: auto; /* Allow height to adjust to content on mobile */
+    aspect-ratio: 1 / 1.1; /* Maintain a consistent aspect ratio */
+  }
+} 

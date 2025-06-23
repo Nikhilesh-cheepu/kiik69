@@ -1,0 +1,575 @@
+import React, { useRef, useState, useEffect } from 'react';
+import { Canvas, useFrame } from '@react-three/fiber';
+import { OrbitControls } from '@react-three/drei';
+import { motion } from 'framer-motion';
+import CapsuleNavbar from './CapsuleNavbar';
+import PartyPackages from './PartyPackages';
+import MenuSection from './MenuSection';
+import EventsSection from './EventsSection';
+import GallerySection from './GallerySection';
+import FaqSection from './FaqPage';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import AdminLogin from './AdminLogin';
+import AdminDashboard from './AdminDashboard';
+import Footer from './Footer';
+
+function CursorFollower() {
+  const followerRef = useRef(null);
+  const cursorPosition = useRef({ x: 0, y: 0 });
+  const followerPosition = useRef({ x: 0, y: 0 });
+  const followerSize = 24; // The width/height of the follower
+
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      cursorPosition.current = { x: e.clientX, y: e.clientY };
+    };
+    window.addEventListener('mousemove', handleMouseMove);
+
+    let animationFrameId;
+    const animate = () => {
+      const { x: targetX, y: targetY } = cursorPosition.current;
+      const { x: currentX, y: currentY } = followerPosition.current;
+
+      const newX = currentX + (targetX - currentX) * 0.1;
+      const newY = currentY + (targetY - currentY) * 0.1;
+
+      followerPosition.current = { x: newX, y: newY };
+
+      if (followerRef.current) {
+        // Center the follower on the cursor
+        followerRef.current.style.transform = `translate3d(${newX - followerSize / 2}px, ${newY - followerSize / 2}px, 0)`;
+      }
+
+      animationFrameId = requestAnimationFrame(animate);
+    };
+    animate();
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      cancelAnimationFrame(animationFrameId);
+    };
+  }, []);
+
+  return <div ref={followerRef} style={styles.cursorFollower} />;
+}
+
+// Audio Toggle Button
+function MusicToggle({ isPlaying, isMuted, onToggle }) {
+  const isSoundOn = isPlaying && !isMuted;
+  return (
+    <motion.button
+      onClick={onToggle}
+      style={styles.musicToggle}
+      className={isSoundOn ? 'glowing' : ''}
+      whileHover={{ scale: 1.1 }}
+      whileTap={{ scale: 0.9 }}
+      aria-label={isSoundOn ? 'Mute music' : 'Play music'}
+    >
+      {isSoundOn ? '🔊' : '🔇'}
+    </motion.button>
+  );
+}
+
+function getHeroVideo() {
+  return localStorage.getItem('kiik69_hero_video') || '';
+}
+
+// Hero Section
+function Hero() {
+  const [animation, setAnimation] = useState('initial');
+  const animationTypes = ['pulse', 'rotate', 'flicker', 'shake'];
+  const heroVideo = getHeroVideo();
+
+  function isYouTube(url) {
+    return /youtu\.be|youtube\.com/.test(url);
+  }
+  function isVimeo(url) {
+    return /vimeo\.com/.test(url);
+  }
+
+  let videoBg;
+  if (heroVideo.startsWith('data:video')) {
+    videoBg = (
+      <video
+        autoPlay
+        loop
+        muted
+        playsInline
+        poster="/assets/images/hero-fallback.jpg"
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          objectFit: 'cover',
+          zIndex: 0,
+          minHeight: '100%',
+          minWidth: '100%',
+        }}
+        src={heroVideo}
+      />
+    );
+  } else if (isYouTube(heroVideo)) {
+    const match = heroVideo.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([\w-]{11})/);
+    const id = match ? match[1] : null;
+    videoBg = id ? (
+      <iframe
+        width="100%"
+        height="100%"
+        src={`https://www.youtube.com/embed/${id}?autoplay=1&mute=1&loop=1&playlist=${id}`}
+        frameBorder="0"
+        allow="autoplay; encrypted-media"
+        allowFullScreen
+        style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }}
+        title="Hero Video"
+      />
+    ) : null;
+  } else if (isVimeo(heroVideo)) {
+    const match = heroVideo.match(/vimeo\.com\/(\d+)/);
+    const id = match ? match[1] : null;
+    videoBg = id ? (
+      <iframe
+        width="100%"
+        height="100%"
+        src={`https://player.vimeo.com/video/${id}?autoplay=1&muted=1&loop=1&background=1`}
+        frameBorder="0"
+        allow="autoplay; fullscreen"
+        allowFullScreen
+        style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }}
+        title="Hero Video"
+      />
+    ) : null;
+  } else {
+    videoBg = (
+      <video
+        autoPlay
+        loop
+        muted
+        playsInline
+        poster="/assets/images/hero-fallback.jpg"
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          objectFit: 'cover',
+          zIndex: 0,
+          minHeight: '100%',
+          minWidth: '100%',
+        }}
+      >
+        <source src="/videos/home.mp4" type="video/mp4" />
+        <img src="/assets/images/hero-fallback.jpg" alt="KIIK 69" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+      </video>
+    );
+  }
+
+  const animationVariants = {
+    initial: {
+      scale: 1,
+      rotate: 0,
+      x: 0,
+      transition: { duration: 0.4, ease: 'easeOut' },
+    },
+    pulse: {
+      scale: [1, 1.05, 1],
+      transition: { duration: 0.6, repeat: Infinity, ease: 'easeInOut' },
+    },
+    rotate: {
+      rotate: [0, 3, -3, 0],
+      transition: { duration: 0.5, repeat: Infinity, ease: 'easeInOut' },
+    },
+    flicker: {
+      opacity: [1, 0.85, 1],
+      transition: { duration: 0.3, repeat: Infinity, ease: 'easeInOut' },
+    },
+    shake: {
+      x: [0, -2, 2, -2, 2, 0],
+      transition: { duration: 0.4, ease: 'easeInOut' },
+    },
+  };
+
+  const draggableProps = {
+    drag: true,
+    dragElastic: 0.2,
+    dragSnapToOrigin: true,
+    dragTransition: { bounceStiffness: 500, bounceDamping: 15 },
+    whileTap: { cursor: 'grabbing' },
+  };
+
+  const handleHoverStart = () => {
+    const randomType = animationTypes[Math.floor(Math.random() * animationTypes.length)];
+    setAnimation(randomType);
+  };
+
+  const handleHoverEnd = () => {
+    setAnimation('initial');
+  };
+
+  return (
+    <section className="section" style={{ ...styles.heroWrapper, position: 'relative', overflow: 'hidden' }}>
+      {/* Video background */}
+      {videoBg}
+      {/* Dark overlay for text readability */}
+      <div className="hero-overlay" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(0,0,0,0.4)', zIndex: 2 }} />
+      <div style={{ ...styles.meshBg, zIndex: 2 }} />
+      <div style={{ ...styles.heroInner, zIndex: 4 }}>
+        <motion.h1
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1, ease: 'easeOut' }}
+          style={styles.heroHeadline}
+        >
+          <span style={styles.staticWord}>Welcome to</span>
+          <motion.span
+            {...draggableProps}
+            style={styles.kiik69Highlight}
+            variants={animationVariants}
+            animate={animation}
+            onHoverStart={handleHoverStart}
+            onHoverEnd={handleHoverEnd}
+          >
+            KIIK 69
+          </motion.span>
+          <motion.span {...draggableProps} style={styles.draggableWord}>
+            Sports
+          </motion.span>
+          <motion.span {...draggableProps} style={styles.draggableWord}>
+            Bar
+          </motion.span>
+        </motion.h1>
+
+        <motion.div
+          style={styles.subheadlineContainer}
+          variants={{
+            hidden: { opacity: 0 },
+            visible: {
+              opacity: 1,
+              transition: {
+                staggerChildren: 0.3,
+                delayChildren: 0.3,
+              },
+            },
+          }}
+          initial="hidden"
+          animate="visible"
+        >
+          {["Eat.", "Play.", "Repeat."].map((word, index) => (
+            <motion.span
+              key={index}
+              style={styles.subheadlineWord}
+              variants={{
+                hidden: { opacity: 0, scale: 0.8 },
+                visible: { opacity: 1, scale: 1 },
+              }}
+            >
+              {word}
+            </motion.span>
+          ))}
+        </motion.div>
+
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 1.2, ease: 'easeOut' }}
+          style={styles.heroSubtext}
+        >
+          "Not just a place to hang out — it's where food, games, and good times collide."
+        </motion.p>
+      </div>
+    </section>
+  );
+}
+
+function RequireAuth({ children }) {
+  const isAuth = localStorage.getItem('kiik69_admin_auth') === 'true';
+  const location = useLocation();
+  if (!isAuth) return <Navigate to="/admin" state={{ from: location }} replace />;
+  return children;
+}
+
+export default function App() {
+  const audioRef = useRef(null);
+  const [isPlaying, setIsPlaying] = React.useState(false);
+  const [isMuted, setIsMuted] = React.useState(true);
+  const wasPlayingBeforeHidden = useRef(false);
+
+  const toggleMute = () => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    if (audio.paused) {
+      audio.play().catch(e => console.error("Audio play failed on toggle:", e));
+    }
+    
+    audio.muted = !audio.muted;
+  };
+
+  React.useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    const handlePlay = () => setIsPlaying(true);
+    const handlePause = () => setIsPlaying(false);
+    const handleVolumeChange = () => setIsMuted(audio.muted);
+
+    audio.addEventListener('play', handlePlay);
+    audio.addEventListener('pause', handlePause);
+    audio.addEventListener('volumechange', handleVolumeChange);
+
+    audio.volume = 0.2;
+    audio.muted = true; 
+    audio.play().catch(() => {
+      console.log("Autoplay was prevented. User must interact to start music.");
+    });
+
+    return () => {
+      audio.removeEventListener('play', handlePlay);
+      audio.removeEventListener('pause', handlePause);
+      audio.removeEventListener('volumechange', handleVolumeChange);
+    };
+  }, []);
+
+  React.useEffect(() => {
+    const handleVisibilityChange = () => {
+      const audio = audioRef.current;
+      if (!audio) return;
+
+      if (document.visibilityState === 'hidden') {
+        wasPlayingBeforeHidden.current = !audio.paused;
+        audio.pause();
+      } else {
+        if (wasPlayingBeforeHidden.current) {
+          audio.play().catch(e => console.error("Audio play failed on visibility change:", e));
+        }
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, []);
+
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/admin" element={<AdminLogin />} />
+        <Route path="/admin/dashboard" element={
+          <RequireAuth>
+            <AdminDashboard />
+          </RequireAuth>
+        } />
+        <Route path="*" element={
+          <div>
+            <CursorFollower />
+            <audio ref={audioRef} src="/music/kiik-vibe-new.mp3" loop preload="auto" />
+            <MusicToggle isPlaying={isPlaying} isMuted={isMuted} onToggle={toggleMute} />
+            <CapsuleNavbar />
+            <Hero />
+            <PartyPackages />
+            <MenuSection />
+            <EventsSection />
+            <GallerySection />
+            <FaqSection id="faq" />
+          </div>
+        } />
+        <Route path="/faq" element={<FaqSection />} />
+        <Route path="/admin" element={<RequireAuth><AdminDashboard /></RequireAuth>} />
+        <Route path="/login" element={<AdminLogin />} />
+      </Routes>
+      <Footer />
+    </BrowserRouter>
+  );
+}
+
+// Add to styles object:
+const styles = {
+  cursorFollower: {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    width: '24px',
+    height: '24px',
+    backgroundColor: 'rgba(255, 0, 60, 0.4)',
+    borderRadius: '50%',
+    boxShadow: '0 0 15px 5px rgba(255, 0, 60, 0.7)',
+    pointerEvents: 'none',
+    zIndex: 9999,
+  },
+  musicToggle: {
+    position: 'fixed',
+    bottom: '20px',
+    right: '20px',
+    zIndex: 1001,
+    width: '50px',
+    height: '50px',
+    borderRadius: '50%',
+    backgroundColor: 'rgba(26, 26, 26, 0.7)',
+    color: '#fff',
+    border: '1px solid rgba(255, 255, 255, 0.2)',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    cursor: 'pointer',
+    fontSize: '1.5rem',
+    backdropFilter: 'blur(10px)',
+    boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+  },
+  navbar: {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: 'var(--kiik-black)',
+    padding: '10px 20px',
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    zIndex: 1000,
+  },
+  logo: {
+    fontSize: '1.5rem',
+    fontWeight: 700,
+  },
+  links: {
+    display: 'flex',
+    gap: '20px',
+  },
+  link: {
+    color: 'var(--kiik-white)',
+    textDecoration: 'none',
+    transition: 'color 0.3s',
+    '&:hover': {
+      color: 'var(--kiik-red)',
+    },
+  },
+  meshBg: {
+    position: 'fixed',
+    inset: 0,
+    zIndex: 0,
+    width: '100vw',
+    height: '100vh',
+    pointerEvents: 'none',
+    background: 'transparent',
+  },
+  gradient1: {
+    position: 'absolute',
+    width: '80vw',
+    height: '80vw',
+    left: '-20vw',
+    top: '-20vw',
+    background: 'radial-gradient(circle at 30% 30%, #ff003c 0%, transparent 70%)',
+    filter: 'blur(80px)',
+    opacity: 0.7,
+    animation: 'move1 12s ease-in-out infinite alternate',
+    zIndex: 0,
+  },
+  gradient2: {
+    position: 'absolute',
+    width: '70vw',
+    height: '70vw',
+    right: '-15vw',
+    top: '10vw',
+    background: 'radial-gradient(circle at 70% 20%, #7d2ae8 0%, transparent 70%)',
+    filter: 'blur(80px)',
+    opacity: 0.6,
+    animation: 'move2 14s ease-in-out infinite alternate',
+    zIndex: 0,
+  },
+  gradient3: {
+    position: 'absolute',
+    width: '60vw',
+    height: '60vw',
+    left: '20vw',
+    bottom: '-10vw',
+    background: 'radial-gradient(circle at 50% 80%, #0a0a0a 0%, transparent 70%)',
+    filter: 'blur(60px)',
+    opacity: 0.8,
+    animation: 'move3 16s ease-in-out infinite alternate',
+    zIndex: 0,
+  },
+  heroWrapper: {
+    position: 'relative',
+    minHeight: '100vh',
+    width: '100vw',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 1,
+    padding: 0,
+    boxSizing: 'border-box',
+  },
+  heroInner: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
+    maxWidth: 900,
+    margin: '0 auto',
+    gap: 36,
+  },
+  heroHeadline: {
+    fontSize: 'clamp(1.2rem, 5vw, 4rem)',
+    fontWeight: 'bold',
+    color: '#fff',
+    textAlign: 'center',
+    marginBottom: '16px',
+    letterSpacing: '1px',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: '0.4em',
+    flexWrap: 'nowrap',
+    whiteSpace: 'nowrap',
+    minWidth: 0,
+  },
+  staticWord: {
+    display: 'inline-block',
+    marginRight: '0.4em',
+    fontWeight: 400,
+    color: '#fff',
+    fontSize: 'inherit',
+    letterSpacing: 'inherit',
+    userSelect: 'none',
+  },
+  kiik69Highlight: {
+    display: 'inline-block',
+    color: 'var(--kiik-red)',
+    textShadow: '0 0 8px rgba(255, 0, 60, 0.7), 0 0 16px rgba(255, 0, 60, 0.5)',
+    cursor: 'pointer',
+    fontSize: 'inherit',
+    fontWeight: 700,
+  },
+  draggableWord: {
+    display: 'inline-block',
+    cursor: 'grab',
+    fontSize: 'inherit',
+    fontWeight: 700,
+    color: '#fff',
+    letterSpacing: 'inherit',
+  },
+  subheadlineContainer: {
+    display: 'flex',
+    gap: '1.5rem',
+    textAlign: 'center',
+    marginBottom: '24px',
+  },
+  subheadlineWord: {
+    fontSize: 'clamp(1.5rem, 4vw, 2.5rem)',
+    color: '#fff',
+    display: 'inline-block',
+  },
+  heroSubtext: {
+    fontSize: 'clamp(1rem, 2vw, 1.2rem)',
+    color: '#eee',
+    fontWeight: 300,
+    textAlign: 'center',
+    maxWidth: '600px',
+    lineHeight: 1.6,
+  },
+};
