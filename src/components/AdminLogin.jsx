@@ -11,8 +11,7 @@ const AdminLogin = ({ isOpen, onClose }) => {
   const [user, setUser] = useState(null);
   const [showAdminDashboard, setShowAdminDashboard] = useState(false);
 
-  const handleLogin = async (e) => {
-    if (e) e.preventDefault();
+  const handleLogin = async () => {
     setLoading(true);
     setError('');
     setSuccess('');
@@ -248,7 +247,7 @@ const AdminLogin = ({ isOpen, onClose }) => {
         </motion.button>
       </div>
 
-      <form onSubmit={handleLogin}>
+      <div>
         <div style={{ marginBottom: '15px' }}>
           <input
             type="text"
@@ -288,8 +287,9 @@ const AdminLogin = ({ isOpen, onClose }) => {
           />
         </div>
         <motion.button
-          type="submit"
+          type="button"
           disabled={loading}
+          onClick={handleLogin}
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           style={{
@@ -307,7 +307,7 @@ const AdminLogin = ({ isOpen, onClose }) => {
         >
           {loading ? 'Logging in...' : 'Login'}
         </motion.button>
-      </form>
+      </div>
 
       {error && (
         <p style={{ color: '#f44336', fontSize: '12px', marginTop: '10px' }}>
