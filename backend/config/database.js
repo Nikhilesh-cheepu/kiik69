@@ -1,9 +1,14 @@
-const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
 
 // Database configuration
 const isProduction = process.env.NODE_ENV === 'production';
 const usePostgreSQL = process.env.DATABASE_URL || isProduction;
+
+// Only require sqlite3 if we're not using PostgreSQL
+let sqlite3;
+if (!usePostgreSQL) {
+  sqlite3 = require('sqlite3').verbose();
+}
 
 let db;
 let initializeDatabase;
