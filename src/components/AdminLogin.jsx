@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ApiService from '../services/api';
 
-const AdminLogin = ({ isOpen, onClose }) => {
+const AdminLogin = React.memo(({ isOpen, onClose }) => {
   const [credentials, setCredentials] = useState({ username: '', password: '' });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -10,6 +10,16 @@ const AdminLogin = ({ isOpen, onClose }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
   const [showAdminDashboard, setShowAdminDashboard] = useState(false);
+
+  // Reset form when modal opens
+  useEffect(() => {
+    if (isOpen) {
+      setCredentials({ username: '', password: '' });
+      setError('');
+      setSuccess('');
+      setLoading(false);
+    }
+  }, [isOpen]);
 
   const handleLogin = async () => {
     setLoading(true);
@@ -245,7 +255,10 @@ const AdminLogin = ({ isOpen, onClose }) => {
             type="text"
             placeholder="Username"
             value={credentials.username}
-            onChange={(e) => setCredentials({ ...credentials, username: e.target.value })}
+            onChange={(e) => {
+              e.preventDefault();
+              setCredentials(prev => ({ ...prev, username: e.target.value }));
+            }}
             style={{
               width: '100%',
               padding: '12px 16px',
@@ -264,7 +277,10 @@ const AdminLogin = ({ isOpen, onClose }) => {
             type="password"
             placeholder="Password"
             value={credentials.password}
-            onChange={(e) => setCredentials({ ...credentials, password: e.target.value })}
+            onChange={(e) => {
+              e.preventDefault();
+              setCredentials(prev => ({ ...prev, password: e.target.value }));
+            }}
             style={{
               width: '100%',
               padding: '12px 16px',
@@ -358,6 +374,6 @@ const AdminLogin = ({ isOpen, onClose }) => {
       )}
     </AnimatePresence>
   );
-};
+});
 
 export default AdminLogin; 
