@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import CapsuleNavbar from './CapsuleNavbar';
 import PartyPackages from './PartyPackages';
 import MenuSection from './MenuSection';
@@ -9,9 +9,9 @@ import EventsSection from './EventsSection';
 import GallerySection from './GallerySection';
 import FaqSection from './FaqPage';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
-import AdminLogin from './AdminLogin';
-import AdminDashboard from './AdminDashboard';
 import Footer from './Footer';
+import GamesSection from './GamesSection';
+import AdminLogin from './components/AdminLogin';
 
 function CursorFollower() {
   const followerRef = useRef(null);
@@ -54,19 +54,101 @@ function CursorFollower() {
 }
 
 // Audio Toggle Button
-function MusicToggle({ isPlaying, isMuted, onToggle }) {
+function MusicToggle({ isPlaying, isMuted, onToggle, onNextTrack, onPrevTrack, trackName }) {
+  const [showPanel, setShowPanel] = React.useState(false);
   const isSoundOn = isPlaying && !isMuted;
   return (
-    <motion.button
-      onClick={onToggle}
-      style={styles.musicToggle}
-      className={isSoundOn ? 'glowing' : ''}
-      whileHover={{ scale: 1.1 }}
-      whileTap={{ scale: 0.9 }}
-      aria-label={isSoundOn ? 'Mute music' : 'Play music'}
+    <div
+      style={{ position: 'fixed', bottom: 20, right: 20, zIndex: 1002 }}
+      onMouseEnter={() => setShowPanel(true)}
+      onMouseLeave={() => setShowPanel(false)}
+      onTouchStart={() => setShowPanel(true)}
+      onTouchEnd={() => setShowPanel(false)}
     >
-      {isSoundOn ? '🔊' : '🔇'}
-    </motion.button>
+      <motion.button
+        onClick={onToggle}
+        style={styles.musicToggle}
+        className={isSoundOn ? 'glowing' : ''}
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.9 }}
+        aria-label={isSoundOn ? 'Mute music' : 'Play music'}
+      >
+        {isSoundOn ? '🔊' : '🔇'}
+      </motion.button>
+      <AnimatePresence>
+        {showPanel && (
+          <motion.div
+            initial={{ opacity: 0, y: 20, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 20, scale: 0.98 }}
+            transition={{ duration: 0.18, ease: 'easeOut' }}
+            style={{
+              position: 'absolute',
+              bottom: 60,
+              right: 0,
+              minWidth: 240,
+              background: 'rgba(20,20,20,0.7)',
+              borderRadius: 18,
+              boxShadow: '0 8px 32px rgba(0,0,0,0.25)',
+              border: '1.5px solid rgba(255,255,255,0.13)',
+              backdropFilter: 'blur(16px)',
+              WebkitBackdropFilter: 'blur(16px)',
+              color: '#fff',
+              padding: '1.1rem 1.2rem 1.1rem 1.2rem',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: 12,
+              zIndex: 1003,
+            }}
+          >
+            <div style={{ fontWeight: 600, fontSize: '1.05rem', textAlign: 'center', marginBottom: 4, textShadow: '0 2px 8px #0008' }}>
+              {trackName}
+            </div>
+            <div style={{ display: 'flex', gap: 18, alignItems: 'center' }}>
+              <motion.button
+                onClick={onPrevTrack}
+                style={{
+                  background: 'rgba(255,255,255,0.08)',
+                  border: 'none',
+                  borderRadius: '50%',
+                  width: 36,
+                  height: 36,
+                  color: '#fff',
+                  fontSize: 20,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  boxShadow: '0 2px 8px #0004',
+                }}
+                whileTap={{ scale: 0.9 }}
+                aria-label="Previous track"
+              >⏮️</motion.button>
+              <motion.button
+                onClick={onNextTrack}
+                style={{
+                  background: 'rgba(255,255,255,0.08)',
+                  border: 'none',
+                  borderRadius: '50%',
+                  width: 36,
+                  height: 36,
+                  color: '#fff',
+                  fontSize: 20,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  boxShadow: '0 2px 8px #0004',
+                }}
+                whileTap={{ scale: 0.9 }}
+                aria-label="Next track"
+              >⏭️</motion.button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
   );
 }
 
@@ -209,7 +291,7 @@ function Hero() {
   };
 
   return (
-    <section className="section" style={{ ...styles.heroWrapper, position: 'relative', overflow: 'hidden' }}>
+    <section className="section" id="home" style={{ ...styles.heroWrapper, position: 'relative', overflow: 'hidden' }}>
       {/* Video background */}
       {videoBg}
       {/* Dark overlay for text readability */}
@@ -283,6 +365,81 @@ function Hero() {
   );
 }
 
+function OpenHoursClock() {
+  const [time, setTime] = React.useState(() => new Date());
+  const [magnet, setMagnet] = React.useState({ x: 0, y: 0 });
+  const panelRef = React.useRef(null);
+
+  React.useEffect(() => {
+    const interval = setInterval(() => setTime(new Date()), 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Time logic
+  const pad = (n) => n.toString().padStart(2, '0');
+  let hours = time.getHours();
+  const ampm = hours >= 12 ? 'PM' : 'AM';
+  hours = hours % 12;
+  if (hours === 0) hours = 12;
+  const minutes = pad(time.getMinutes());
+  const seconds = pad(time.getSeconds());
+  const timeString = `${pad(hours)}:${minutes}:${seconds}`;
+
+  // Open/closed logic
+  const isOpen = time.getHours() >= 11 && time.getHours() < 24;
+  const mainHeading = isOpen ? (
+    <span className="openNowHeading">
+      <span className="openNowEmoji">
+        <span className="emojiClock">⏰</span>
+        <span className="emojiPulseDot" />
+      </span>
+      <span className="openNowText">We're Open Now!</span>
+    </span>
+  ) : (
+    <span className="closedHeading">
+      <span className="closedDot">🔴</span>
+      <span className="closedText">Sorry, We're Closed!</span>
+    </span>
+  );
+  const subtext = isOpen
+    ? 'From 11 AM to 12 AM · Come hang out!'
+    : 'Open Daily · 11 AM to 12 AM';
+
+  // Magnetic effect handlers
+  function handleMouseMove(e) {
+    const rect = panelRef.current.getBoundingClientRect();
+    const x = e.clientX - (rect.left + rect.width / 2);
+    const y = e.clientY - (rect.top + rect.height / 2);
+    setMagnet({ x: x * 0.18, y: y * 0.18 });
+  }
+  function handleMouseLeave() {
+    setMagnet({ x: 0, y: 0 });
+  }
+
+  return (
+    <div
+      className="openHoursClockPanel enhancedClockPanel"
+      ref={panelRef}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      style={{ perspective: '800px', margin: '4.5rem auto 4.5rem auto' }}
+    >
+      <motion.div
+        animate={{ x: magnet.x, y: magnet.y }}
+        transition={{ type: 'spring', stiffness: 120, damping: 12 }}
+        style={{ willChange: 'transform', display: 'flex', flexDirection: 'column', alignItems: 'center' }}
+      >
+        <div className="openHoursMainHeading">{mainHeading}</div>
+        <div className="openHoursSubtext" style={{ marginBottom: '1.2rem', marginTop: '0.2rem' }}>{subtext}</div>
+        <div className="digitalClock digitalFont">
+          <span className="clockDigits">{timeString}</span>
+          <span className="clockAMPM">{ampm}</span>
+        </div>
+      </motion.div>
+    </div>
+  );
+}
+
 function RequireAuth({ children }) {
   const isAuth = localStorage.getItem('kiik69_admin_auth') === 'true';
   const location = useLocation();
@@ -294,37 +451,42 @@ export default function App() {
   const audioRef = useRef(null);
   const [isPlaying, setIsPlaying] = React.useState(false);
   const [isMuted, setIsMuted] = React.useState(true);
+  const [trackIdx, setTrackIdx] = React.useState(0);
   const wasPlayingBeforeHidden = useRef(false);
+
+  // Playlist of local tracks
+  const playlist = [
+    { src: '/music/kiik-vibe-new.mp3', name: 'KIIK Vibe' },
+    { src: '/music/Epic Uplifting Rock Sports Music for Promos, Ads & Trailers [Royalty Free Music].mp3', name: 'Epic Uplifting Rock Sports' },
+  ];
 
   const toggleMute = () => {
     const audio = audioRef.current;
     if (!audio) return;
-
     if (audio.paused) {
       audio.play().catch(e => console.error("Audio play failed on toggle:", e));
     }
-    
     audio.muted = !audio.muted;
   };
+
+  // Switch to next/prev track in playlist
+  const nextTrack = () => setTrackIdx(idx => (idx + 1) % playlist.length);
+  const prevTrack = () => setTrackIdx(idx => (idx - 1 + playlist.length) % playlist.length);
 
   React.useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
-
     const handlePlay = () => setIsPlaying(true);
     const handlePause = () => setIsPlaying(false);
     const handleVolumeChange = () => setIsMuted(audio.muted);
-
     audio.addEventListener('play', handlePlay);
     audio.addEventListener('pause', handlePause);
     audio.addEventListener('volumechange', handleVolumeChange);
-
     audio.volume = 0.2;
     audio.muted = true; 
     audio.play().catch(() => {
       console.log("Autoplay was prevented. User must interact to start music.");
     });
-
     return () => {
       audio.removeEventListener('play', handlePlay);
       audio.removeEventListener('pause', handlePause);
@@ -332,11 +494,21 @@ export default function App() {
     };
   }, []);
 
+  // When trackIdx changes, update audio src and play
+  React.useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    audio.src = playlist[trackIdx].src;
+    audio.load();
+    if (!isMuted) {
+      audio.play().catch(e => console.error("Audio play failed on track switch:", e));
+    }
+  }, [trackIdx]);
+
   React.useEffect(() => {
     const handleVisibilityChange = () => {
       const audio = audioRef.current;
       if (!audio) return;
-
       if (document.visibilityState === 'hidden') {
         wasPlayingBeforeHidden.current = !audio.paused;
         audio.pause();
@@ -346,9 +518,7 @@ export default function App() {
         }
       }
     };
-
     document.addEventListener('visibilitychange', handleVisibilityChange);
-
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
@@ -357,29 +527,31 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/admin" element={<AdminLogin />} />
-        <Route path="/admin/dashboard" element={
-          <RequireAuth>
-            <AdminDashboard />
-          </RequireAuth>
-        } />
         <Route path="*" element={
           <div>
             <CursorFollower />
-            <audio ref={audioRef} src="/music/kiik-vibe-new.mp3" loop preload="auto" />
-            <MusicToggle isPlaying={isPlaying} isMuted={isMuted} onToggle={toggleMute} />
+            <audio ref={audioRef} src={playlist[trackIdx].src} loop preload="auto" />
+            <MusicToggle
+              isPlaying={isPlaying}
+              isMuted={isMuted}
+              onToggle={toggleMute}
+              onNextTrack={nextTrack}
+              onPrevTrack={prevTrack}
+              trackName={playlist[trackIdx].name}
+            />
             <CapsuleNavbar />
+            <AdminLogin />
             <Hero />
+            <OpenHoursClock />
             <PartyPackages />
             <MenuSection />
+            <GamesSection />
             <EventsSection />
             <GallerySection />
             <FaqSection id="faq" />
           </div>
         } />
         <Route path="/faq" element={<FaqSection />} />
-        <Route path="/admin" element={<RequireAuth><AdminDashboard /></RequireAuth>} />
-        <Route path="/login" element={<AdminLogin />} />
       </Routes>
       <Footer />
     </BrowserRouter>

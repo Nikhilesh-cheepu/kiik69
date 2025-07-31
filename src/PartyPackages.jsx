@@ -95,56 +95,118 @@ const itemVariants = {
   },
 };
 
+const benefits = [
+  { icon: '🍹', text: 'Unlimited Drinks' },
+  { icon: '🍽️', text: 'Unlimited Food' },
+  { icon: '🎯', text: 'Free Access to Games' },
+  { icon: '🪑', text: '300+ Seating Capacity' },
+  { icon: '📽️', text: 'Giant Projector Setup' },
+  { icon: '🛠️', text: 'We Handle Everything' },
+];
+
 export default function PartyPackages() {
+  // Parallax tilt logic for each card
+  function useParallaxTilt() {
+    const [tilt, setTilt] = React.useState({ x: 0, y: 0 });
+    const ref = React.useRef(null);
+    function handleMouseMove(e) {
+      const rect = ref.current.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const px = (x / rect.width) * 2 - 1;
+      const py = (y / rect.height) * 2 - 1;
+      setTilt({ x: py * 10, y: px * 10 }); // max 10deg tilt
+    }
+    function handleMouseLeave() {
+      setTilt({ x: 0, y: 0 });
+    }
+    return { ref, tilt, handleMouseMove, handleMouseLeave };
+  }
+
   return (
-    <motion.section
-      className={styles.partyPackagesSection}
-      id="packages"
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true, amount: 0.2 }}
-      variants={containerVariants}
-    >
-      <motion.div className={styles.partyIntro} variants={itemVariants}>
-        <h2 className={styles.title}>🥳 Unlimited Party Packages</h2>
-        <p className={styles.partySubtext}>
-          Choose the vibe that suits you best. Each package is crafted for a perfect night out — minimum 20 people required to book a party package.
-        </p>
-      </motion.div>
-      <motion.div
-        className={styles.packagesContainer}
+    <>
+      <motion.section
+        className={styles.partyPackagesSection}
+        id="packages"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.2 }}
         variants={containerVariants}
       >
-        {packages.map((pkg, idx) => (
-          <motion.div key={pkg.title} className={styles.packageCard} variants={itemVariants}>
-            <h3>{pkg.icon} {pkg.title}</h3>
-            <ul>
-              {pkg.features.map((feature, i) => (
-                <li key={i}>{feature}</li>
-              ))}
-            </ul>
-            {pkg.price ? (
-              <a
-                className={styles.packageButton}
-                href={`https://wa.me/919274696969?text=${encodeURIComponent(pkg.waMsg)}`}
-                target="_blank"
-                rel="noopener noreferrer"
+        <motion.div className={styles.partyIntro} variants={itemVariants}>
+          <h2 className={styles.title}>🥳 Unlimited Party Packages</h2>
+          <p className={styles.partySubtext}>
+            Choose the vibe that suits you best. Each package is crafted for a perfect night out — minimum 20 people required to book a party package.
+          </p>
+        </motion.div>
+        <motion.div
+          className={styles.packagesContainer}
+          variants={containerVariants}
+        >
+          {packages.map((pkg, idx) => {
+            const { ref, tilt, handleMouseMove, handleMouseLeave } = useParallaxTilt();
+            return (
+              <motion.div
+                key={pkg.title}
+                className={styles.packageCard}
+                variants={itemVariants}
+                ref={ref}
+                onMouseMove={handleMouseMove}
+                onMouseLeave={handleMouseLeave}
+                style={{
+                  willChange: 'transform',
+                  transform: `rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)`
+                }}
+                transition={{ type: 'spring', stiffness: 180, damping: 16 }}
               >
-                Book for {pkg.price}
-              </a>
-            ) : (
-              <a
-                className={styles.packageButton}
-                href={`https://wa.me/919274696969?text=${encodeURIComponent(pkg.waMsg)}`}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Book Custom Plan
-              </a>
-            )}
-          </motion.div>
-        ))}
-      </motion.div>
-    </motion.section>
+                <h3>{pkg.icon} {pkg.title}</h3>
+                <ul>
+                  {pkg.features.map((feature, i) => (
+                    <li key={i}>{feature}</li>
+                  ))}
+                </ul>
+                {pkg.price ? (
+                  <a
+                    className={styles.packageButton}
+                    href={`https://wa.me/919274696969?text=${encodeURIComponent(pkg.waMsg)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Book for {pkg.price}
+                  </a>
+                ) : (
+                  <a
+                    className={styles.packageButton}
+                    href={`https://wa.me/919274696969?text=${encodeURIComponent(pkg.waMsg)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Book Custom Plan
+                  </a>
+                )}
+              </motion.div>
+            );
+          })}
+        </motion.div>
+      </motion.section>
+      <section className={styles.whyChooseSection}>
+        <div className={styles.whyChooseCard}>
+          <h2 className={styles.whyChooseTitle}>
+            🎉 Why Choose Our Party Packages?
+          </h2>
+          <div className={styles.whyChooseList}>
+            {benefits.map((b, i) => (
+              <div key={b.text} className={styles.whyChooseItem}>
+                <span className={styles.whyChooseIcon}>{b.icon}</span>
+                <span className={styles.whyChooseText}>{b.text}</span>
+              </div>
+            ))}
+          </div>
+          <div className={styles.whyChooseStatement}>
+            One all-in experience. You just show up. We make it epic.
+          </div>
+        </div>
+      </section>
+    </>
   );
 } 

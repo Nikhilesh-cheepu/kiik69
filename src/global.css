@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700&family=Rajdhani:wght@600&display=swap');
+
 /* global.css */
 html, body {
   box-sizing: border-box;
@@ -101,4 +103,277 @@ h1, h2, h3, h4, h5, h6 {
 
 html {
   scroll-behavior: smooth;
+}
+
+/* Light Theme Variables */
+.light-theme {
+  --kiik-red: #e6002f;
+  --kiik-purple: #7d2ae8;
+  --kiik-black: #f7f7fa;
+  --glass-bg: rgba(255,255,255,0.7);
+  --glass-blur: 16px;
+  --section-padding: 80px;
+  --section-padding-mobile: 40px;
+  --white: #181818;
+  --black: #fff;
+}
+
+.light-theme html, .light-theme body {
+  background: #fff;
+  color: #181818;
+}
+
+.light-theme .dark-glass {
+  background-color: rgba(255,255,255,0.7);
+  border: 1px solid rgba(0,0,0,0.07);
+}
+
+.light-theme h1, .light-theme h2, .light-theme h3, .light-theme h4, .light-theme h5, .light-theme h6 {
+  color: var(--kiik-red);
+  text-shadow: 0 0 8px rgba(230, 0, 47, 0.13);
+}
+
+.light-theme .glowing-button {
+  background-color: var(--kiik-red);
+  color: #fff;
+  box-shadow: 0 0 15px rgba(230, 0, 47, 0.18);
+}
+
+.light-theme .glowing-button:hover {
+  box-shadow: 0 0 25px rgba(230, 0, 47, 0.25);
+  transform: scale(1.05);
+}
+
+.openHoursLine {
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto 2.5rem auto;
+  padding: 0.7rem 0 0.7rem 0;
+  background: transparent;
+}
+.openHoursText {
+  font-size: 2.1rem;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 0 0 12px #ff003c55, 0 2px 12px #7d2ae888, 0 0 8px #fff2;
+  letter-spacing: 0.01em;
+  line-height: 1.2;
+  display: inline-block;
+}
+@media (max-width: 700px) {
+  .openHoursText {
+    font-size: 1.2rem;
+    padding: 0 0.5rem;
+  }
+  .openHoursLine {
+    margin-bottom: 1.2rem;
+    padding: 0.4rem 0;
+  }
+}
+
+.openHoursClockPanel {
+  margin: 10rem auto 3.5rem auto !important;
+  padding: 0;
+  background: none;
+  border-radius: 0;
+  box-shadow: none;
+  border: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: none;
+  width: 100vw;
+}
+.digitalClock {
+  font-family: 'Share Tech Mono', 'Fira Mono', 'Consolas', monospace;
+  font-size: 3.1rem;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 0.13em;
+  text-shadow: 0 0 18px #ff005099, 0 0 32px #d7004088, 0 0 8px #fff2;
+  margin-bottom: 0.2rem;
+  background: linear-gradient(90deg, #FF0050 0%, #D70040 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-fill-color: transparent;
+  text-align: center;
+}
+.openNowGlow {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 0 0 18px #ff005088, 0 0 32px #d7004088, 0 0 8px #fff2;
+  margin-bottom: 0.5rem;
+  letter-spacing: 0.04em;
+  animation: openGlowPulseRed 2.2s infinite alternate;
+  text-align: center;
+}
+@keyframes openGlowPulseRed {
+  0% { text-shadow: 0 0 8px #ff005088, 0 0 16px #d7004088; }
+  100% { text-shadow: 0 0 24px #ff0050, 0 0 32px #d70040; }
+}
+.openHoursSubtext {
+  font-size: 1.05rem;
+  color: #eee;
+  font-weight: 400;
+  letter-spacing: 0.11em;
+  text-align: center;
+  opacity: 0.85;
+  margin-top: 0.4rem;
+}
+@media (max-width: 700px) {
+  .openHoursClockPanel, .enhancedClockPanel {
+    margin: 5rem auto 1.8rem auto !important;
+    padding: 0;
+    max-width: 100vw;
+  }
+  .digitalClock {
+    font-size: 1.5rem;
+    margin-bottom: 0.1rem;
+  }
+  .openNowGlow {
+    font-size: 1.05rem;
+  }
+  .openHoursSubtext {
+    font-size: 0.92rem;
+  }
+}
+
+.enhancedClockPanel {
+  margin: 10rem auto 3.5rem auto !important;
+}
+.openHoursMainHeading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.45rem;
+  font-weight: 700;
+  margin-bottom: 0.2rem;
+  letter-spacing: 0.01em;
+  text-align: center;
+  color: #fff;
+  text-shadow: 0 0 12px #ff0050cc, 0 2px 12px #d70040cc;
+}
+.openNowHeading {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  color: #fff;
+}
+.openNowEmoji {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+.emojiClock {
+  font-size: 1.3em;
+  margin-right: 0.1em;
+  animation: bounceClock 1.2s infinite alternate cubic-bezier(.4,1.4,.6,1);
+}
+.emojiPulseDot {
+  width: 0.7em;
+  height: 0.7em;
+  border-radius: 50%;
+  background: linear-gradient(90deg, #FF0050 0%, #D70040 100%);
+  margin-left: 0.18em;
+  box-shadow: 0 0 12px #ff0050cc, 0 0 18px #d70040cc;
+  animation: pulseDot 1.1s infinite alternate;
+  display: inline-block;
+}
+@keyframes bounceClock {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-0.18em); }
+}
+@keyframes pulseDot {
+  0% { opacity: 0.7; box-shadow: 0 0 8px #ff0050cc; }
+  100% { opacity: 1; box-shadow: 0 0 18px #d70040cc; }
+}
+.openNowText {
+  color: #fff;
+  font-weight: 700;
+  font-size: 1.18em;
+  letter-spacing: 0.01em;
+}
+.closedHeading {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  color: #fff;
+}
+.closedDot {
+  font-size: 1.2em;
+  margin-right: 0.1em;
+}
+.closedText {
+  color: #fff;
+  font-weight: 700;
+  font-size: 1.18em;
+  letter-spacing: 0.01em;
+}
+.digitalClock {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.5em;
+  font-family: 'Orbitron', 'Rajdhani', 'Share Tech Mono', 'Fira Mono', 'Consolas', monospace;
+  font-size: 3.1rem;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 0.13em;
+  text-shadow: 0 0 18px #ff005099, 0 0 32px #d7004088, 0 0 8px #fff2;
+  margin-bottom: 0.2rem;
+  background: linear-gradient(90deg, #FF0050 0%, #D70040 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-fill-color: transparent;
+  text-align: center;
+}
+.digitalFont {
+  font-family: 'Orbitron', 'Rajdhani', 'Share Tech Mono', 'Fira Mono', 'Consolas', monospace;
+}
+.clockDigits {
+  font-size: 1em;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+}
+.clockAMPM {
+  font-size: 0.45em;
+  font-weight: 700;
+  margin-left: 0.18em;
+  letter-spacing: 0.08em;
+  color: #fff;
+  text-shadow: 0 0 8px #ff0050cc, 0 0 12px #d70040cc;
+  background: none;
+  -webkit-text-fill-color: #fff;
+}
+.openHoursSubtext {
+  font-size: 1.05rem;
+  color: #eee;
+  font-weight: 400;
+  letter-spacing: 0.11em;
+  text-align: center;
+  opacity: 0.85;
+  margin-top: 0.4rem;
+}
+@media (max-width: 700px) {
+  .enhancedClockPanel {
+    margin: 1.8rem auto 1.8rem auto !important;
+  }
+  .digitalClock {
+    font-size: 1.5rem;
+    margin-bottom: 0.1rem;
+  }
+  .openHoursMainHeading {
+    font-size: 1.05rem;
+  }
+  .openNowText, .closedText {
+    font-size: 1em;
+  }
+  .openHoursSubtext {
+    font-size: 0.92rem;
+  }
 } 

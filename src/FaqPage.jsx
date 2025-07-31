@@ -29,9 +29,16 @@ const faqData = [
   },
 ];
 
-const FaqItem = ({ item, onClick, isOpen }) => {
+const FaqItem = ({ item, onClick, isOpen, index }) => {
   return (
-    <motion.div className={styles.faqItem} onClick={onClick}>
+    <motion.div
+      className={styles.faqItem}
+      onClick={onClick}
+      initial={{ opacity: 0, y: 24 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.7 }}
+      transition={{ duration: 0.7, delay: 0.2 + index * 0.07, ease: 'easeOut' }}
+    >
       <motion.div className={styles.questionHeader}>
         <h3 className={styles.questionText}>{item.question}</h3>
         <motion.span
@@ -68,7 +75,15 @@ export default function FaqPage() {
 
   return (
     <section className={styles.faqSection} id="faq">
-      <h2 className={styles.title}>Frequently Asked Questions</h2>
+      <motion.h2
+        className={styles.title}
+        initial={{ opacity: 0, y: 40 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.7 }}
+        transition={{ duration: 0.9, delay: 0, ease: 'easeOut' }}
+      >
+        Frequently Asked Questions
+      </motion.h2>
       <div className={styles.faqList}>
         {faqData.map((item, index) => (
           <FaqItem
@@ -76,6 +91,7 @@ export default function FaqPage() {
             item={item}
             isOpen={openIndex === index}
             onClick={() => handleClick(index)}
+            index={index}
           />
         ))}
       </div>

@@ -21,3 +21,25 @@ Welcome to the official website for **KIIK 69 Sports Bar** — your all-in-one h
    ```bash
    git clone <your-repo-url>
    cd kiik69
+   ```
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+3. **Run the dev server:**
+   ```bash
+   npm run dev
+   ```
+4. **Open in browser:**
+   Visit [http://localhost:5173](http://localhost:5173)
+
+## 📞 Contact & Links
+- Instagram: [@kiik69sportsbar.gachibowli](https://www.instagram.com/kiik69sportsbar.gachibowli)
+- WhatsApp: +91 92746 96969
+- Call: +91 92746 96969
+- Email: info@kiik69.com
+- Location: [Google Maps](https://maps.app.goo.gl/jMMuHgGinp6JUSmHA)
+
+---
+
+> **KIIK 69 Sports Bar** — Eat. Play. Repeat. 
