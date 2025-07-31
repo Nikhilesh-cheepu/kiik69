@@ -57,9 +57,9 @@ const AdminLogin = ({ isOpen, onClose }) => {
   const testApiConnection = async () => {
     try {
       const health = await ApiService.healthCheck();
-      setError(`Backend connected! Status: ${health.status}`);
+      setError(`✅ Backend connected! Status: ${health.status}`);
     } catch (err) {
-      setError(`Backend connection failed: ${err.message}`);
+      setError(`⚠️ Backend not connected yet. Need to set up PostgreSQL database in Railway.`);
     }
   };
 
