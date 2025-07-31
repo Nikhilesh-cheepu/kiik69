@@ -61,22 +61,23 @@ const AdminLogin = ({ isOpen, onClose }) => {
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.9 }}
-      style={{
-        position: 'fixed',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        background: 'rgba(0,0,0,0.95)',
-        padding: '30px',
-        borderRadius: '16px',
-        border: '1px solid rgba(255,255,255,0.2)',
-        color: 'white',
-        zIndex: 1001,
-        minWidth: '400px',
-        maxWidth: '600px',
-        maxHeight: '80vh',
-        overflow: 'auto'
-      }}
+              style={{
+          position: 'fixed',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          background: 'rgba(0,0,0,0.95)',
+          padding: '20px',
+          borderRadius: '16px',
+          border: '1px solid rgba(255,255,255,0.2)',
+          color: 'white',
+          zIndex: 1001,
+          width: '90%',
+          maxWidth: '500px',
+          minWidth: '300px',
+          maxHeight: '90vh',
+          overflow: 'auto'
+        }}
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
         <h2 style={{ margin: 0, color: '#ff003c' }}>Admin Dashboard</h2>
@@ -215,12 +216,16 @@ const AdminLogin = ({ isOpen, onClose }) => {
         left: '50%',
         transform: 'translate(-50%, -50%)',
         background: 'rgba(0,0,0,0.95)',
-        padding: '30px',
+        padding: '20px',
         borderRadius: '16px',
         border: '1px solid rgba(255,255,255,0.2)',
         color: 'white',
         zIndex: 1001,
-        minWidth: '350px'
+        width: '90%',
+        maxWidth: '400px',
+        minWidth: '280px',
+        maxHeight: '90vh',
+        overflow: 'auto'
       }}
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
@@ -248,6 +253,11 @@ const AdminLogin = ({ isOpen, onClose }) => {
             placeholder="Username"
             value={credentials.username}
             onChange={(e) => setCredentials({ ...credentials, username: e.target.value })}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && e.target.type === 'password') {
+                e.preventDefault();
+              }
+            }}
             style={{
               width: '100%',
               padding: '12px 16px',
@@ -256,7 +266,8 @@ const AdminLogin = ({ isOpen, onClose }) => {
               background: 'rgba(255,255,255,0.1)',
               color: 'white',
               fontSize: '14px',
-              boxSizing: 'border-box'
+              boxSizing: 'border-box',
+              minHeight: '44px'
             }}
           />
         </div>
@@ -266,6 +277,12 @@ const AdminLogin = ({ isOpen, onClose }) => {
             placeholder="Password"
             value={credentials.password}
             onChange={(e) => setCredentials({ ...credentials, password: e.target.value })}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                handleLogin(e);
+              }
+            }}
             style={{
               width: '100%',
               padding: '12px 16px',
@@ -274,7 +291,8 @@ const AdminLogin = ({ isOpen, onClose }) => {
               background: 'rgba(255,255,255,0.1)',
               color: 'white',
               fontSize: '14px',
-              boxSizing: 'border-box'
+              boxSizing: 'border-box',
+              minHeight: '44px'
             }}
           />
         </div>
@@ -292,7 +310,8 @@ const AdminLogin = ({ isOpen, onClose }) => {
             borderRadius: '8px',
             cursor: loading ? 'not-allowed' : 'pointer',
             fontSize: '14px',
-            opacity: loading ? 0.7 : 1
+            opacity: loading ? 0.7 : 1,
+            minHeight: '44px'
           }}
         >
           {loading ? 'Logging in...' : 'Login'}
