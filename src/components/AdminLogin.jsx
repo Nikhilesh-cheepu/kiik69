@@ -61,22 +61,18 @@ const AdminLogin = ({ isOpen, onClose }) => {
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.9 }}
               style={{
-          position: 'fixed',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
           background: 'rgba(0,0,0,0.95)',
           padding: '24px',
           borderRadius: '16px',
           border: '1px solid rgba(255,255,255,0.2)',
           color: 'white',
-          zIndex: 1001,
-          width: 'calc(100% - 40px)',
+          width: '90vw',
           maxWidth: '500px',
           minWidth: '300px',
-          maxHeight: 'calc(100vh - 40px)',
+          maxHeight: '90vh',
           overflow: 'auto',
-          boxShadow: '0 20px 60px rgba(0,0,0,0.5)'
+          boxShadow: '0 20px 60px rgba(0,0,0,0.5)',
+          margin: '0 auto'
         }}
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
@@ -211,22 +207,18 @@ const AdminLogin = ({ isOpen, onClose }) => {
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.9 }}
       style={{
-        position: 'fixed',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
         background: 'rgba(0,0,0,0.95)',
         padding: '24px',
         borderRadius: '16px',
         border: '1px solid rgba(255,255,255,0.2)',
         color: 'white',
-        zIndex: 1001,
-        width: 'calc(100% - 40px)',
+        width: '90vw',
         maxWidth: '400px',
         minWidth: '300px',
-        maxHeight: 'calc(100vh - 40px)',
+        maxHeight: '90vh',
         overflow: 'auto',
-        boxShadow: '0 20px 60px rgba(0,0,0,0.5)'
+        boxShadow: '0 20px 60px rgba(0,0,0,0.5)',
+        margin: '0 auto'
       }}
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
@@ -345,12 +337,23 @@ const AdminLogin = ({ isOpen, onClose }) => {
               right: 0,
               bottom: 0,
               background: 'rgba(0,0,0,0.7)',
-              zIndex: 1000
+              zIndex: 1000,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
             }}
           />
           
           {/* Modal Content */}
-          {showAdminDashboard ? <AdminDashboard /> : <LoginModal />}
+          <div style={{
+            position: 'fixed',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            zIndex: 1001
+          }}>
+            {showAdminDashboard ? <AdminDashboard /> : <LoginModal />}
+          </div>
         </>
       )}
     </AnimatePresence>
