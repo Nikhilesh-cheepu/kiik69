@@ -13,8 +13,8 @@ const AdminLogin = ({ isOpen, onClose }) => {
   // Reset form when modal opens
   useEffect(() => {
     if (isOpen) {
-      setUsername('');
-      setPassword('');
+      setUsername('admin');
+      setPassword('admin@123');
       setError('');
       setLoading(false);
     }
@@ -96,10 +96,10 @@ const AdminLogin = ({ isOpen, onClose }) => {
                 border: '1px solid rgba(255,255,255,0.2)',
                 color: 'white',
                 zIndex: 1001,
-                width: '90vw',
+                width: 'calc(100vw - 40px)',
                 maxWidth: '500px',
                 minWidth: '300px',
-                maxHeight: '90vh',
+                maxHeight: 'calc(100vh - 40px)',
                 overflow: 'auto',
                 boxShadow: '0 20px 60px rgba(0,0,0,0.5)'
               }}
@@ -251,10 +251,10 @@ const AdminLogin = ({ isOpen, onClose }) => {
               border: '1px solid rgba(255,255,255,0.2)',
               color: 'white',
               zIndex: 1001,
-              width: '90vw',
+              width: 'calc(100vw - 40px)',
               maxWidth: '400px',
               minWidth: '300px',
-              maxHeight: '90vh',
+              maxHeight: 'calc(100vh - 40px)',
               overflow: 'auto',
               boxShadow: '0 20px 60px rgba(0,0,0,0.5)'
             }}
