@@ -34,6 +34,7 @@ app.use('/api/gallery', require('./routes/gallery'));
 app.use('/api/party-packages', require('./routes/partyPackages'));
 app.use('/api/games', require('./routes/games'));
 app.use('/api/contact', require('./routes/contact'));
+app.use('/api/assets', require('./routes/assets'));
 
 // Health check
 app.get('/api/health', (req, res) => {

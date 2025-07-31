@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ApiService from '../services/api';
+import AssetManager from './AssetManager';
 
 const AdminLogin = ({ isOpen, onClose }) => {
   const [username, setUsername] = useState('');
@@ -9,6 +10,7 @@ const AdminLogin = ({ isOpen, onClose }) => {
   const [error, setError] = useState('');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
+  const [showAssetManager, setShowAssetManager] = useState(false);
 
   // Reset form when modal opens
   useEffect(() => {
@@ -142,6 +144,22 @@ const AdminLogin = ({ isOpen, onClose }) => {
 
                 <div style={{ display: 'grid', gap: '15px', marginBottom: '20px' }}>
                   <button
+                    onClick={() => setShowAssetManager(true)}
+                    style={{
+                      background: '#ff003c',
+                      color: 'white',
+                      border: 'none',
+                      padding: '12px 16px',
+                      borderRadius: '8px',
+                      cursor: 'pointer',
+                      fontSize: '14px',
+                      textAlign: 'left'
+                    }}
+                  >
+                    📁 Manage All Assets
+                  </button>
+                  
+                  <button
                     style={{
                       background: '#ff003c',
                       color: 'white',
@@ -229,6 +247,11 @@ const AdminLogin = ({ isOpen, onClose }) => {
         )}
       </AnimatePresence>
     );
+  }
+
+  // Asset Manager Modal
+  if (showAssetManager) {
+    return <AssetManager onClose={() => setShowAssetManager(false)} />;
   }
 
   // Login Modal

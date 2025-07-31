@@ -291,6 +291,66 @@ class ApiService {
     return handleResponse(response);
   }
 
+  // Assets API
+  static async getAssets(filters = {}) {
+    const params = new URLSearchParams(filters);
+    const response = await fetch(`${API_BASE_URL}/assets?${params}`);
+    return handleResponse(response);
+  }
+
+  static async getAsset(id) {
+    const response = await fetch(`${API_BASE_URL}/assets/${id}`);
+    return handleResponse(response);
+  }
+
+  static async uploadAsset(formData) {
+    const response = await fetch(`${API_BASE_URL}/assets`, {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: formData,
+    });
+    return handleResponse(response);
+  }
+
+  static async updateAsset(id, data) {
+    const response = await fetch(`${API_BASE_URL}/assets/${id}`, {
+      method: 'PUT',
+      headers: {
+        ...getAuthHeaders(),
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+    return handleResponse(response);
+  }
+
+  static async deleteAsset(id) {
+    const response = await fetch(`${API_BASE_URL}/assets/${id}`, {
+      method: 'DELETE',
+      headers: getAuthHeaders(),
+    });
+    return handleResponse(response);
+  }
+
+  static async importExistingAssets(category = '') {
+    const response = await fetch(`${API_BASE_URL}/assets/import-existing`, {
+      method: 'POST',
+      headers: {
+        ...getAuthHeaders(),
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ category }),
+    });
+    return handleResponse(response);
+  }
+
+  static async getAssetStats() {
+    const response = await fetch(`${API_BASE_URL}/assets/stats/overview`, {
+      headers: getAuthHeaders(),
+    });
+    return handleResponse(response);
+  }
+
   // Health check
   static async healthCheck() {
     const response = await fetch(`${API_BASE_URL}/health`);
