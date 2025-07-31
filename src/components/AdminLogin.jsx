@@ -12,7 +12,7 @@ const AdminLogin = ({ isOpen, onClose }) => {
   const [showAdminDashboard, setShowAdminDashboard] = useState(false);
 
   const handleLogin = async (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
     setLoading(true);
     setError('');
     setSuccess('');
@@ -67,16 +67,17 @@ const AdminLogin = ({ isOpen, onClose }) => {
           left: '50%',
           transform: 'translate(-50%, -50%)',
           background: 'rgba(0,0,0,0.95)',
-          padding: '20px',
+          padding: '24px',
           borderRadius: '16px',
           border: '1px solid rgba(255,255,255,0.2)',
           color: 'white',
           zIndex: 1001,
-          width: '90%',
+          width: 'calc(100% - 40px)',
           maxWidth: '500px',
           minWidth: '300px',
-          maxHeight: '90vh',
-          overflow: 'auto'
+          maxHeight: 'calc(100vh - 40px)',
+          overflow: 'auto',
+          boxShadow: '0 20px 60px rgba(0,0,0,0.5)'
         }}
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
@@ -216,16 +217,17 @@ const AdminLogin = ({ isOpen, onClose }) => {
         left: '50%',
         transform: 'translate(-50%, -50%)',
         background: 'rgba(0,0,0,0.95)',
-        padding: '20px',
+        padding: '24px',
         borderRadius: '16px',
         border: '1px solid rgba(255,255,255,0.2)',
         color: 'white',
         zIndex: 1001,
-        width: '90%',
+        width: 'calc(100% - 40px)',
         maxWidth: '400px',
-        minWidth: '280px',
-        maxHeight: '90vh',
-        overflow: 'auto'
+        minWidth: '300px',
+        maxHeight: 'calc(100vh - 40px)',
+        overflow: 'auto',
+        boxShadow: '0 20px 60px rgba(0,0,0,0.5)'
       }}
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
@@ -253,11 +255,6 @@ const AdminLogin = ({ isOpen, onClose }) => {
             placeholder="Username"
             value={credentials.username}
             onChange={(e) => setCredentials({ ...credentials, username: e.target.value })}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' && e.target.type === 'password') {
-                e.preventDefault();
-              }
-            }}
             style={{
               width: '100%',
               padding: '12px 16px',
@@ -277,12 +274,6 @@ const AdminLogin = ({ isOpen, onClose }) => {
             placeholder="Password"
             value={credentials.password}
             onChange={(e) => setCredentials({ ...credentials, password: e.target.value })}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                e.preventDefault();
-                handleLogin(e);
-              }
-            }}
             style={{
               width: '100%',
               padding: '12px 16px',

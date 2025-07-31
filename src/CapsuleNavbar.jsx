@@ -89,14 +89,7 @@ export default function CapsuleNavbar({ onAdminClick }) {
   return (
     <>
       <nav className={styles.capsuleNavbar}>
-        <a href="#home" className={styles.logoLink} onClick={(e) => {
-          e.preventDefault();
-          if (onAdminClick) {
-            onAdminClick();
-          } else {
-            handleNavClick(e, '#home');
-          }
-        }}>
+        <a href="#home" className={styles.logoLink} onClick={(e) => handleNavClick(e, '#home')}>
           <img src={logo} alt="KIIK 69 Logo" className={styles.logoImg} />
         </a>
         
