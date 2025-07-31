@@ -453,6 +453,7 @@ export default function App() {
   const [isMuted, setIsMuted] = React.useState(true);
   const [trackIdx, setTrackIdx] = React.useState(0);
   const wasPlayingBeforeHidden = useRef(false);
+  const [isAdminModalOpen, setIsAdminModalOpen] = React.useState(false);
 
   // Playlist of local tracks
   const playlist = [
@@ -539,8 +540,8 @@ export default function App() {
               onPrevTrack={prevTrack}
               trackName={playlist[trackIdx].name}
             />
-            <CapsuleNavbar />
-            <AdminLogin />
+            <CapsuleNavbar onAdminClick={() => setIsAdminModalOpen(true)} />
+            <AdminLogin isOpen={isAdminModalOpen} onClose={() => setIsAdminModalOpen(false)} />
             <Hero />
             <OpenHoursClock />
             <PartyPackages />

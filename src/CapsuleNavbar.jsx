@@ -30,7 +30,7 @@ const navLinkVariants = {
   }),
 };
 
-export default function CapsuleNavbar() {
+export default function CapsuleNavbar({ onAdminClick }) {
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [mobileSettingsOpen, setMobileSettingsOpen] = useState(false);
@@ -89,7 +89,14 @@ export default function CapsuleNavbar() {
   return (
     <>
       <nav className={styles.capsuleNavbar}>
-        <a href="#home" className={styles.logoLink} onClick={handleNavClick}>
+        <a href="#home" className={styles.logoLink} onClick={(e) => {
+          e.preventDefault();
+          if (onAdminClick) {
+            onAdminClick();
+          } else {
+            handleNavClick(e, '#home');
+          }
+        }}>
           <img src={logo} alt="KIIK 69 Logo" className={styles.logoImg} />
         </a>
         
@@ -126,7 +133,12 @@ export default function CapsuleNavbar() {
                 <button className={styles.dropdownItem} type="button" onClick={handleThemeToggle}>
                   {isLightTheme ? 'Dark Theme' : 'Light Theme'}
                 </button>
-                <button className={styles.dropdownItem} type="button">Admin</button>
+                <button className={styles.dropdownItem} type="button" onClick={() => {
+                  if (onAdminClick) {
+                    onAdminClick();
+                    setSettingsOpen(false);
+                  }
+                }}>Admin</button>
               </motion.div>
             </div>
           </div>
@@ -203,7 +215,13 @@ export default function CapsuleNavbar() {
                       <button className={styles.dropdownItem} type="button" onClick={handleThemeToggle}>
                         {isLightTheme ? 'Dark Theme' : 'Light Theme'}
                       </button>
-                      <button className={styles.dropdownItem} type="button">Admin</button>
+                      <button className={styles.dropdownItem} type="button" onClick={() => {
+                        if (onAdminClick) {
+                          onAdminClick();
+                          setMobileSettingsOpen(false);
+                          setMobileMenuOpen(false);
+                        }
+                      }}>Admin</button>
                     </motion.div>
                   )}
                 </AnimatePresence>
