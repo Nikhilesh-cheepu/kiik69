@@ -14,7 +14,7 @@ const AdminLogin = ({ isOpen, onClose }) => {
   useEffect(() => {
     if (isOpen) {
       setUsername('admin');
-      setPassword('admin@123');
+      setPassword('admin123');
       setError('');
       setLoading(false);
     }
@@ -30,15 +30,19 @@ const AdminLogin = ({ isOpen, onClose }) => {
     setError('');
 
     try {
-      // For now, simulate successful login since backend might not be ready
-      if (username === 'admin' && password === 'admin@123') {
-        setIsLoggedIn(true);
-        setUser({ username: 'admin' });
-      } else {
-        setError('Invalid credentials');
-      }
+      // Try Railway backend first
+      const response = await ApiService.login({ username, password });
+      setIsLoggedIn(true);
+      setUser(response.user);
     } catch (err) {
-      setError('Login failed - please try again');
+      // Fallback to local login for testing
+      if (username === 'admin' && password === 'admin123') {
+        setIsLoggedIn(true);
+        setUser({ username: 'admin', role: 'admin' });
+        setError('✅ Logged in successfully! (Local mode - Railway backend may need restart)');
+      } else {
+        setError(err.message || 'Login failed - please try again');
+      }
     } finally {
       setLoading(false);
     }
@@ -57,9 +61,9 @@ const AdminLogin = ({ isOpen, onClose }) => {
   const testApiConnection = async () => {
     try {
       const health = await ApiService.healthCheck();
-      setError(`✅ Backend connected! Status: ${health.status}`);
+      setError(`✅ Backend connected successfully! Status: ${health.status}`);
     } catch (err) {
-      setError(`⚠️ Backend not connected yet. Need to set up PostgreSQL database in Railway.`);
+      setError(`⚠️ Backend connection failed. Railway URL: https://kiik69-production.up.railway.app`);
     }
   };
 

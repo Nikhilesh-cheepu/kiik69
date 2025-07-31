@@ -1,7 +1,15 @@
-// Change this when deploying to production
-const API_BASE_URL = process.env.NODE_ENV === 'production' 
-  ? 'https://yourdomain.com/api'  // Production URL
-  : 'http://localhost:5001/api';  // Development URL
+// Dynamic API URL configuration
+const getApiBaseUrl = () => {
+  // Check if we're in production (deployed)
+  if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+    // Production - use Railway URL
+    return 'https://kiik69-production.up.railway.app/api';
+  }
+  // Development - use localhost
+  return 'http://localhost:5001/api';
+};
+
+const API_BASE_URL = getApiBaseUrl();
 
 // Helper function to handle API responses
 const handleResponse = async (response) => {
