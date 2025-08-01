@@ -117,6 +117,13 @@ function MusicToggle({ isPlaying, isMuted, onToggle, onNextTrack, onPrevTrack, t
     }
   };
 
+  const handleClosePanel = () => {
+    setShowPanel(false);
+    if (autoHideTimer.current) {
+      clearTimeout(autoHideTimer.current);
+    }
+  };
+
   return (
     <div
       style={{ 
@@ -173,15 +180,44 @@ function MusicToggle({ isPlaying, isMuted, onToggle, onNextTrack, onPrevTrack, t
             onMouseEnter={!isMobileDevice ? handlePanelInteraction : undefined}
             onTouchStart={isMobileDevice ? handlePanelInteraction : undefined}
           >
+            {/* Close Button */}
+            <motion.button
+              onClick={handleClosePanel}
+              style={{
+                position: 'absolute',
+                top: 8,
+                right: 8,
+                background: 'rgba(255,255,255,0.1)',
+                border: 'none',
+                borderRadius: '50%',
+                width: 24,
+                height: 24,
+                color: '#fff',
+                fontSize: 14,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                zIndex: 1004,
+              }}
+              whileHover={{ scale: 1.1, background: 'rgba(255,255,255,0.2)' }}
+              whileTap={{ scale: 0.9 }}
+              aria-label="Close music panel"
+            >
+              ✕
+            </motion.button>
+
             <div style={{ 
               fontWeight: 600, 
               fontSize: isMobileDevice ? '1.2rem' : '1.05rem', 
               textAlign: 'center', 
               marginBottom: 4, 
-              textShadow: '0 2px 8px #0008' 
+              textShadow: '0 2px 8px #0008',
+              marginTop: 8, // Add space for close button
             }}>
               {trackName}
             </div>
+            
             <div style={{ 
               display: 'flex', 
               gap: isMobileDevice ? 24 : 18, 
@@ -207,6 +243,32 @@ function MusicToggle({ isPlaying, isMuted, onToggle, onNextTrack, onPrevTrack, t
                 whileTap={{ scale: 0.9 }}
                 aria-label="Previous track"
               >⏮️</motion.button>
+              
+              {/* Play/Pause Button */}
+              <motion.button
+                onClick={onToggle}
+                style={{
+                  background: 'rgba(255,0,60,0.2)',
+                  border: '2px solid rgba(255,0,60,0.6)',
+                  borderRadius: '50%',
+                  width: isMobileDevice ? 52 : 44,
+                  height: isMobileDevice ? 52 : 44,
+                  color: '#fff',
+                  fontSize: isMobileDevice ? 28 : 24,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  boxShadow: '0 4px 12px rgba(255,0,60,0.3)',
+                  minHeight: '48px', // Touch-friendly target
+                }}
+                whileHover={{ scale: 1.05, boxShadow: '0 6px 16px rgba(255,0,60,0.4)' }}
+                whileTap={{ scale: 0.95 }}
+                aria-label={isSoundOn ? 'Pause music' : 'Play music'}
+              >
+                {isSoundOn ? '⏸️' : '▶️'}
+              </motion.button>
+              
               <motion.button
                 onClick={onNextTrack}
                 style={{
