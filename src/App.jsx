@@ -13,13 +13,27 @@ import Footer from './Footer';
 import GamesSection from './GamesSection';
 import AdminLogin from './components/AdminLogin';
 
+// Mobile detection utility
+const isMobile = () => window.innerWidth <= 768;
+
 function CursorFollower() {
   const followerRef = useRef(null);
   const cursorPosition = useRef({ x: 0, y: 0 });
   const followerPosition = useRef({ x: 0, y: 0 });
-  const followerSize = 24; // The width/height of the follower
+  const followerSize = 24;
+  const [isMobileDevice, setIsMobileDevice] = useState(false);
 
   useEffect(() => {
+    const checkMobile = () => {
+      setIsMobileDevice(isMobile());
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    // Don't add cursor follower on mobile
+    if (isMobileDevice) return;
+
     const handleMouseMove = (e) => {
       cursorPosition.current = { x: e.clientX, y: e.clientY };
     };
@@ -36,7 +50,6 @@ function CursorFollower() {
       followerPosition.current = { x: newX, y: newY };
 
       if (followerRef.current) {
-        // Center the follower on the cursor
         followerRef.current.style.transform = `translate3d(${newX - followerSize / 2}px, ${newY - followerSize / 2}px, 0)`;
       }
 
@@ -48,26 +61,82 @@ function CursorFollower() {
       window.removeEventListener('mousemove', handleMouseMove);
       cancelAnimationFrame(animationFrameId);
     };
-  }, []);
+  }, [isMobileDevice]);
+
+  // Don't render cursor follower on mobile
+  if (isMobileDevice) return null;
 
   return <div ref={followerRef} style={styles.cursorFollower} />;
 }
 
-// Audio Toggle Button
+// Enhanced Audio Toggle Button with mobile-first design
 function MusicToggle({ isPlaying, isMuted, onToggle, onNextTrack, onPrevTrack, trackName }) {
   const [showPanel, setShowPanel] = React.useState(false);
+  const [isMobileDevice, setIsMobileDevice] = React.useState(false);
+  const autoHideTimer = React.useRef(null);
   const isSoundOn = isPlaying && !isMuted;
+
+  React.useEffect(() => {
+    const checkMobile = () => {
+      setIsMobileDevice(isMobile());
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  const handlePanelShow = () => {
+    setShowPanel(true);
+    
+    // Auto-hide after 10 seconds on mobile
+    if (isMobileDevice) {
+      if (autoHideTimer.current) {
+        clearTimeout(autoHideTimer.current);
+      }
+      autoHideTimer.current = setTimeout(() => {
+        setShowPanel(false);
+      }, 10000);
+    }
+  };
+
+  const handlePanelHide = () => {
+    if (!isMobileDevice) {
+      setShowPanel(false);
+    }
+  };
+
+  const handlePanelInteraction = () => {
+    // Reset auto-hide timer on interaction
+    if (isMobileDevice && autoHideTimer.current) {
+      clearTimeout(autoHideTimer.current);
+      autoHideTimer.current = setTimeout(() => {
+        setShowPanel(false);
+      }, 10000);
+    }
+  };
+
   return (
     <div
-      style={{ position: 'fixed', bottom: 20, right: 20, zIndex: 1002 }}
-      onMouseEnter={() => setShowPanel(true)}
-      onMouseLeave={() => setShowPanel(false)}
-      onTouchStart={() => setShowPanel(true)}
-      onTouchEnd={() => setShowPanel(false)}
+      style={{ 
+        position: 'fixed', 
+        bottom: isMobileDevice ? 16 : 20, 
+        right: isMobileDevice ? 16 : 20, 
+        zIndex: 1002 
+      }}
+      onMouseEnter={!isMobileDevice ? handlePanelShow : undefined}
+      onMouseLeave={!isMobileDevice ? handlePanelHide : undefined}
+      onTouchStart={isMobileDevice ? handlePanelShow : undefined}
     >
       <motion.button
         onClick={onToggle}
-        style={styles.musicToggle}
+        style={{
+          ...styles.musicToggle,
+          width: isMobileDevice ? '56px' : '50px',
+          height: isMobileDevice ? '56px' : '50px',
+          fontSize: isMobileDevice ? '1.8rem' : '1.5rem',
+        }}
         className={isSoundOn ? 'glowing' : ''}
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
@@ -84,43 +153,56 @@ function MusicToggle({ isPlaying, isMuted, onToggle, onNextTrack, onPrevTrack, t
             transition={{ duration: 0.18, ease: 'easeOut' }}
             style={{
               position: 'absolute',
-              bottom: 60,
+              bottom: isMobileDevice ? 72 : 60,
               right: 0,
-              minWidth: 240,
-              background: 'rgba(20,20,20,0.7)',
+              minWidth: isMobileDevice ? 280 : 240,
+              background: 'rgba(20,20,20,0.95)',
               borderRadius: 18,
               boxShadow: '0 8px 32px rgba(0,0,0,0.25)',
               border: '1.5px solid rgba(255,255,255,0.13)',
               backdropFilter: 'blur(16px)',
               WebkitBackdropFilter: 'blur(16px)',
               color: '#fff',
-              padding: '1.1rem 1.2rem 1.1rem 1.2rem',
+              padding: isMobileDevice ? '1.4rem 1.5rem' : '1.1rem 1.2rem',
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
-              gap: 12,
+              gap: isMobileDevice ? 16 : 12,
               zIndex: 1003,
             }}
+            onMouseEnter={!isMobileDevice ? handlePanelInteraction : undefined}
+            onTouchStart={isMobileDevice ? handlePanelInteraction : undefined}
           >
-            <div style={{ fontWeight: 600, fontSize: '1.05rem', textAlign: 'center', marginBottom: 4, textShadow: '0 2px 8px #0008' }}>
+            <div style={{ 
+              fontWeight: 600, 
+              fontSize: isMobileDevice ? '1.2rem' : '1.05rem', 
+              textAlign: 'center', 
+              marginBottom: 4, 
+              textShadow: '0 2px 8px #0008' 
+            }}>
               {trackName}
             </div>
-            <div style={{ display: 'flex', gap: 18, alignItems: 'center' }}>
+            <div style={{ 
+              display: 'flex', 
+              gap: isMobileDevice ? 24 : 18, 
+              alignItems: 'center' 
+            }}>
               <motion.button
                 onClick={onPrevTrack}
                 style={{
                   background: 'rgba(255,255,255,0.08)',
                   border: 'none',
                   borderRadius: '50%',
-                  width: 36,
-                  height: 36,
+                  width: isMobileDevice ? 44 : 36,
+                  height: isMobileDevice ? 44 : 36,
                   color: '#fff',
-                  fontSize: 20,
+                  fontSize: isMobileDevice ? 24 : 20,
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  boxShadow: '0 2px 8px #0004',
+                  boxShadow: '0 2px 8px #0004)',
+                  minHeight: '48px', // Touch-friendly target
                 }}
                 whileTap={{ scale: 0.9 }}
                 aria-label="Previous track"
@@ -131,15 +213,16 @@ function MusicToggle({ isPlaying, isMuted, onToggle, onNextTrack, onPrevTrack, t
                   background: 'rgba(255,255,255,0.08)',
                   border: 'none',
                   borderRadius: '50%',
-                  width: 36,
-                  height: 36,
+                  width: isMobileDevice ? 44 : 36,
+                  height: isMobileDevice ? 44 : 36,
                   color: '#fff',
-                  fontSize: 20,
+                  fontSize: isMobileDevice ? 24 : 20,
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  boxShadow: '0 2px 8px #0004',
+                  boxShadow: '0 2px 8px #0004)',
+                  minHeight: '48px', // Touch-friendly target
                 }}
                 whileTap={{ scale: 0.9 }}
                 aria-label="Next track"
@@ -156,11 +239,23 @@ function getHeroVideo() {
   return localStorage.getItem('kiik69_hero_video') || '';
 }
 
-// Hero Section
+// Optimized Hero Section with responsive video loading
 function Hero() {
   const [animation, setAnimation] = useState('initial');
+  const [isMobileDevice, setIsMobileDevice] = useState(false);
   const animationTypes = ['pulse', 'rotate', 'flicker', 'shake'];
   const heroVideo = getHeroVideo();
+
+  React.useEffect(() => {
+    const checkMobile = () => {
+      setIsMobileDevice(isMobile());
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   function isYouTube(url) {
     return /youtu\.be|youtube\.com/.test(url);
@@ -168,6 +263,24 @@ function Hero() {
   function isVimeo(url) {
     return /vimeo\.com/.test(url);
   }
+
+  // Responsive video source selection
+  const getVideoSource = () => {
+    if (heroVideo.startsWith('data:video')) {
+      return heroVideo;
+    } else if (isYouTube(heroVideo)) {
+      return heroVideo;
+    } else if (isVimeo(heroVideo)) {
+      return heroVideo;
+    } else {
+      // Use optimized video based on device
+      if (isMobileDevice) {
+        return '/videos/home-tiny.webm';
+      } else {
+        return '/videos/home-mobile.webm';
+      }
+    }
+  };
 
   let videoBg;
   if (heroVideo.startsWith('data:video')) {
@@ -177,7 +290,8 @@ function Hero() {
         loop
         muted
         playsInline
-        poster="/assets/images/hero-fallback.jpg"
+        preload="auto"
+        poster="/videos/home-poster.jpg"
         style={{
           position: 'absolute',
           top: 0,
@@ -229,7 +343,8 @@ function Hero() {
         loop
         muted
         playsInline
-        poster="/assets/images/hero-fallback.jpg"
+        preload="auto"
+        poster="/videos/home-poster.jpg"
         style={{
           position: 'absolute',
           top: 0,
@@ -242,8 +357,9 @@ function Hero() {
           minWidth: '100%',
         }}
       >
+        <source src={getVideoSource()} type="video/webm" />
         <source src="/videos/home.mp4" type="video/mp4" />
-        <img src="/assets/images/hero-fallback.jpg" alt="KIIK 69" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+        <img src="/videos/home-poster.jpg" alt="KIIK 69" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
       </video>
     );
   }
@@ -274,7 +390,7 @@ function Hero() {
   };
 
   const draggableProps = {
-    drag: true,
+    drag: !isMobileDevice, // Disable drag on mobile
     dragElastic: 0.2,
     dragSnapToOrigin: true,
     dragTransition: { bounceStiffness: 500, bounceDamping: 15 },
@@ -282,12 +398,16 @@ function Hero() {
   };
 
   const handleHoverStart = () => {
-    const randomType = animationTypes[Math.floor(Math.random() * animationTypes.length)];
-    setAnimation(randomType);
+    if (!isMobileDevice) {
+      const randomType = animationTypes[Math.floor(Math.random() * animationTypes.length)];
+      setAnimation(randomType);
+    }
   };
 
   const handleHoverEnd = () => {
-    setAnimation('initial');
+    if (!isMobileDevice) {
+      setAnimation('initial');
+    }
   };
 
   return (
@@ -447,6 +567,68 @@ function RequireAuth({ children }) {
   return children;
 }
 
+// Lazy load sections for better performance
+const LazyPartyPackages = React.lazy(() => import('./PartyPackages'));
+const LazyMenuSection = React.lazy(() => import('./MenuSection'));
+const LazyGamesSection = React.lazy(() => import('./GamesSection'));
+const LazyEventsSection = React.lazy(() => import('./EventsSection'));
+const LazyGallerySection = React.lazy(() => import('./GallerySection'));
+const LazyFaqSection = React.lazy(() => import('./FaqPage'));
+
+// Loading fallback component
+function SectionLoader() {
+  return (
+    <div style={{
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      minHeight: '200px',
+      background: 'rgba(255,255,255,0.05)',
+      borderRadius: '12px',
+      margin: '20px 0'
+    }}>
+      <div style={{
+        width: '40px',
+        height: '40px',
+        border: '3px solid rgba(255,0,60,0.3)',
+        borderTop: '3px solid #ff003c',
+        borderRadius: '50%',
+        animation: 'spin 1s linear infinite'
+      }} />
+    </div>
+  );
+}
+
+// Intersection Observer wrapper for lazy loading
+function LazySection({ children, threshold = 0.1 }) {
+  const [isVisible, setIsVisible] = React.useState(false);
+  const ref = React.useRef(null);
+
+  React.useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.disconnect();
+        }
+      },
+      { threshold }
+    );
+
+    if (ref.current) {
+      observer.observe(ref.current);
+    }
+
+    return () => observer.disconnect();
+  }, [threshold]);
+
+  return (
+    <div ref={ref}>
+      {isVisible ? children : <SectionLoader />}
+    </div>
+  );
+}
+
 export default function App() {
   const audioRef = useRef(null);
   const [isPlaying, setIsPlaying] = React.useState(false);
@@ -529,30 +711,54 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         <Route path="*" element={
-          <div>
-            <CursorFollower />
-            <audio ref={audioRef} src={playlist[trackIdx].src} loop preload="auto" />
-            <MusicToggle
-              isPlaying={isPlaying}
-              isMuted={isMuted}
-              onToggle={toggleMute}
-              onNextTrack={nextTrack}
-              onPrevTrack={prevTrack}
-              trackName={playlist[trackIdx].name}
-            />
-            <CapsuleNavbar onAdminClick={() => setIsAdminModalOpen(true)} />
-            <AdminLogin isOpen={isAdminModalOpen} onClose={() => setIsAdminModalOpen(false)} />
-            <Hero />
-            <OpenHoursClock />
-            <PartyPackages />
-            <MenuSection />
-            <GamesSection />
-            <EventsSection />
-            <GallerySection />
-            <FaqSection id="faq" />
-          </div>
+          <React.Suspense fallback={<SectionLoader />}>
+            <div>
+              <CursorFollower />
+              <audio ref={audioRef} src={playlist[trackIdx].src} loop preload="auto" />
+              <MusicToggle
+                isPlaying={isPlaying}
+                isMuted={isMuted}
+                onToggle={toggleMute}
+                onNextTrack={nextTrack}
+                onPrevTrack={prevTrack}
+                trackName={playlist[trackIdx].name}
+              />
+              <CapsuleNavbar onAdminClick={() => setIsAdminModalOpen(true)} />
+              <AdminLogin isOpen={isAdminModalOpen} onClose={() => setIsAdminModalOpen(false)} />
+              <Hero />
+              <OpenHoursClock />
+              
+              <LazySection>
+                <LazyPartyPackages />
+              </LazySection>
+              
+              <LazySection>
+                <LazyMenuSection />
+              </LazySection>
+              
+              <LazySection>
+                <LazyGamesSection />
+              </LazySection>
+              
+              <LazySection>
+                <LazyEventsSection />
+              </LazySection>
+              
+              <LazySection>
+                <LazyGallerySection />
+              </LazySection>
+              
+              <LazySection>
+                <LazyFaqSection id="faq" />
+              </LazySection>
+            </div>
+          </React.Suspense>
         } />
-        <Route path="/faq" element={<FaqSection />} />
+        <Route path="/faq" element={
+          <React.Suspense fallback={<SectionLoader />}>
+            <LazyFaqSection />
+          </React.Suspense>
+        } />
       </Routes>
       <Footer />
     </BrowserRouter>
