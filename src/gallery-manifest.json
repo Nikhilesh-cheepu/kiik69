@@ -14,5 +14,21 @@
   {
     "type": "video",
     "src": "/gallery/WhatsApp Video 2568-06-23 at 20.30.54.mp4"
+  },
+  {
+    "type": "video",
+    "src": "/gallery/gallery-video-1.webm"
+  },
+  {
+    "type": "video",
+    "src": "/gallery/gallery-video-2.webm"
+  },
+  {
+    "type": "video",
+    "src": "/gallery/gallery-video-3.webm"
+  },
+  {
+    "type": "video",
+    "src": "/gallery/gallery-video-4.webm"
   }
 ]
