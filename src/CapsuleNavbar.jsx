@@ -59,17 +59,51 @@ export default function CapsuleNavbar({ onAdminClick }) {
 
   useEffect(() => {
     document.body.style.overflow = isMobileMenuOpen ? 'hidden' : 'auto';
-    if (!isMobileMenuOpen) setMobileSettingsOpen(false);
+    if (!isMobileMenuOpen) {
+      setMobileSettingsOpen(false);
+    }
   }, [isMobileMenuOpen]);
 
-  // Scroll to section and close menu
+  // Improved scroll to section with better error handling and mobile optimization
   const handleNavClick = (e, href) => {
     if (href.startsWith('#')) {
       e.preventDefault();
       setMobileMenuOpen(false);
-      const section = document.getElementById(href.replace('#', ''));
+      setSettingsOpen(false);
+      setMobileSettingsOpen(false);
+      
+      const targetId = href.replace('#', '');
+      const section = document.getElementById(targetId);
+      
       if (section) {
-        section.scrollIntoView({ behavior: 'smooth' });
+        // Use custom smooth scroll to prevent snapping
+        const isMobile = window.innerWidth <= 768;
+        const offset = isMobile ? 80 : 100; // Account for fixed navbar
+        
+        // Custom smooth scroll implementation
+        const elementTop = section.offsetTop - offset;
+        const startPosition = window.pageYOffset;
+        const distance = elementTop - startPosition;
+        const duration = 800;
+        let start = null;
+
+        const animation = (currentTime) => {
+          if (start === null) start = currentTime;
+          const timeElapsed = currentTime - start;
+          const run = ease(timeElapsed, startPosition, distance, duration);
+          window.scrollTo(0, run);
+          if (timeElapsed < duration) requestAnimationFrame(animation);
+        };
+
+        // Easing function
+        const ease = (t, b, c, d) => {
+          t /= d / 2;
+          if (t < 1) return c / 2 * t * t + b;
+          t--;
+          return -c / 2 * (t * (t - 2) - 1) + b;
+        };
+
+        requestAnimationFrame(animation);
       }
     }
   };
@@ -85,6 +119,20 @@ export default function CapsuleNavbar({ onAdminClick }) {
     document.addEventListener('mousedown', handleClick);
     return () => document.removeEventListener('mousedown', handleClick);
   }, [settingsOpen]);
+
+  // Close mobile menu on escape key
+  useEffect(() => {
+    const handleEscape = (e) => {
+      if (e.key === 'Escape') {
+        setMobileMenuOpen(false);
+        setSettingsOpen(false);
+        setMobileSettingsOpen(false);
+      }
+    };
+    
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, []);
 
   return (
     <>
@@ -116,26 +164,30 @@ export default function CapsuleNavbar({ onAdminClick }) {
               >
                 Settings <FaChevronDown style={{ fontSize: '0.9em', marginLeft: 4, transition: 'transform 0.2s', transform: settingsOpen ? 'rotate(-180deg)' : 'none' }} />
               </button>
-              <motion.div
-                className={styles.dropdownMenu}
-                initial={{ opacity: 0, y: 10, scale: 0.98 }}
-                animate={settingsOpen ? { opacity: 1, y: 0, scale: 1 } : {}}
-                exit={{ opacity: 0, y: 10, scale: 0.98 }}
-                style={{ display: settingsOpen ? 'block' : 'none' }}
-              >
-                <button className={styles.dropdownItem} type="button" onClick={handleThemeToggle}>
-                  {isLightTheme ? 'Dark Theme' : 'Light Theme'}
-                </button>
-                <button className={styles.dropdownItem} type="button" onClick={() => {
-                  if (onAdminClick) {
-                    onAdminClick();
-                    setSettingsOpen(false);
-                  }
-                }}>Admin</button>
-              </motion.div>
+              <AnimatePresence>
+                {settingsOpen && (
+                  <motion.div
+                    className={styles.dropdownMenu}
+                    initial={{ opacity: 0, y: 10, scale: 0.98 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 10, scale: 0.98 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <button className={styles.dropdownItem} type="button" onClick={handleThemeToggle}>
+                      {isLightTheme ? 'Dark Theme' : 'Light Theme'}
+                    </button>
+                    <button className={styles.dropdownItem} type="button" onClick={() => {
+                      if (onAdminClick) {
+                        onAdminClick();
+                        setSettingsOpen(false);
+                      }
+                    }}>Admin</button>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           </div>
-          <a href="#booking" className={styles.bookNowBtn}>Book Now</a>
+          <a href="#booking" className={styles.bookNowBtn} onClick={(e) => handleNavClick(e, '#booking')}>Book Now</a>
         </div>
 
         {!isMobileMenuOpen && (
@@ -204,6 +256,7 @@ export default function CapsuleNavbar({ onAdminClick }) {
                       initial={{ opacity: 0, y: 10, scale: 0.98 }}
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: 10, scale: 0.98 }}
+                      transition={{ duration: 0.2 }}
                     >
                       <button className={styles.dropdownItem} type="button" onClick={handleThemeToggle}>
                         {isLightTheme ? 'Dark Theme' : 'Light Theme'}
@@ -226,7 +279,7 @@ export default function CapsuleNavbar({ onAdminClick }) {
                 variants={navLinkVariants}
                 initial="hidden"
                 animate="visible"
-                onClick={toggleMobileMenu}
+                onClick={(e) => handleNavClick(e, '#booking')}
               >
                 Book Now
               </motion.a>

@@ -16,6 +16,35 @@ import AdminLogin from './components/AdminLogin';
 // Mobile detection utility
 const isMobile = () => window.innerWidth <= 768;
 
+// Smooth scroll utility to prevent snapping
+const smoothScrollTo = (element, offset = 0) => {
+  if (!element) return;
+  
+  const elementTop = element.offsetTop - offset;
+  const startPosition = window.pageYOffset;
+  const distance = elementTop - startPosition;
+  const duration = 800;
+  let start = null;
+
+  const animation = (currentTime) => {
+    if (start === null) start = currentTime;
+    const timeElapsed = currentTime - start;
+    const run = ease(timeElapsed, startPosition, distance, duration);
+    window.scrollTo(0, run);
+    if (timeElapsed < duration) requestAnimationFrame(animation);
+  };
+
+  // Easing function
+  const ease = (t, b, c, d) => {
+    t /= d / 2;
+    if (t < 1) return c / 2 * t * t + b;
+    t--;
+    return -c / 2 * (t * (t - 2) - 1) + b;
+  };
+
+  requestAnimationFrame(animation);
+};
+
 function CursorFollower() {
   const followerRef = useRef(null);
   const cursorPosition = useRef({ x: 0, y: 0 });
@@ -25,7 +54,8 @@ function CursorFollower() {
 
   useEffect(() => {
     const checkMobile = () => {
-      setIsMobileDevice(isMobile());
+      const mobile = window.innerWidth <= 768;
+      setIsMobileDevice(mobile);
     };
     
     checkMobile();
@@ -40,7 +70,12 @@ function CursorFollower() {
     window.addEventListener('mousemove', handleMouseMove);
 
     let animationFrameId;
+    let isAnimating = false;
+    
     const animate = () => {
+      if (isAnimating) return;
+      isAnimating = true;
+      
       const { x: targetX, y: targetY } = cursorPosition.current;
       const { x: currentX, y: currentY } = followerPosition.current;
 
@@ -53,13 +88,18 @@ function CursorFollower() {
         followerRef.current.style.transform = `translate3d(${newX - followerSize / 2}px, ${newY - followerSize / 2}px, 0)`;
       }
 
-      animationFrameId = requestAnimationFrame(animate);
+      animationFrameId = requestAnimationFrame(() => {
+        isAnimating = false;
+        animate();
+      });
     };
     animate();
 
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
-      cancelAnimationFrame(animationFrameId);
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+      }
     };
   }, [isMobileDevice]);
 
@@ -483,7 +523,7 @@ function Hero() {
         <motion.h1
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, ease: 'easeOut' }}
+          transition={{ duration: isMobileDevice ? 0.6 : 1, ease: 'easeOut' }}
           style={styles.heroHeadline}
         >
           <span style={styles.staticWord}>Welcome to</span>
@@ -512,8 +552,8 @@ function Hero() {
             visible: {
               opacity: 1,
               transition: {
-                staggerChildren: 0.3,
-                delayChildren: 0.3,
+                staggerChildren: isMobileDevice ? 0.1 : 0.3,
+                delayChildren: isMobileDevice ? 0.1 : 0.3,
               },
             },
           }}
@@ -537,7 +577,7 @@ function Hero() {
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 1.2, ease: 'easeOut' }}
+          transition={{ duration: isMobileDevice ? 0.5 : 0.8, delay: isMobileDevice ? 0.6 : 1.2, ease: 'easeOut' }}
           style={styles.heroSubtext}
         >
           "Not just a place to hang out — it's where food, games, and good times collide."
