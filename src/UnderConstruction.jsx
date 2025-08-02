@@ -119,7 +119,7 @@ const UnderConstruction = () => {
             textShadow: '0 0 30px rgba(255, 0, 60, 0.5)'
           }}
         >
-          We're Coming Back Strong
+          🚧 Our website is currently under construction
         </motion.h1>
 
         {/* Subtitle */}
@@ -132,7 +132,7 @@ const UnderConstruction = () => {
             lineHeight: 1.6
           }}
         >
-          Something amazing is brewing at KIIK 69
+          We'll be back online soon with a brand new experience!
         </motion.p>
 
         {/* Opening Hours */}
@@ -302,7 +302,7 @@ const UnderConstruction = () => {
             fontStyle: 'italic'
           }}
         >
-          Stay tuned for the grand reopening! 🍻
+          Stay tuned for our brand new website! 🍻
         </motion.p>
       </motion.div>
 

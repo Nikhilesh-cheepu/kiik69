@@ -1,13 +1,13 @@
 # 🍻 KIIK 69 Sports Bar - Under Construction
 
 > **⚠️ TEMPORARY HOLDING PAGE**  
-> This is a temporary "Under Construction" page while we rebuild the main website.
+> This is a clean, minimal "Under Construction" page while we rebuild the main website.
 
 ## 🚧 Current Status
 
 The main website is being rebuilt with a mobile-first responsive design. This repository currently contains:
 
-- ✅ **Under Construction Page**: A stylish, mobile-friendly holding page
+- ✅ **Under Construction Page**: A clean, mobile-friendly holding page
 - ✅ **Media Assets**: All images, videos, and music files preserved
 - ✅ **Backend Files**: API routes and server files intact
 - 🔄 **Main Website**: Being rebuilt with modern responsive design
@@ -23,7 +23,7 @@ The main website is being rebuilt with a mobile-first responsive design. This re
 
 ## 🛠️ Tech Stack
 
-- **React 18** with Vite
+- **React 19** with Vite
 - **Framer Motion** for animations
 - **React Icons** for social media icons
 - **Responsive CSS** with clamp() and viewport units
@@ -41,7 +41,7 @@ npm run dev
 npm run build
 ```
 
-## 📁 Project Structure
+## 📁 Clean Project Structure
 
 ```
 kiik69/
@@ -56,7 +56,8 @@ kiik69/
 │   ├── music/                   # Background music tracks
 │   └── events/                  # Event-specific assets
 ├── backend/                     # Express.js backend (preserved)
-└── package.json                 # Dependencies and scripts
+├── package.json                 # Minimal dependencies
+└── README.md                    # Project documentation
 ```
 
 ## 🎯 What's Preserved
@@ -76,9 +77,20 @@ kiik69/
 
 ### ✅ Configuration
 - Vite configuration
-- Package.json dependencies
+- Package.json with minimal dependencies
 - Environment variables
 - Deployment settings
+
+## 📦 Current Dependencies
+
+### Production Dependencies
+- `framer-motion`: Smooth animations
+- `react`: Core React library
+- `react-dom`: React DOM rendering
+- `react-icons`: Social media and UI icons
+
+### Development Dependencies
+- `vite`: Build tool and dev server
 
 ## 🔄 Coming Soon
 
