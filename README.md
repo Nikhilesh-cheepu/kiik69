@@ -1,45 +1,111 @@
-# KIIK 69 Sports Bar Website
+# 🍻 KIIK 69 Sports Bar - Under Construction
 
-Welcome to the official website for **KIIK 69 Sports Bar** — your all-in-one hangout spot in Gachibowli, Hyderabad! This site showcases our events, party packages, menu, gallery, and more, with a modern, mobile-friendly design.
+> **⚠️ TEMPORARY HOLDING PAGE**  
+> This is a temporary "Under Construction" page while we rebuild the main website.
 
-## 🚀 Features
-- Modern, responsive design (React + Vite)
-- Events section with image modal
-- Auto-updating gallery (images & videos)
-- Menu and party packages with WhatsApp booking
-- Animated FAQ and glassmorphism UI
-- Professional navbar and footer with all contact options
+## 🚧 Current Status
+
+The main website is being rebuilt with a mobile-first responsive design. This repository currently contains:
+
+- ✅ **Under Construction Page**: A stylish, mobile-friendly holding page
+- ✅ **Media Assets**: All images, videos, and music files preserved
+- ✅ **Backend Files**: API routes and server files intact
+- 🔄 **Main Website**: Being rebuilt with modern responsive design
+
+## 📱 Under Construction Page Features
+
+- **Responsive Design**: Works perfectly on all devices
+- **KIIK 69 Branding**: Logo and brand colors maintained
+- **Contact Information**: Phone, location, and social media links
+- **Opening Hours**: 11 AM to 12 AM display
+- **Smooth Animations**: Framer Motion powered transitions
+- **Mobile-First**: Optimized for touch interactions
 
 ## 🛠️ Tech Stack
-- React 18
-- Vite
-- Framer Motion (animations)
-- CSS Modules
 
-## 🖥️ Local Development
-1. **Clone the repo:**
-   ```bash
-   git clone <your-repo-url>
-   cd kiik69
-   ```
-2. **Install dependencies:**
-   ```bash
-   npm install
-   ```
-3. **Run the dev server:**
-   ```bash
-   npm run dev
-   ```
-4. **Open in browser:**
-   Visit [http://localhost:5173](http://localhost:5173)
+- **React 18** with Vite
+- **Framer Motion** for animations
+- **React Icons** for social media icons
+- **Responsive CSS** with clamp() and viewport units
 
-## 📞 Contact & Links
-- Instagram: [@kiik69sportsbar.gachibowli](https://www.instagram.com/kiik69sportsbar.gachibowli)
-- WhatsApp: +91 92746 96969
-- Call: +91 92746 96969
-- Email: info@kiik69.com
-- Location: [Google Maps](https://maps.app.goo.gl/jMMuHgGinp6JUSmHA)
+## 🚀 Quick Start
+
+```bash
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+
+# Build for production
+npm run build
+```
+
+## 📁 Project Structure
+
+```
+kiik69/
+├── src/
+│   ├── UnderConstruction.jsx    # Main holding page component
+│   ├── main.jsx                 # Application entry point
+│   └── index.css                # Basic styling
+├── public/
+│   ├── logos/                   # KIIK 69 brand assets
+│   ├── videos/                  # Hero and promotional videos
+│   ├── images/                  # Gallery and content images
+│   ├── music/                   # Background music tracks
+│   └── events/                  # Event-specific assets
+├── backend/                     # Express.js backend (preserved)
+└── package.json                 # Dependencies and scripts
+```
+
+## 🎯 What's Preserved
+
+### ✅ Media Assets
+- All images in `/public/images/`
+- All videos in `/public/videos/`
+- All music files in `/public/music/`
+- Logo and brand assets in `/public/logos/`
+- Event images in `/public/events/`
+
+### ✅ Backend Files
+- Express.js server files
+- API routes and endpoints
+- Database configurations
+- Upload functionality
+
+### ✅ Configuration
+- Vite configuration
+- Package.json dependencies
+- Environment variables
+- Deployment settings
+
+## 🔄 Coming Soon
+
+The main website will feature:
+- **Mobile-First Design**: Responsive across all devices
+- **Optimized Performance**: Fast loading and smooth animations
+- **Enhanced UX**: Better navigation and interactions
+- **Modern Styling**: Glassmorphism and gradient effects
+- **Accessibility**: WCAG compliant design
+
+## 📞 Contact Information
+
+- **Phone**: +91 92746 96969
+- **Instagram**: [@kiik69sportsbar.gachibowli](https://www.instagram.com/kiik69sportsbar.gachibowli)
+- **Location**: [Google Maps](https://maps.app.goo.gl/jMMuHgGinp6JUSmHA)
+- **Hours**: 11 AM to 12 AM
+
+## 🚀 Deployment
+
+This under construction page is automatically deployed to:
+- **Vercel**: Main production site
+- **GitHub Pages**: Backup deployment
+
+## 📄 License
+
+This project is licensed under the MIT License.
 
 ---
 
-> **KIIK 69 Sports Bar** — Eat. Play. Repeat. 
+**KIIK 69 Sports Bar** — Eat. Play. Repeat. 🍻 
