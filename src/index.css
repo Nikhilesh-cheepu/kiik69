@@ -1,3 +1,17 @@
+/* CSS Variables for consistent theming */
+:root {
+  --font-heading: 'Bebas Neue', 'Arial Black', sans-serif;
+  --font-body: 'Manrope', 'Inter', 'Segoe UI', Arial, sans-serif;
+  --color-primary: #ff003c;
+  --color-secondary: #22c55e;
+  --color-accent: #ef4444;
+  --color-white: #ffffff;
+  --color-black: #000000;
+  --color-dark: #0a0a0a;
+  --color-gray: #888888;
+  --color-light-gray: #cccccc;
+}
+
 /* Reset and base styles */
 * {
   margin: 0;
@@ -5,21 +19,117 @@
   box-sizing: border-box;
 }
 
-html, body {
+html, body, #root {
   height: 100%;
-  font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
 }
 
-#root {
-  height: 100%;
+body {
+  font-family: var(--font-body);
+  line-height: 1.6;
+  color: var(--color-white);
+  background: var(--color-black);
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Disable hover effects on mobile */
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  font-weight: 400;
+  line-height: 1.1;
+  letter-spacing: 0.02em;
+}
+
+h1 {
+  font-size: clamp(2.5rem, 8vw, 5rem);
+  font-weight: 400;
+}
+
+h2 {
+  font-size: clamp(2rem, 6vw, 3.5rem);
+  font-weight: 400;
+}
+
+h3 {
+  font-size: clamp(1.5rem, 4vw, 2.5rem);
+  font-weight: 400;
+}
+
+p {
+  font-family: var(--font-body);
+  font-size: clamp(1rem, 2.5vw, 1.1rem);
+  line-height: 1.6;
+}
+
+/* Mobile-first responsive design */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* Disable hover effects on mobile devices */
 @media (max-width: 768px) {
   *:hover {
     transform: none !important;
   }
+  
+  *:focus {
+    outline: none;
+  }
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 0, 60, 0.5);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 0, 60, 0.7);
+}
+
+/* Focus styles for accessibility */
+button:focus,
+a:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Brand styling */
+.brand-name {
+  font-family: var(--font-heading);
+  font-weight: 400;
+  letter-spacing: 0.05em;
+}
+
+.cta-button {
+  font-family: var(--font-heading);
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
 } 

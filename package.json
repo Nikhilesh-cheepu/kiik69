@@ -8,14 +8,20 @@
     "build": "vite build",
     "preview": "vite preview"
   },
-  "keywords": ["kiik69", "sports-bar", "under-construction"],
+  "keywords": [
+    "kiik69",
+    "sports-bar",
+    "under-construction"
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "framer-motion": "^12.18.1",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
-    "react-icons": "^5.5.0"
+    "react-helmet-async": "^2.0.5",
+    "react-icons": "^5.5.0",
+    "react-router-dom": "^7.6.2"
   },
   "devDependencies": {
     "vite": "^6.3.5"
