@@ -32,7 +32,7 @@ const Navbar = () => {
       setIsScrolled(window.scrollY > 50);
       
       // Scrollspy effect - detect active section
-      const sections = ['home', 'menu-section', 'party-packages', 'policies-section', 'booking-section', 'contact-section'];
+      const sections = ['home', 'menu-section', 'party-packages', 'contact-section'];
       const scrollPosition = window.scrollY + 100;
       
       for (let i = sections.length - 1; i >= 0; i--) {
@@ -188,7 +188,7 @@ const Navbar = () => {
             />
           </motion.div>
 
-          {/* Desktop Navigation - Only visible on desktop */}
+          {/* Desktop Navigation - Center */}
           {isDesktop && (
             <div style={{
               display: 'flex',
@@ -199,7 +199,6 @@ const Navbar = () => {
               marginLeft: '2rem',
               marginRight: '2rem'
             }}>
-
               {navLinks.map((link, index) => (
                 <motion.button
                   key={link.id}
@@ -278,73 +277,82 @@ const Navbar = () => {
                   />
                 </motion.button>
               ))}
-              
-              {/* Chat Button */}
-              <motion.button
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: navLinks.length * 0.1 + 0.1, duration: 0.5 }}
-                whileHover={{ 
-                  y: -3, 
-                  scale: 1.08,
-                  textShadow: '0 0 20px rgba(255, 255, 255, 0.8)',
-                  boxShadow: '0 8px 25px rgba(0, 0, 60, 0.3)',
-                  transition: { duration: 0.2 }
-                }}
-                whileTap={{ scale: 0.92 }}
-                onClick={toggleChat}
-                style={{
-                  background: 'linear-gradient(135deg, rgba(0, 0, 60, 0.8), rgba(0, 0, 120, 0.8))',
-                  border: '1px solid rgba(0, 0, 60, 0.3)',
-                  color: 'var(--color-white)',
-                  fontSize: '0.9rem',
-                  fontWeight: '600',
-                  cursor: 'pointer',
-                  padding: '0.75rem 1.25rem',
-                  borderRadius: '25px',
-                  transition: 'all 0.3s ease',
-                  fontFamily: 'var(--font-body)',
-                  position: 'relative',
-                  overflow: 'hidden',
-                  letterSpacing: '0.02em',
-                  whiteSpace: 'nowrap',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.5rem'
-                }}
-              >
-                <FaComments />
-                Chat
-              </motion.button>
             </div>
           )}
 
-          {/* Mobile Menu Button - Only visible on mobile */}
-          {!isDesktop && (
+          {/* Right Side - Chat Button and Mobile Menu */}
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '1rem'
+          }}>
+            {/* Chat Button - Always visible */}
             <motion.button
-              whileTap={{ scale: 0.9 }}
-              onClick={toggleMenu}
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3, duration: 0.5 }}
+              whileHover={{ 
+                y: -3, 
+                scale: 1.08,
+                textShadow: '0 0 20px rgba(255, 255, 255, 0.8)',
+                boxShadow: '0 8px 25px rgba(0, 0, 60, 0.3)',
+                transition: { duration: 0.2 }
+              }}
+              whileTap={{ scale: 0.92 }}
+              onClick={toggleChat}
               style={{
+                background: 'linear-gradient(135deg, rgba(0, 0, 60, 0.8), rgba(0, 0, 120, 0.8))',
+                border: '1px solid rgba(0, 0, 60, 0.3)',
+                color: 'var(--color-white)',
+                fontSize: '0.9rem',
+                fontWeight: '600',
+                cursor: 'pointer',
+                padding: '0.75rem 1.25rem',
+                borderRadius: '25px',
+                transition: 'all 0.3s ease',
+                fontFamily: 'var(--font-body)',
+                position: 'relative',
+                overflow: 'hidden',
+                letterSpacing: '0.02em',
+                whiteSpace: 'nowrap',
                 display: 'flex',
                 alignItems: 'center',
-                justifyContent: 'center',
-                background: 'rgba(255, 255, 255, 0.1)',
-                border: '1px solid rgba(255, 255, 255, 0.2)',
-                borderRadius: '50%',
-                color: 'var(--color-white)',
-                fontSize: '1.2rem',
-                cursor: 'pointer',
-                padding: '0.5rem',
-                width: '40px',
-                height: '40px',
-                transition: 'all 0.3s ease',
-                flexShrink: 0
+                gap: '0.5rem'
               }}
-              aria-label="Toggle navigation menu"
             >
-              {isMenuOpen ? <FaTimes /> : <FaBars />}
+              <FaComments />
+              Chat
             </motion.button>
-          )}
+
+            {/* Mobile Menu Button - Only visible on mobile */}
+            {!isDesktop && (
+              <motion.button
+                whileTap={{ scale: 0.9 }}
+                onClick={toggleMenu}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  background: 'rgba(255, 255, 255, 0.1)',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  borderRadius: '50%',
+                  color: 'var(--color-white)',
+                  fontSize: '1.2rem',
+                  cursor: 'pointer',
+                  padding: '0.5rem',
+                  width: '40px',
+                  height: '40px',
+                  transition: 'all 0.3s ease',
+                  flexShrink: 0
+                }}
+                aria-label="Toggle navigation menu"
+              >
+                {isMenuOpen ? <FaTimes /> : <FaBars />}
+              </motion.button>
+            )}
+          </div>
+
+
         </nav>
       </div>
 

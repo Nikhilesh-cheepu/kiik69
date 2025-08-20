@@ -35,36 +35,7 @@ const MainPage = () => {
 
 
 
-        <section id="policies-section" aria-label="About KIIK69">
-          <div style={{
-            maxWidth: '1200px',
-            margin: '0 auto',
-            padding: '4rem 1rem'
-          }}>
-            <h2 style={{
-              fontSize: '2.5rem',
-              fontFamily: 'Bebas Neue, Arial Black, sans-serif',
-              textAlign: 'center',
-              marginBottom: '2rem',
-              color: '#ffffff'
-            }}>Policies & Rules</h2>
-          </div>
-        </section>
-        <section id="booking-section" aria-label="Booking and reservations">
-          <div style={{
-            maxWidth: '1200px',
-            margin: '0 auto',
-            padding: '4rem 1rem'
-          }}>
-            <h2 style={{
-              fontSize: '2.5rem',
-              fontFamily: 'Bebas Neue, Arial Black, sans-serif',
-              textAlign: 'center',
-              marginBottom: '2rem',
-              color: '#ffffff'
-            }}>Book Your Party</h2>
-          </div>
-        </section>
+
         <section id="contact-section" aria-label="Contact information and social links">
           <Footer />
         </section>
