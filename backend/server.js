@@ -34,6 +34,7 @@ app.get('/dashboard', (req, res) => {
 
 // Routes
 app.use('/api/chat-auth', require('./routes/chatAuth'));
+app.use('/api/party-packages', require('./routes/partyPackages'));
 app.use('/api/instagram-bot', require('./routes/instagramBot'));
 app.use('/api/assets', require('./routes/assets'));
 

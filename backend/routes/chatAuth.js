@@ -1,9 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { db } = require('../config/database');
-const { sendOTP, generateOTP, formatPhoneNumber } = require('../services/otpService');
-
-// OTP functions are now imported from otpService
+const { generateSessionId, formatPhoneNumber, validateEmail, validatePhone } = require('../services/authService');
 
 // Test endpoint to verify database connection
 router.get('/test', async (req, res) => {
@@ -25,128 +23,100 @@ router.get('/test', async (req, res) => {
   }
 });
 
-// Request OTP for mobile number
-router.post('/request-otp', async (req, res) => {
+// Simple login with phone or email
+router.post('/login', async (req, res) => {
   try {
-    const { phone } = req.body;
+    const { phone, email } = req.body;
     
-    if (!phone || phone.length < 10) {
+    if (!phone && !email) {
       return res.status(400).json({ 
         success: false, 
-        message: 'Please provide a valid mobile number' 
+        message: 'Please provide either phone number or email' 
       });
     }
 
-    // Format phone number with automatic India country code (+91)
-    const formattedPhone = formatPhoneNumber(phone);
-    
-    // Generate OTP
-    const otp = generateOTP();
-    const otpExpiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes expiry
+    let formattedPhone = null;
+    let userIdentifier = null;
+
+    if (phone) {
+      if (!validatePhone(phone)) {
+        return res.status(400).json({ 
+          success: false, 
+          message: 'Please provide a valid 10-digit mobile number' 
+        });
+      }
+      formattedPhone = formatPhoneNumber(phone);
+      userIdentifier = formattedPhone;
+    } else if (email) {
+      if (!validateEmail(email)) {
+        return res.status(400).json({ 
+          success: false, 
+          message: 'Please provide a valid email address' 
+        });
+      }
+      userIdentifier = email;
+    }
     
     // Check if user exists
-    const existingUser = await db.get('SELECT * FROM chat_users WHERE phone = ?', [formattedPhone]);
+    let existingUser;
+    if (formattedPhone) {
+      existingUser = await db.get('SELECT * FROM chat_users WHERE phone = ?', [formattedPhone]);
+    } else {
+      existingUser = await db.get('SELECT * FROM chat_users WHERE email = ?', [email]);
+    }
     
     if (existingUser) {
-      // Update existing user's OTP
-      await db.run('UPDATE chat_users SET otp = ?, otp_expires_at = ? WHERE phone = ?', 
-        [otp, otpExpiresAt, formattedPhone]);
+      // Update existing user's session and last login
+      const newSessionId = generateSessionId();
+      await db.run('UPDATE chat_users SET session_id = ?, last_login = ?, updated_at = ? WHERE id = ?', 
+        [newSessionId, new Date(), new Date(), existingUser.id]);
+      
+      res.json({
+        success: true,
+        message: 'Login successful',
+        user: {
+          id: existingUser.id,
+          phone: existingUser.phone,
+          email: existingUser.email,
+          sessionId: newSessionId
+        }
+      });
     } else {
-      // Create new user with session_id
-      const sessionId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-      await db.run('INSERT INTO chat_users (phone, session_id, otp, otp_expires_at) VALUES (?, ?, ?, ?)', 
-        [formattedPhone, sessionId, otp, otpExpiresAt]);
+      // Create new user
+      const newSessionId = generateSessionId();
+      const result = await db.run(
+        'INSERT INTO chat_users (phone, email, session_id, last_login) VALUES (?, ?, ?, ?)', 
+        [formattedPhone, email, newSessionId, new Date()]
+      );
+      
+      res.json({
+        success: true,
+        message: 'Account created and login successful',
+        user: {
+          id: result.lastID,
+          phone: formattedPhone,
+          email: email,
+          sessionId: newSessionId
+        }
+      });
     }
     
-    // Send OTP (mock)
-    await sendOTP(formattedPhone, otp);
-    
-    res.json({
-      success: true,
-      message: 'OTP sent successfully',
-      phone: formattedPhone
-    });
-    
   } catch (error) {
-    console.error('Error requesting OTP:', error);
+    console.error('Error during login:', error);
     res.status(500).json({ 
       success: false, 
-      message: 'Failed to send OTP. Please try again.' 
+      message: 'Login failed. Please try again.' 
     });
   }
 });
 
-// Verify OTP and login
-router.post('/verify-otp', async (req, res) => {
+// Get user profile and chat history
+router.get('/profile/:sessionId', async (req, res) => {
   try {
-    const { phone, otp } = req.body;
-    
-    if (!phone || !otp) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Please provide phone number and OTP' 
-      });
-    }
-    
-    const formattedPhone = formatPhoneNumber(phone);
-    
-    // Find user and verify OTP
-    const user = await db.get('SELECT * FROM chat_users WHERE phone = ?', [formattedPhone]);
-    
-    if (!user) {
-      return res.status(404).json({ 
-        success: false, 
-        message: 'User not found. Please request OTP first.' 
-      });
-    }
-    
-    if (user.otp !== otp) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Invalid OTP. Please try again.' 
-      });
-    }
-    
-    if (new Date() > new Date(user.otp_expires_at)) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'OTP has expired. Please request a new one.' 
-      });
-    }
-    
-    // Update user verification status and last login
-    await db.run('UPDATE chat_users SET is_verified = true, last_login = ?, otp = NULL, otp_expires_at = NULL WHERE id = ?', 
-      [new Date(), user.id]);
-    
-    // Generate session ID
-    const sessionId = `session_${user.id}_${Date.now()}`;
-    
-    res.json({
-      success: true,
-      message: 'Login successful',
-      user: {
-        id: user.id,
-        phone: user.phone,
-        sessionId: sessionId
-      }
-    });
-    
-  } catch (error) {
-    console.error('Error verifying OTP:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Failed to verify OTP. Please try again.' 
-    });
-  }
-});
-
-// Get user profile and history
-router.get('/profile/:userId', async (req, res) => {
-  try {
-    const { userId } = req.params;
+    const { sessionId } = req.params;
     
     // Get user details
-    const user = await db.get('SELECT id, phone, last_login, created_at FROM chat_users WHERE id = ?', [userId]);
+    const user = await db.get('SELECT id, phone, email, last_login, created_at FROM chat_users WHERE session_id = ?', [sessionId]);
     
     if (!user) {
       return res.status(404).json({ 
@@ -156,17 +126,13 @@ router.get('/profile/:userId', async (req, res) => {
     }
     
     // Get recent chat history
-    const recentChats = await db.all('SELECT * FROM user_chats WHERE user_id = ? ORDER BY timestamp DESC LIMIT 10', [userId]);
-    
-    // Get recent bookings
-    const recentBookings = await db.all('SELECT * FROM user_bookings WHERE user_id = ? ORDER BY created_at DESC LIMIT 5', [userId]);
+    const recentChats = await db.all('SELECT * FROM user_chats WHERE user_id = ? ORDER BY timestamp DESC LIMIT 20', [user.id]);
     
     res.json({
       success: true,
       user: {
         ...user,
-        recentChats,
-        recentBookings
+        recentChats
       }
     });
     
@@ -182,18 +148,27 @@ router.get('/profile/:userId', async (req, res) => {
 // Save chat message
 router.post('/save-chat', async (req, res) => {
   try {
-    const { userId, sessionId, message, sender } = req.body;
+    const { sessionId, message, isBot = false } = req.body;
     
-    if (!userId || !message || !sender) {
+    if (!sessionId || !message) {
       return res.status(400).json({ 
         success: false, 
         message: 'Missing required fields' 
       });
     }
     
+    // Get user ID from session
+    const user = await db.get('SELECT id FROM chat_users WHERE session_id = ?', [sessionId]);
+    if (!user) {
+      return res.status(404).json({ 
+        success: false, 
+        message: 'User not found' 
+      });
+    }
+    
     // Save chat message
-    const result = await db.run('INSERT INTO user_chats (user_id, session_id, message, sender) VALUES (?, ?, ?, ?)', 
-      [userId, sessionId, message, sender]);
+    const result = await db.run('INSERT INTO user_chats (user_id, session_id, message, is_bot) VALUES (?, ?, ?, ?)', 
+      [user.id, sessionId, message, isBot]);
     
     res.json({
       success: true,
@@ -227,6 +202,36 @@ router.get('/chat-history/:sessionId', async (req, res) => {
     res.status(500).json({ 
       success: false, 
       message: 'Failed to fetch chat history' 
+    });
+  }
+});
+
+// Logout (invalidate session)
+router.post('/logout', async (req, res) => {
+  try {
+    const { sessionId } = req.body;
+    
+    if (!sessionId) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Session ID required' 
+      });
+    }
+    
+    // Generate new session ID to invalidate current one
+    const newSessionId = generateSessionId();
+    await db.run('UPDATE chat_users SET session_id = ? WHERE session_id = ?', [newSessionId, sessionId]);
+    
+    res.json({
+      success: true,
+      message: 'Logout successful'
+    });
+    
+  } catch (error) {
+    console.error('Error during logout:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Logout failed' 
     });
   }
 });

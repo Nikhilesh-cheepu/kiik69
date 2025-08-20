@@ -6,57 +6,56 @@ Create a `.env` file in the backend directory with these variables:
 
 ```bash
 # Core Configuration
-NODE_ENV=development
+NODE_ENV=production
 PORT=5000
-FRONTEND_URL=http://localhost:5173
+FRONTEND_URL=https://your-frontend-domain.com
 
-# Database
-DATABASE_URL=your_postgresql_database_url_here
-# For local development, leave empty to use SQLite
+# Database (REQUIRED - PostgreSQL)
+DATABASE_URL=postgresql://username:password@host:port/database_name
 
-# JWT Secret
+# JWT Secret (for future use)
 JWT_SECRET=your_jwt_secret_key_here
 
-# OpenAI Configuration
+# OpenAI Configuration (for chat AI)
 OPENAI_API_KEY=your_openai_api_key_here
 OPENAI_MODEL=gpt-4o
 OPENAI_MAX_TOKENS=150
 
-# Instagram Bot Configuration
-INSTAGRAM_ACCESS_TOKEN=your_instagram_access_token_here
-INSTAGRAM_APP_SECRET=your_instagram_app_secret_here
-INSTAGRAM_VERIFY_TOKEN=your_instagram_verify_token_here
-
-# Twilio Configuration (for SMS OTP)
-TWILIO_ACCOUNT_SID=your_twilio_account_sid_here
-TWILIO_AUTH_TOKEN=your_twilio_auth_token_here
-TWILIO_PHONE_NUMBER=your_twilio_phone_number_here
-
-# Email Configuration (for email OTP fallback)
-EMAIL_USER=your_gmail_address@gmail.com
-EMAIL_APP_PASSWORD=your_gmail_app_password_here
+# Instagram Bot Configuration (optional)
+INSTAGRAM_ACCESS_TOKEN=your_instagram_access_token
+INSTAGRAM_APP_SECRET=your_instagram_app_secret
+INSTAGRAM_VERIFY_TOKEN=your_instagram_verify_token
 ```
 
-## Setup Instructions
+## Database Setup
 
-### 1. Twilio Setup (for SMS OTP)
-1. Sign up at [twilio.com](https://twilio.com)
-2. Get your Account SID and Auth Token
-3. Get a Twilio phone number
-4. Add these to your `.env` file
+### PostgreSQL Database
+- **Required**: `DATABASE_URL` must be set
+- **Format**: `postgresql://username:password@host:port/database_name`
+- **SSL**: Automatically configured for production
 
-### 2. Gmail Setup (for Email OTP)
-1. Enable 2-factor authentication on your Gmail
-2. Generate an App Password
-3. Use your Gmail address and app password in `.env`
+### Tables Created Automatically
+- `chat_users` - User authentication and sessions
+- `user_chats` - Chat history storage
+- `party_packages` - Party package management
 
-### 3. Local Development
-- Leave `DATABASE_URL` empty to use SQLite
-- Set `NODE_ENV=development`
-- Use local URLs for frontend and backend
+## Production Deployment
 
-### 4. Production
-- Set `NODE_ENV=production`
-- Use production database URL
-- Use production frontend URL
-- Ensure all API keys are set
+### Railway/Heroku/Vercel
+1. Set `NODE_ENV=production`
+2. Set `DATABASE_URL` to your PostgreSQL connection string
+3. Set `FRONTEND_URL` to your production frontend domain
+4. Set `OPENAI_API_KEY` for AI chat functionality
+
+### Environment Variables Priority
+1. **Required**: `DATABASE_URL` (PostgreSQL connection)
+2. **Required**: `NODE_ENV` (production/development)
+3. **Optional**: `OPENAI_API_KEY` (for AI chat)
+4. **Optional**: Instagram bot variables
+
+## Security Notes
+
+- Never expose `DATABASE_URL` in client-side code
+- Use environment variables for all sensitive configuration
+- The `.env` file is automatically ignored by Git
+- Production environment variables are encrypted and secure

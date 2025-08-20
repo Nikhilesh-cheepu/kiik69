@@ -1,44 +1,40 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaTimes, FaPhone, FaKey, FaArrowLeft, FaCheck } from 'react-icons/fa';
-import { requestOTP, verifyOTP } from '../lib/chatAuth';
+import { FaTimes, FaPhone, FaEnvelope, FaArrowLeft, FaCheck } from 'react-icons/fa';
+import { loginUser } from '../lib/chatAuth';
 
 const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
-  const [step, setStep] = useState('phone'); // 'phone' or 'otp'
   const [phone, setPhone] = useState('');
-  const [otp, setOtp] = useState('');
+  const [email, setEmail] = useState('');
+  const [loginMethod, setLoginMethod] = useState('phone'); // 'phone' or 'email'
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  const [countdown, setCountdown] = useState(0);
   
   const phoneInputRef = useRef(null);
-  const otpInputRef = useRef(null);
+  const emailInputRef = useRef(null);
 
   // Focus input when modal opens
   useEffect(() => {
     if (isOpen) {
-      if (step === 'phone' && phoneInputRef.current) {
+      if (loginMethod === 'phone' && phoneInputRef.current) {
         setTimeout(() => phoneInputRef.current.focus(), 100);
-      } else if (step === 'otp' && otpInputRef.current) {
-        setTimeout(() => otpInputRef.current.focus(), 100);
+      } else if (loginMethod === 'email' && emailInputRef.current) {
+        setTimeout(() => emailInputRef.current.focus(), 100);
       }
     }
-  }, [isOpen, step]);
+  }, [isOpen, loginMethod]);
 
-  // Countdown timer for OTP resend
-  useEffect(() => {
-    let timer;
-    if (countdown > 0) {
-      timer = setTimeout(() => setCountdown(countdown - 1), 1000);
-    }
-    return () => clearTimeout(timer);
-  }, [countdown]);
-
-  const handlePhoneSubmit = async (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    if (!phone || phone.length < 10) {
-      setError('Please enter a valid mobile number');
+    
+    if (loginMethod === 'phone' && (!phone || phone.length < 10)) {
+      setError('Please enter a valid 10-digit mobile number');
+      return;
+    }
+    
+    if (loginMethod === 'email' && (!email || !email.includes('@'))) {
+      setError('Please enter a valid email address');
       return;
     }
 
@@ -46,75 +42,40 @@ const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
     setError('');
 
     try {
-      await requestOTP(phone);
-      setStep('otp');
-      setCountdown(60); // 60 second countdown
-      setSuccess('OTP sent successfully!');
-      setTimeout(() => setSuccess(''), 3000);
-    } catch (error) {
-      setError(error.message || 'Failed to send OTP. Please try again.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleOTPSubmit = async (e) => {
-    e.preventDefault();
-    if (!otp || otp.length !== 6) {
-      setError('Please enter a valid 6-digit OTP');
-      return;
-    }
-
-    setIsLoading(true);
-    setError('');
-
-    try {
-      const result = await verifyOTP(phone, otp);
+      const loginData = loginMethod === 'phone' ? { phone } : { email };
+      const result = await loginUser(loginData);
+      
       setSuccess('Login successful!');
       setTimeout(() => {
         onLoginSuccess(result.user);
         onClose();
       }, 1000);
     } catch (error) {
-      setError(error.message || 'Failed to verify OTP. Please try again.');
+      setError(error.message || 'Login failed. Please try again.');
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const handleResendOTP = async () => {
-    if (countdown > 0) return;
-    
-    setIsLoading(true);
-    setError('');
-
-    try {
-      await requestOTP(phone);
-      setCountdown(60);
-      setSuccess('OTP resent successfully!');
-      setTimeout(() => setSuccess(''), 3000);
-    } catch (error) {
-      setError(error.message || 'Failed to resend OTP. Please try again.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleBackToPhone = () => {
-    setStep('phone');
-    setOtp('');
-    setError('');
-    setSuccess('');
   };
 
   const handleClose = () => {
-    setStep('phone');
     setPhone('');
-    setOtp('');
+    setEmail('');
     setError('');
     setSuccess('');
-    setCountdown(0);
+    setLoginMethod('phone');
     onClose();
+  };
+
+  const switchToPhone = () => {
+    setLoginMethod('phone');
+    setError('');
+    setSuccess('');
+  };
+
+  const switchToEmail = () => {
+    setLoginMethod('email');
+    setError('');
+    setSuccess('');
   };
 
   return (
@@ -124,28 +85,25 @@ const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.3 }}
           style={{
             position: 'fixed',
             top: 0,
             left: 0,
             right: 0,
             bottom: 0,
-            zIndex: 10000,
             background: 'rgba(0, 0, 0, 0.8)',
-            backdropFilter: 'blur(10px)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            zIndex: 1000,
             padding: '1rem'
           }}
           onClick={handleClose}
         >
           <motion.div
-            initial={{ scale: 0.9, opacity: 0, y: 20 }}
-            animate={{ scale: 1, opacity: 1, y: 0 }}
-            exit={{ scale: 0.9, opacity: 0, y: 20 }}
-            transition={{ duration: 0.3, ease: "easeOut" }}
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.8, opacity: 0 }}
             style={{
               width: '100%',
               maxWidth: '400px',
@@ -166,45 +124,14 @@ const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
               borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
               background: 'rgba(255, 255, 255, 0.05)'
             }}>
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '1rem'
+              <h2 style={{
+                fontFamily: 'var(--font-heading)',
+                fontSize: '1.5rem',
+                color: 'var(--color-white)',
+                margin: 0
               }}>
-                {step === 'otp' && (
-                  <button
-                    onClick={handleBackToPhone}
-                    style={{
-                      background: 'none',
-                      border: 'none',
-                      color: 'var(--color-gray)',
-                      cursor: 'pointer',
-                      fontSize: '1.2rem',
-                      padding: '0.5rem',
-                      borderRadius: '50%',
-                      transition: 'all 0.3s ease'
-                    }}
-                    onMouseEnter={(e) => {
-                      e.target.style.color = 'var(--color-white)';
-                      e.target.style.background = 'rgba(255, 255, 255, 0.1)';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.target.style.color = 'var(--color-gray)';
-                      e.target.style.background = 'none';
-                    }}
-                  >
-                    <FaArrowLeft />
-                  </button>
-                )}
-                <h2 style={{
-                  fontFamily: 'var(--font-heading)',
-                  fontSize: '1.5rem',
-                  color: 'var(--color-white)',
-                  margin: 0
-                }}>
-                  {step === 'phone' ? 'Login to Chat' : 'Verify OTP'}
-                </h2>
-              </div>
+                Login to Chat
+              </h2>
               <button
                 onClick={handleClose}
                 style={{
@@ -236,8 +163,58 @@ const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
 
             {/* Content */}
             <div style={{ padding: '2rem' }}>
-              {step === 'phone' ? (
-                <form onSubmit={handlePhoneSubmit}>
+              {/* Login Method Tabs */}
+              <div style={{
+                display: 'flex',
+                marginBottom: '1.5rem',
+                background: 'rgba(255, 255, 255, 0.05)',
+                borderRadius: '12px',
+                padding: '4px'
+              }}>
+                <button
+                  onClick={switchToPhone}
+                  style={{
+                    flex: 1,
+                    padding: '0.75rem',
+                    background: loginMethod === 'phone' ? 'var(--color-primary)' : 'transparent',
+                    border: 'none',
+                    borderRadius: '8px',
+                    color: loginMethod === 'phone' ? 'white' : 'var(--color-gray)',
+                    cursor: 'pointer',
+                    transition: 'all 0.3s ease',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '0.5rem'
+                  }}
+                >
+                  <FaPhone />
+                  Phone
+                </button>
+                <button
+                  onClick={switchToEmail}
+                  style={{
+                    flex: 1,
+                    padding: '0.75rem',
+                    background: loginMethod === 'email' ? 'var(--color-primary)' : 'transparent',
+                    border: 'none',
+                    borderRadius: '8px',
+                    color: loginMethod === 'email' ? 'white' : 'var(--color-gray)',
+                    cursor: 'pointer',
+                    transition: 'all 0.3s ease',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '0.5rem'
+                  }}
+                >
+                  <FaEnvelope />
+                  Email
+                </button>
+              </div>
+
+              <form onSubmit={handleLogin}>
+                {loginMethod === 'phone' ? (
                   <div style={{ marginBottom: '1.5rem' }}>
                     <label style={{
                       display: 'block',
@@ -320,40 +297,7 @@ const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
                       We'll automatically add the +91 country code for India
                     </p>
                   </div>
-
-                  <button
-                    type="submit"
-                    disabled={isLoading || phone.length < 10}
-                    style={{
-                      width: '100%',
-                      background: 'linear-gradient(135deg, var(--color-primary), rgba(255, 0, 60, 0.8))',
-                      border: 'none',
-                      borderRadius: '12px',
-                      padding: '1rem',
-                      color: 'var(--color-white)',
-                      fontFamily: 'var(--font-body)',
-                      fontSize: '1rem',
-                      fontWeight: '600',
-                      cursor: 'pointer',
-                      transition: 'all 0.3s ease',
-                      boxShadow: '0 4px 20px rgba(255, 0, 60, 0.3)'
-                    }}
-                    onMouseEnter={(e) => {
-                      if (!e.target.disabled) {
-                        e.target.style.transform = 'translateY(-2px)';
-                        e.target.style.boxShadow = '0 6px 25px rgba(255, 0, 60, 0.4)';
-                      }
-                    }}
-                    onMouseLeave={(e) => {
-                      e.target.style.transform = 'translateY(0)';
-                      e.target.style.boxShadow = '0 4px 20px rgba(255, 0, 60, 0.3)';
-                    }}
-                  >
-                    {isLoading ? 'Sending OTP...' : 'Send OTP'}
-                  </button>
-                </form>
-              ) : (
-                <form onSubmit={handleOTPSubmit}>
+                ) : (
                   <div style={{ marginBottom: '1.5rem' }}>
                     <label style={{
                       display: 'block',
@@ -362,7 +306,7 @@ const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
                       color: 'var(--color-gray)',
                       marginBottom: '0.5rem'
                     }}>
-                      Enter 6-digit OTP sent to {phone}
+                      Email Address
                     </label>
                     <div style={{
                       position: 'relative',
@@ -375,15 +319,14 @@ const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
                         color: 'var(--color-gray)',
                         fontSize: '1.1rem'
                       }}>
-                        <FaKey />
+                        <FaEnvelope />
                       </div>
                       <input
-                        ref={otpInputRef}
-                        type="text"
-                        value={otp}
-                        onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
-                        placeholder="Enter OTP"
-                        maxLength={6}
+                        ref={emailInputRef}
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="Enter your email address"
                         style={{
                           width: '100%',
                           background: 'rgba(255, 255, 255, 0.05)',
@@ -394,9 +337,7 @@ const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
                           fontFamily: 'var(--font-body)',
                           fontSize: '1rem',
                           outline: 'none',
-                          transition: 'all 0.3s ease',
-                          letterSpacing: '0.5em',
-                          textAlign: 'center'
+                          transition: 'all 0.3s ease'
                         }}
                         onFocus={(e) => {
                           e.target.style.border = '1px solid var(--color-primary)';
@@ -409,114 +350,80 @@ const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
                       />
                     </div>
                   </div>
+                )}
 
-                  <button
-                    type="submit"
-                    disabled={isLoading || otp.length !== 6}
-                    style={{
-                      width: '100%',
-                      background: 'linear-gradient(135deg, var(--color-primary), rgba(255, 0, 60, 0.8))',
-                      border: 'none',
-                      borderRadius: '12px',
-                      padding: '1rem',
-                      color: 'var(--color-white)',
-                      fontFamily: 'var(--font-body)',
-                      fontSize: '1rem',
-                      fontWeight: '600',
-                      cursor: 'pointer',
-                      transition: 'all 0.3s ease',
-                      boxShadow: '0 4px 20px rgba(255, 0, 60, 0.3)',
-                      marginBottom: '1rem'
-                    }}
-                    onMouseEnter={(e) => {
-                      if (!e.target.disabled) {
-                        e.target.style.transform = 'translateY(-2px)';
-                        e.target.style.boxShadow = '0 6px 25px rgba(255, 0, 60, 0.4)';
-                      }
-                    }}
-                    onMouseLeave={(e) => {
-                      e.target.style.transform = 'translateY(0)';
-                      e.target.style.boxShadow = '0 4px 20px rgba(255, 0, 60, 0.3)';
-                    }}
-                  >
-                    {isLoading ? 'Verifying...' : 'Verify & Login'}
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={handleResendOTP}
-                    disabled={countdown > 0 || isLoading}
-                    style={{
-                      width: '100%',
-                      background: 'none',
-                      border: '1px solid rgba(255, 255, 255, 0.2)',
-                      borderRadius: '12px',
-                      padding: '0.75rem',
-                      color: countdown > 0 ? 'var(--color-gray)' : 'var(--color-white)',
-                      fontFamily: 'var(--font-body)',
-                      fontSize: '0.9rem',
-                      cursor: countdown > 0 ? 'not-allowed' : 'pointer',
-                      transition: 'all 0.3s ease'
-                    }}
-                    onMouseEnter={(e) => {
-                      if (countdown === 0 && !isLoading) {
-                        e.target.style.background = 'rgba(255, 255, 255, 0.1)';
-                        e.target.style.borderColor = 'var(--color-primary)';
-                      }
-                    }}
-                    onMouseLeave={(e) => {
-                      e.target.style.background = 'none';
-                      e.target.style.borderColor = 'rgba(255, 255, 255, 0.2)';
-                    }}
-                  >
-                    {countdown > 0 ? `Resend OTP in ${countdown}s` : 'Resend OTP'}
-                  </button>
-                </form>
-              )}
-
-              {/* Error Message */}
-              {error && (
-                <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  style={{
-                    marginTop: '1rem',
-                    padding: '0.75rem 1rem',
+                {/* Error Message */}
+                {error && (
+                  <div style={{
                     background: 'rgba(255, 0, 0, 0.1)',
                     border: '1px solid rgba(255, 0, 0, 0.3)',
                     borderRadius: '8px',
+                    padding: '0.75rem',
+                    marginBottom: '1rem',
                     color: '#ff6b6b',
-                    fontFamily: 'var(--font-body)',
                     fontSize: '0.9rem'
-                  }}
-                >
-                  {error}
-                </motion.div>
-              )}
+                  }}>
+                    {error}
+                  </div>
+                )}
 
-              {/* Success Message */}
-              {success && (
-                <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  style={{
-                    marginTop: '1rem',
-                    padding: '0.75rem 1rem',
+                {/* Success Message */}
+                {success && (
+                  <div style={{
                     background: 'rgba(0, 255, 0, 0.1)',
                     border: '1px solid rgba(0, 255, 0, 0.3)',
                     borderRadius: '8px',
+                    padding: '0.75rem',
+                    marginBottom: '1rem',
                     color: '#51cf66',
+                    fontSize: '0.9rem'
+                  }}>
+                    {success}
+                  </div>
+                )}
+
+                <button
+                  type="submit"
+                  disabled={isLoading || (loginMethod === 'phone' ? phone.length < 10 : !email)}
+                  style={{
+                    width: '100%',
+                    background: 'linear-gradient(135deg, var(--color-primary), rgba(255, 0, 60, 0.8))',
+                    border: 'none',
+                    borderRadius: '12px',
+                    padding: '1rem',
+                    color: 'var(--color-white)',
                     fontFamily: 'var(--font-body)',
-                    fontSize: '0.9rem',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '0.5rem'
+                    fontSize: '1rem',
+                    fontWeight: '600',
+                    cursor: 'pointer',
+                    transition: 'all 0.3s ease',
+                    boxShadow: '0 4px 20px rgba(255, 0, 60, 0.3)',
+                    opacity: isLoading || (loginMethod === 'phone' ? phone.length < 10 : !email) ? 0.6 : 1
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!e.target.disabled) {
+                      e.target.style.transform = 'translateY(-2px)';
+                      e.target.style.boxShadow = '0 6px 25px rgba(255, 0, 60, 0.4)';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.transform = 'translateY(0)';
+                    e.target.style.boxShadow = '0 4px 20px rgba(255, 0, 60, 0.3)';
                   }}
                 >
-                  <FaCheck />
-                  {success}
-                </motion.div>
-              )}
+                  {isLoading ? 'Logging in...' : 'Login'}
+                </button>
+              </form>
+
+              <p style={{
+                fontSize: '0.8rem',
+                color: 'var(--color-gray)',
+                textAlign: 'center',
+                marginTop: '1rem',
+                fontFamily: 'var(--font-body)'
+              }}>
+                No password required! Just enter your phone or email to start chatting.
+              </p>
             </div>
           </motion.div>
         </motion.div>
