@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaBars, FaTimes, FaComments } from 'react-icons/fa';
 import Chat from './Chat';
+import ChatFullScreen from './ChatFullScreen';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -9,6 +10,7 @@ const Navbar = () => {
   const [activeSection, setActiveSection] = useState('home');
   const [isDesktop, setIsDesktop] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const [showFullScreenChat, setShowFullScreenChat] = useState(false);
 
 
   // Handle screen size changes
@@ -55,7 +57,13 @@ const Navbar = () => {
 
   // Handle chat toggle
   const toggleChat = () => {
-    setIsChatOpen(!isChatOpen);
+    if (isDesktop) {
+      // On desktop, use popup chat
+      setIsChatOpen(!isChatOpen);
+    } else {
+      // On mobile, use full-screen chat
+      setShowFullScreenChat(true);
+    }
   };
 
 
@@ -363,6 +371,13 @@ const Navbar = () => {
 
         </nav>
       </div>
+
+      {/* Full-Screen Chat - Mobile Only */}
+      <ChatFullScreen
+        isOpen={showFullScreenChat}
+        onClose={() => setShowFullScreenChat(false)}
+        onBackToMain={() => setShowFullScreenChat(false)}
+      />
 
       {/* Mobile Menu Drawer - Only visible on mobile */}
       {!isDesktop && (
