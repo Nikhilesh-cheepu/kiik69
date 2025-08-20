@@ -1,14 +1,11 @@
 // OpenAI API Integration for KIIK 69 Chat Assistant
 import { KIIK69_KNOWLEDGE, searchKnowledge } from '../data/kiik69-knowledge.js';
+import { openaiConfig, validateEnvironment } from './config.js';
 
-// Configuration
-const OPENAI_CONFIG = {
-  apiKey: import.meta.env.VITE_OPENAI_API_KEY || '',
-  model: import.meta.env.VITE_OPENAI_MODEL || 'gpt-3.5-turbo',
-  maxTokens: parseInt(import.meta.env.VITE_OPENAI_MAX_TOKENS) || 600,
-  temperature: parseFloat(import.meta.env.VITE_OPENAI_TEMPERATURE) || 0.7,
-  timeout: parseInt(import.meta.env.VITE_OPENAI_TIMEOUT) || 30000
-};
+// Validate environment variables
+validateEnvironment();
+
+// Use the imported config directly
 
 // System prompt for the AI assistant
 const SYSTEM_PROMPT = `You are KIKKI, the AI assistant for KIIK 69 Sports Bar in Gachibowli, Hyderabad. 
@@ -65,7 +62,7 @@ ${JSON.stringify(KIIK69_KNOWLEDGE, null, 2)}`;
  */
 export const generateAIResponse = async (userMessage, conversationHistory = []) => {
   // Check if API key is configured
-  if (!OPENAI_CONFIG.apiKey) {
+  if (!openaiConfig.apiKey) {
     throw new Error('OpenAI API key not configured. Please add VITE_OPENAI_API_KEY to your .env file.');
   }
 
@@ -94,19 +91,19 @@ export const generateAIResponse = async (userMessage, conversationHistory = []) 
 
     // Create controller for timeout
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), OPENAI_CONFIG.timeout);
+    const timeoutId = setTimeout(() => controller.abort(), openaiConfig.timeout);
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${OPENAI_CONFIG.apiKey}`
+        'Authorization': `Bearer ${openaiConfig.apiKey}`
       },
       body: JSON.stringify({
-        model: OPENAI_CONFIG.model,
+        model: openaiConfig.model,
         messages: messages,
-        max_tokens: OPENAI_CONFIG.maxTokens,
-        temperature: OPENAI_CONFIG.temperature,
+        max_tokens: openaiConfig.maxTokens,
+        temperature: openaiConfig.temperature,
         stream: false
       }),
       signal: controller.signal
@@ -154,7 +151,7 @@ export const generateAIResponse = async (userMessage, conversationHistory = []) 
  * @returns {boolean} - True if API key is set
  */
 export const isOpenAIConfigured = () => {
-  return !!OPENAI_CONFIG.apiKey;
+  return !!openaiConfig.apiKey;
 };
 
 /**
@@ -163,7 +160,7 @@ export const isOpenAIConfigured = () => {
  */
 export const getOpenAIConfig = () => {
   return {
-    ...OPENAI_CONFIG,
-    apiKey: OPENAI_CONFIG.apiKey ? '***configured***' : '***not configured***'
+    ...openaiConfig,
+    apiKey: openaiConfig.apiKey ? '***configured***' : '***not configured***'
   };
 };

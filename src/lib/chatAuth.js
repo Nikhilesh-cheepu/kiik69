@@ -1,7 +1,8 @@
-// Chat Authentication Service
-const API_BASE_URL = import.meta.env.VITE_BACKEND_URL 
-  ? `${import.meta.env.VITE_BACKEND_URL}/api/chat-auth`
-  : 'http://localhost:5001/api/chat-auth';
+import { backendConfig } from './config.js';
+
+const API_BASE_URL = backendConfig.url
+  ? `${backendConfig.url}${backendConfig.apiEndpoints.chatAuth}`
+  : 'http://localhost:5000/api/chat-auth';
 
 // Generate a unique session ID for guest users
 const generateGuestSessionId = () => {
