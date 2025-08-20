@@ -3,18 +3,13 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { FaTimes, FaPaperPlane, FaArrowLeft } from 'react-icons/fa';
 import ChatNavigationButtons from './ChatNavigationButtons';
 import { getNavigationButtonsForMessage, handleNavigationClick } from '../lib/chatNavigation.js';
-import { loginUser, getCurrentUser, logoutUser, saveChatMessage, getChatHistory } from '../lib/chatAuth.js';
+import { saveChatMessage, getChatHistory } from '../lib/chatAuth.js';
 
 const ChatFullScreen = ({ isOpen, onClose, onBackToMain }) => {
   const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
-  const [currentUser, setCurrentUser] = useState(null);
-  const [showLoginPopup, setShowLoginPopup] = useState(false);
-  const [loginIdentifier, setLoginIdentifier] = useState('');
-  const [loginError, setLoginError] = useState('');
-  const [isLoginLoading, setIsLoginLoading] = useState(false);
   
   const messagesEndRef = useRef(null);
   const chatBodyRef = useRef(null);
@@ -30,10 +25,10 @@ const ChatFullScreen = ({ isOpen, onClose, onBackToMain }) => {
 
   // Load chat history when component mounts
   useEffect(() => {
-    if (isOpen && currentUser) {
+    if (isOpen) {
       loadChatHistory();
     }
-  }, [isOpen, currentUser]);
+  }, [isOpen]);
 
   // Load chat history from backend
   const loadChatHistory = async () => {
@@ -66,40 +61,11 @@ const ChatFullScreen = ({ isOpen, onClose, onBackToMain }) => {
     }
   };
 
-  // Handle login
-  const handleLoginSubmit = async (e) => {
-    e.preventDefault();
-    if (!loginIdentifier.trim()) {
-      setLoginError('Please enter your phone number or email');
-      return;
-    }
 
-    setIsLoginLoading(true);
-    setLoginError('');
-
-    try {
-      const user = await loginUser(loginIdentifier);
-      setCurrentUser(user);
-      setShowLoginPopup(false);
-      setLoginIdentifier('');
-      await loadChatHistory();
-    } catch (error) {
-      setLoginError('Login failed. Please try again.');
-    } finally {
-      setIsLoginLoading(false);
-    }
-  };
-
-  // Handle logout
-  const handleLogout = () => {
-    logoutUser();
-    setCurrentUser(null);
-    setMessages([]);
-  };
 
   // Send message
   const sendMessage = async () => {
-    if (!inputMessage.trim() || !currentUser) return;
+    if (!inputMessage.trim()) return;
 
     const userMessage = {
       id: Date.now(),
@@ -201,7 +167,8 @@ const ChatFullScreen = ({ isOpen, onClose, onBackToMain }) => {
           left: 0,
           right: 0,
           bottom: 0,
-          backgroundColor: '#0a0a0a',
+          backgroundColor: '#000000',
+          background: 'linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #000000 100%)',
           zIndex: 10000,
           display: 'flex',
           flexDirection: 'column',
@@ -210,9 +177,9 @@ const ChatFullScreen = ({ isOpen, onClose, onBackToMain }) => {
       >
         {/* Header */}
         <div style={{
-          background: 'linear-gradient(135deg, rgba(0, 0, 0, 0.9), rgba(20, 20, 20, 0.9))',
+          background: 'linear-gradient(135deg, rgba(0, 0, 0, 0.95), rgba(255, 0, 60, 0.1))',
           backdropFilter: 'blur(20px)',
-          borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+          borderBottom: '1px solid rgba(255, 0, 60, 0.3)',
           padding: '1rem',
           display: 'flex',
           alignItems: 'center',
@@ -254,10 +221,10 @@ const ChatFullScreen = ({ isOpen, onClose, onBackToMain }) => {
               </h2>
               <p style={{
                 fontSize: '0.8rem',
-                color: '#888888',
+                color: '#ff6b6b',
                 margin: 0
               }}>
-                {currentUser ? `Logged in as ${currentUser.identifier}` : 'Please login to chat'}
+                Ready to chat! 🍻
               </p>
             </div>
           </div>
@@ -267,45 +234,11 @@ const ChatFullScreen = ({ isOpen, onClose, onBackToMain }) => {
             alignItems: 'center',
             gap: '0.5rem'
           }}>
-            {currentUser ? (
-              <button
-                onClick={handleLogout}
-                style={{
-                  background: 'rgba(255, 0, 60, 0.8)',
-                  border: 'none',
-                  color: '#ffffff',
-                  fontSize: '0.8rem',
-                  padding: '0.5rem 1rem',
-                  borderRadius: '20px',
-                  cursor: 'pointer',
-                  transition: 'all 0.3s ease'
-                }}
-              >
-                Logout
-              </button>
-            ) : (
-              <button
-                onClick={() => setShowLoginPopup(true)}
-                style={{
-                  background: 'rgba(0, 150, 255, 0.8)',
-                  border: 'none',
-                  color: '#ffffff',
-                  fontSize: '0.8rem',
-                  padding: '0.5rem 1rem',
-                  borderRadius: '20px',
-                  cursor: 'pointer',
-                  transition: 'all 0.3s ease'
-                }}
-              >
-                Login
-              </button>
-            )}
-            
             <button
               onClick={onClose}
               style={{
-                background: 'rgba(255, 255, 255, 0.1)',
-                border: 'none',
+                background: 'rgba(255, 0, 60, 0.2)',
+                border: '1px solid rgba(255, 0, 60, 0.3)',
                 color: '#ffffff',
                 fontSize: '1.2rem',
                 padding: '0.5rem',
@@ -403,9 +336,9 @@ const ChatFullScreen = ({ isOpen, onClose, onBackToMain }) => {
           bottom: 0,
           left: 0,
           right: 0,
-          background: 'rgba(0, 0, 0, 0.95)',
+          background: 'linear-gradient(135deg, rgba(0, 0, 0, 0.95), rgba(255, 0, 60, 0.05))',
           backdropFilter: 'blur(20px)',
-          borderTop: '1px solid rgba(255, 255, 255, 0.1)',
+          borderTop: '1px solid rgba(255, 0, 60, 0.3)',
           padding: '1rem',
           display: 'flex',
           alignItems: 'center',
@@ -417,14 +350,13 @@ const ChatFullScreen = ({ isOpen, onClose, onBackToMain }) => {
             value={inputMessage}
             onChange={(e) => setInputMessage(e.target.value)}
             onKeyPress={handleKeyPress}
-            placeholder={currentUser ? "Type your message..." : "Login to start chatting..."}
-            disabled={!currentUser}
+            placeholder="Type your message..."
             style={{
               flex: 1,
               padding: '0.75rem 1rem',
               borderRadius: '25px',
-              border: '1px solid rgba(255, 255, 255, 0.2)',
-              background: 'rgba(255, 255, 255, 0.1)',
+              border: '1px solid rgba(255, 0, 60, 0.3)',
+              background: 'rgba(255, 0, 60, 0.1)',
               color: '#ffffff',
               fontSize: '0.9rem',
               outline: 'none',
@@ -433,129 +365,28 @@ const ChatFullScreen = ({ isOpen, onClose, onBackToMain }) => {
           />
           <button
             onClick={sendMessage}
-            disabled={!currentUser || !inputMessage.trim()}
+            disabled={!inputMessage.trim()}
             style={{
               padding: '0.75rem',
               borderRadius: '50%',
               border: 'none',
-              background: currentUser && inputMessage.trim() 
+              background: inputMessage.trim() 
                 ? 'linear-gradient(135deg, rgba(255, 0, 60, 0.9), rgba(255, 0, 60, 0.7))'
-                : 'rgba(255, 255, 255, 0.2)',
+                : 'rgba(255, 0, 60, 0.3)',
               color: '#ffffff',
-              cursor: currentUser && inputMessage.trim() ? 'pointer' : 'not-allowed',
+              cursor: inputMessage.trim() ? 'pointer' : 'not-allowed',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               transition: 'all 0.3s ease',
-              transform: currentUser && inputMessage.trim() ? 'scale(1)' : 'scale(0.9)'
+              transform: inputMessage.trim() ? 'scale(1)' : 'scale(0.9)'
             }}
           >
             <FaPaperPlane />
           </button>
         </div>
 
-        {/* Login Popup */}
-        {showLoginPopup && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.9 }}
-            style={{
-              position: 'absolute',
-              top: '50%',
-              left: '50%',
-              transform: 'translate(-50%, -50%)',
-              background: 'rgba(0, 0, 0, 0.95)',
-              backdropFilter: 'blur(20px)',
-              border: '1px solid rgba(255, 255, 255, 0.2)',
-              borderRadius: '20px',
-              padding: '2rem',
-              width: '90%',
-              maxWidth: '400px',
-              zIndex: 10002
-            }}
-          >
-            <h3 style={{
-              fontSize: '1.5rem',
-              color: '#ffffff',
-              textAlign: 'center',
-              marginBottom: '1.5rem'
-            }}>
-              Login to Chat
-            </h3>
-            
-            <form onSubmit={handleLoginSubmit}>
-              <input
-                type="text"
-                value={loginIdentifier}
-                onChange={(e) => setLoginIdentifier(e.target.value)}
-                placeholder="Enter phone number or email"
-                style={{
-                  width: '100%',
-                  padding: '1rem',
-                  borderRadius: '12px',
-                  border: '1px solid rgba(255, 255, 255, 0.2)',
-                  background: 'rgba(255, 255, 255, 0.1)',
-                  color: '#ffffff',
-                  fontSize: '1rem',
-                  marginBottom: '1rem',
-                  outline: 'none'
-                }}
-              />
-              
-              {loginError && (
-                <p style={{
-                  color: '#ff6b6b',
-                  fontSize: '0.9rem',
-                  textAlign: 'center',
-                  marginBottom: '1rem'
-                }}>
-                  {loginError}
-                </p>
-              )}
-              
-              <div style={{
-                display: 'flex',
-                gap: '1rem'
-              }}>
-                <button
-                  type="submit"
-                  disabled={isLoginLoading}
-                  style={{
-                    flex: 1,
-                    padding: '1rem',
-                    borderRadius: '12px',
-                    border: 'none',
-                    background: 'linear-gradient(135deg, rgba(0, 150, 255, 0.9), rgba(0, 150, 255, 0.7))',
-                    color: '#ffffff',
-                    fontSize: '1rem',
-                    cursor: 'pointer',
-                    transition: 'all 0.3s ease'
-                  }}
-                >
-                  {isLoginLoading ? 'Logging in...' : 'Login'}
-                </button>
-                
-                <button
-                  type="button"
-                  onClick={() => setShowLoginPopup(false)}
-                  style={{
-                    padding: '1rem',
-                    borderRadius: '12px',
-                    border: '1px solid rgba(255, 255, 255, 0.2)',
-                    background: 'rgba(255, 255, 255, 0.1)',
-                    color: '#ffffff',
-                    fontSize: '1rem',
-                    cursor: 'pointer',
-                    transition: 'all 0.3s ease'
-                  }}
-                >
-                  Cancel
-                </button>
-              </div>
-            </form>
-          </motion.div>
-        )}
+        
       </motion.div>
     </AnimatePresence>
   );
