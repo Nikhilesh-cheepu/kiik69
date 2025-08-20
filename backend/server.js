@@ -33,15 +33,8 @@ app.get('/dashboard', (req, res) => {
 });
 
 // Routes
-app.use('/api/auth', require('./routes/auth'));
 app.use('/api/chat-auth', require('./routes/chatAuth'));
 app.use('/api/instagram-bot', require('./routes/instagramBot'));
-app.use('/api/menu', require('./routes/menu'));
-app.use('/api/events', require('./routes/events'));
-app.use('/api/gallery', require('./routes/gallery'));
-app.use('/api/party-packages', require('./routes/partyPackages'));
-app.use('/api/games', require('./routes/games'));
-app.use('/api/contact', require('./routes/contact'));
 app.use('/api/assets', require('./routes/assets'));
 
 // Health check
