@@ -46,6 +46,7 @@ const MainPage = () => {
               <p style={{ fontSize: '1.125rem', marginBottom: '1rem', color: '#ffffff' }}>🎉 Party Packages for Groups & Celebrations</p>
               <p style={{ fontSize: '1.125rem', marginBottom: '1rem', color: '#ffffff' }}>✨ Modern Ambience with LED Lighting</p>
             </div>
+
           </div>
         </section>
         <section id="timings-section" aria-label="Opening hours and timings">

@@ -32,7 +32,7 @@ const Navbar = () => {
       setIsScrolled(window.scrollY > 50);
       
       // Scrollspy effect - detect active section
-      const sections = ['home', 'whats-inside', 'menu', 'party-packages', 'vibes', 'reviews', 'policies', 'booking', 'contact'];
+      const sections = ['home', 'whats-inside', 'menu-section', 'party-packages', 'vibes', 'reviews', 'policies-section', 'booking-section', 'contact-section'];
       const scrollPosition = window.scrollY + 100;
       
       for (let i = sections.length - 1; i >= 0; i--) {
@@ -64,44 +64,73 @@ const Navbar = () => {
   const handleNavClick = (sectionId) => {
     setIsMenuOpen(false);
     
-    if (sectionId === 'home') {
-      // Smooth scroll to top for home
-      window.scrollTo({
-        top: 0,
-        behavior: 'smooth'
-      });
-      return;
-    }
-    
-    const element = document.getElementById(sectionId);
-    if (element) {
-      // Calculate offset for navbar height
-      const navbarHeight = 100; // Approximate navbar height
-      const elementPosition = element.offsetTop - navbarHeight;
+    // Add a small delay to ensure DOM is ready
+    setTimeout(() => {
+      if (sectionId === 'home') {
+        // Smooth scroll to top for home
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        });
+        return;
+      }
       
-      window.scrollTo({
-        top: elementPosition,
-        behavior: 'smooth'
-      });
+      // Try multiple ways to find the element
+      let element = document.getElementById(sectionId);
       
-      // Add highlight effect
-      element.style.transition = 'all 0.3s ease';
-      element.style.boxShadow = '0 0 30px rgba(255, 0, 60, 0.3)';
+      // If not found, try alternative selectors
+      if (!element) {
+        element = document.querySelector(`[id="${sectionId}"]`);
+      }
+      if (!element) {
+        element = document.querySelector(`section[id="${sectionId}"]`);
+      }
       
-      setTimeout(() => {
-        element.style.boxShadow = '';
-      }, 2000);
-    }
+      if (element) {
+        // Calculate offset for navbar height
+        const navbarHeight = 100; // Approximate navbar height
+        const elementPosition = element.offsetTop - navbarHeight;
+        
+        // Try different scroll methods
+        try {
+          // Method 1: window.scrollTo
+          window.scrollTo({
+            top: elementPosition,
+            behavior: 'smooth'
+          });
+          
+          // Method 2: element.scrollIntoView as fallback
+          setTimeout(() => {
+            if (window.scrollY < elementPosition - 50) {
+              element.scrollIntoView({ 
+                behavior: 'smooth',
+                block: 'start'
+              });
+            }
+          }, 100);
+          
+          // Add highlight effect
+          element.style.transition = 'all 0.3s ease';
+          element.style.boxShadow = '0 0 30px rgba(255, 0, 60, 0.3)';
+          
+          setTimeout(() => {
+            element.style.boxShadow = '';
+          }, 2000);
+        } catch (error) {
+          console.error('Navigation error:', error);
+        }
+      }
+    }, 100); // Small delay to ensure DOM is ready
   };
 
   const navLinks = [
     { id: 'home', label: 'Home' },
     { id: 'whats-inside', label: "What's Inside" },
-    { id: 'menu', label: 'Menu' },
+    { id: 'menu-section', label: 'Menu' },
     { id: 'party-packages', label: 'Party Packages' },
     { id: 'vibes', label: 'Gallery' },
     { id: 'reviews', label: 'Reviews' },
-    { id: 'contact', label: 'Contact' }
+    { id: 'contact-section', label: 'Contact' }
   ];
 
   return (
@@ -173,6 +202,7 @@ const Navbar = () => {
               marginLeft: '2rem',
               marginRight: '2rem'
             }}>
+
               {navLinks.map((link, index) => (
                 <motion.button
                   key={link.id}
