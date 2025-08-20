@@ -32,7 +32,7 @@ const Navbar = () => {
       setIsScrolled(window.scrollY > 50);
       
       // Scrollspy effect - detect active section
-      const sections = ['home', 'whats-inside', 'menu-section', 'party-packages', 'vibes', 'reviews', 'policies-section', 'booking-section', 'contact-section'];
+      const sections = ['home', 'menu-section', 'party-packages', 'policies-section', 'booking-section', 'contact-section'];
       const scrollPosition = window.scrollY + 100;
       
       for (let i = sections.length - 1; i >= 0; i--) {
@@ -125,11 +125,8 @@ const Navbar = () => {
 
   const navLinks = [
     { id: 'home', label: 'Home' },
-    { id: 'whats-inside', label: "What's Inside" },
     { id: 'menu-section', label: 'Menu' },
     { id: 'party-packages', label: 'Party Packages' },
-    { id: 'vibes', label: 'Gallery' },
-    { id: 'reviews', label: 'Reviews' },
     { id: 'contact-section', label: 'Contact' }
   ];
 
