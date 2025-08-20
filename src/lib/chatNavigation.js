@@ -203,13 +203,13 @@ export const handleNavigationClick = (action) => {
       scrollToSection('timings-section');
       break;
     case NAVIGATION_ACTIONS.SCROLL_TO_LOCATION:
-      scrollToSection('hero-section');
+      scrollToSection('home');
       break;
     case NAVIGATION_ACTIONS.SCROLL_TO_CONTACT:
       scrollToSection('contact-section');
       break;
     case NAVIGATION_ACTIONS.SCROLL_TO_ATMOSPHERE:
-      scrollToSection('atmosphere-section');
+      scrollToSection('vibes');
       break;
     case NAVIGATION_ACTIONS.SCROLL_TO_DRINKS:
       scrollToSection('menu-section');

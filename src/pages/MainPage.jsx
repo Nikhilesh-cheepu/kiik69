@@ -18,10 +18,36 @@ const MainPage = () => {
 
       <Navbar />
       <main>
-        <section id="hero-section" aria-label="Hero section">
+        <section id="home" aria-label="Hero section">
           <HeroSection />
         </section>
         <LiveStatusBar />
+        <section id="whats-inside" aria-label="What's Inside KIIK69">
+          <div style={{
+            maxWidth: '1200px',
+            margin: '0 auto',
+            padding: '4rem 1rem'
+          }}>
+            <h2 style={{
+              fontSize: '2.5rem',
+              fontFamily: 'Bebas Neue, Arial Black, sans-serif',
+              textAlign: 'center',
+              marginBottom: '2rem',
+              color: '#ffffff'
+            }}>What's Inside KIIK69</h2>
+            <div style={{
+              maxWidth: '800px',
+              margin: '0 auto',
+              textAlign: 'center'
+            }}>
+              <p style={{ fontSize: '1.125rem', marginBottom: '1rem', color: '#ffffff' }}>🎮 Multiple Gaming Zones with Pool Tables, Carroms, Foosball</p>
+              <p style={{ fontSize: '1.125rem', marginBottom: '1rem', color: '#ffffff' }}>🍽️ Premium Food & Beverages</p>
+              <p style={{ fontSize: '1.125rem', marginBottom: '1rem', color: '#ffffff' }}>📺 Multiple LED Screens for Sports & Entertainment</p>
+              <p style={{ fontSize: '1.125rem', marginBottom: '1rem', color: '#ffffff' }}>🎉 Party Packages for Groups & Celebrations</p>
+              <p style={{ fontSize: '1.125rem', marginBottom: '1rem', color: '#ffffff' }}>✨ Modern Ambience with LED Lighting</p>
+            </div>
+          </div>
+        </section>
         <section id="timings-section" aria-label="Opening hours and timings">
           <TimingsSection />
         </section>
@@ -35,7 +61,7 @@ const MainPage = () => {
           <PartyPackages />
         </section>
 
-        <section id="atmosphere-section" aria-label="Events and gallery">
+        <section id="vibes" aria-label="Events and gallery">
           <VibesSection />
         </section>
         <section id="reviews" aria-label="Customer reviews and testimonials">

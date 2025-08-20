@@ -9,34 +9,60 @@ const ChatNavigationButtons = ({ buttons, onButtonClick }) => {
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, delay: 0.2 }}
-      className="mt-4 space-y-3"
+      style={{
+        marginTop: '1rem',
+        marginBottom: '1rem'
+      }}
     >
-      <div className="text-xs text-gray-300 mb-3 font-manrope text-center">
+      <div style={{
+        fontSize: '0.75rem',
+        color: 'var(--color-gray)',
+        marginBottom: '1rem',
+        fontFamily: 'var(--font-body)',
+        textAlign: 'center',
+        opacity: 0.8
+      }}>
         💡 Quick navigation:
       </div>
-      <div className="flex flex-wrap gap-3 justify-center">
+      <div style={{
+        display: 'flex',
+        flexWrap: 'wrap',
+        gap: '0.75rem',
+        justifyContent: 'center',
+        alignItems: 'center'
+      }}>
         {buttons.map((button, index) => (
           <motion.button
             key={index}
             whileHover={{ 
               scale: 1.05,
               y: -2,
-              boxShadow: "0 8px 25px rgba(255, 0, 60, 0.3)"
+              boxShadow: "0 8px 25px rgba(255, 0, 60, 0.4)"
             }}
             whileTap={{ scale: 0.95 }}
             onClick={() => onButtonClick(button.action)}
-            className="px-6 py-3 rounded-xl text-sm font-semibold text-white transition-all duration-300 shadow-lg hover:shadow-xl"
             style={{
-              background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.05))',
+              padding: '0.75rem 1.25rem',
+              borderRadius: '25px',
+              fontSize: '0.85rem',
+              fontWeight: '600',
+              color: 'var(--color-white)',
+              background: 'linear-gradient(135deg, rgba(255, 0, 60, 0.8), rgba(255, 0, 60, 0.6))',
               backdropFilter: 'blur(20px)',
-              border: '2px solid rgba(255, 255, 255, 0.25)',
-              boxShadow: '0 4px 15px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
-              fontFamily: 'Bebas Neue, Arial Black, sans-serif',
+              border: '2px solid rgba(255, 255, 255, 0.2)',
+              boxShadow: '0 4px 15px rgba(255, 0, 60, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
+              fontFamily: 'var(--font-body)',
               letterSpacing: '0.02em',
-              textTransform: 'uppercase'
+              cursor: 'pointer',
+              transition: 'all 0.3s ease',
+              whiteSpace: 'nowrap',
+              minWidth: 'fit-content',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem'
             }}
           >
-            <span className="text-lg mr-2">{button.icon}</span>
+            <span style={{ fontSize: '1.1rem' }}>{button.icon}</span>
             {button.label}
           </motion.button>
         ))}

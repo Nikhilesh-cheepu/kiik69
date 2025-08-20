@@ -32,7 +32,7 @@ const Navbar = () => {
       setIsScrolled(window.scrollY > 50);
       
       // Scrollspy effect - detect active section
-      const sections = ['home', 'whats-inside', 'menu', 'party-packages', 'vibes', 'reviews', 'about', 'contact'];
+      const sections = ['home', 'whats-inside', 'menu', 'party-packages', 'vibes', 'reviews', 'policies', 'booking', 'contact'];
       const scrollPosition = window.scrollY + 100;
       
       for (let i = sections.length - 1; i >= 0; i--) {
@@ -63,13 +63,39 @@ const Navbar = () => {
   // Handle navigation click
   const handleNavClick = (sectionId) => {
     setIsMenuOpen(false);
+    
+    if (sectionId === 'home') {
+      // Smooth scroll to top for home
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+      return;
+    }
+    
     const element = document.getElementById(sectionId);
     if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
+      // Calculate offset for navbar height
+      const navbarHeight = 100; // Approximate navbar height
+      const elementPosition = element.offsetTop - navbarHeight;
+      
+      window.scrollTo({
+        top: elementPosition,
+        behavior: 'smooth'
+      });
+      
+      // Add highlight effect
+      element.style.transition = 'all 0.3s ease';
+      element.style.boxShadow = '0 0 30px rgba(255, 0, 60, 0.3)';
+      
+      setTimeout(() => {
+        element.style.boxShadow = '';
+      }, 2000);
     }
   };
 
   const navLinks = [
+    { id: 'home', label: 'Home' },
     { id: 'whats-inside', label: "What's Inside" },
     { id: 'menu', label: 'Menu' },
     { id: 'party-packages', label: 'Party Packages' },
