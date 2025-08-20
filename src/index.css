@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 /* CSS Variables for consistent theming */
 :root {
   --font-heading: 'Bebas Neue', 'Arial Black', sans-serif;
@@ -10,6 +14,24 @@
   --color-dark: #0a0a0a;
   --color-gray: #888888;
   --color-light-gray: #cccccc;
+}
+
+/* Tailwind CSS custom properties */
+@layer base {
+  :root {
+    --primary: 255 0 60;
+  }
+}
+
+/* Hide scrollbars for horizontal scroll */
+@layer utilities {
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 /* Reset and base styles */

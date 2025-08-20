@@ -36,7 +36,6 @@ const Footer = () => {
   const quickLinks = [
     { label: "What's Inside", href: '#whats-inside' },
     { label: 'Menu', href: '#menu' },
-    { label: 'Party Packages', href: '#packages' },
     { label: 'Gallery', href: '#vibes' },
     { label: 'Reviews', href: '#reviews' },
     { label: 'About', href: '#about' }

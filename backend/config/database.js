@@ -128,6 +128,48 @@ if (usePostgreSQL) {
         )
       `);
 
+      // Chat user authentication table
+      await db.query(`
+        CREATE TABLE IF NOT EXISTS chat_users (
+          id SERIAL PRIMARY KEY,
+          phone VARCHAR(15) UNIQUE NOT NULL,
+          otp VARCHAR(6),
+          otp_expires_at TIMESTAMP,
+          is_verified BOOLEAN DEFAULT false,
+          last_login TIMESTAMP,
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+      `);
+
+      // User chat history table
+      await db.query(`
+        CREATE TABLE IF NOT EXISTS user_chats (
+          id SERIAL PRIMARY KEY,
+          user_id INTEGER REFERENCES chat_users(id),
+          session_id VARCHAR(100),
+          message TEXT NOT NULL,
+          sender VARCHAR(20) NOT NULL,
+          timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+      `);
+
+      // User bookings table
+      await db.query(`
+        CREATE TABLE IF NOT EXISTS user_bookings (
+          id SERIAL PRIMARY KEY,
+          user_id INTEGER REFERENCES chat_users(id),
+          package_name VARCHAR(255) NOT NULL,
+          package_price DECIMAL(10,2) NOT NULL,
+          guest_count INTEGER NOT NULL,
+          booking_date DATE NOT NULL,
+          event_date DATE NOT NULL,
+          status VARCHAR(50) DEFAULT 'confirmed',
+          details TEXT,
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+      `);
+
       // Insert default admin user
       const bcrypt = require('bcryptjs');
       const defaultPassword = bcrypt.hashSync('admin123', 10);
@@ -190,13 +232,53 @@ if (usePostgreSQL) {
     fs.mkdirSync(dataDir, { recursive: true });
   }
 
-  db = new sqlite3.Database(dbPath);
+  const sqliteDb = new sqlite3.Database(dbPath);
+
+  // Create wrapper methods for SQLite to match PostgreSQL interface
+  db = {
+    query: (text, params) => new Promise((resolve, reject) => {
+      sqliteDb.all(text, params, (err, rows) => {
+        if (err) reject(err);
+        else resolve({ rows });
+      });
+    }),
+    get: (text, params) => new Promise((resolve, reject) => {
+      sqliteDb.get(text, params, (err, row) => {
+        if (err) reject(err);
+        else resolve(row);
+      });
+    }),
+    all: (text, params) => new Promise((resolve, reject) => {
+      sqliteDb.all(text, params, (err, rows) => {
+        if (err) reject(err);
+        else resolve(rows);
+      });
+    }),
+    run: (text, params) => new Promise((resolve, reject) => {
+      sqliteDb.run(text, params, function(err) {
+        if (err) reject(err);
+        else resolve({ lastID: this.lastID, changes: this.changes });
+      });
+    }),
+    prepare: (text) => ({
+      run: (params) => new Promise((resolve, reject) => {
+        const stmt = sqliteDb.prepare(text);
+        stmt.run(params, function(err) {
+          if (err) reject(err);
+          else resolve({ lastID: this.lastID, changes: this.changes });
+        });
+        stmt.finalize();
+      }),
+      finalize: () => {}
+    })
+  };
 
   initializeDatabase = () => {
     return new Promise((resolve, reject) => {
-      db.serialize(() => {
+      // Use the original sqlite3 database for initialization
+      sqliteDb.serialize(() => {
         // Users table for admin authentication
-        db.run(`CREATE TABLE IF NOT EXISTS users (
+        sqliteDb.run(`CREATE TABLE IF NOT EXISTS users (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           username TEXT UNIQUE NOT NULL,
           email TEXT UNIQUE NOT NULL,
@@ -207,7 +289,7 @@ if (usePostgreSQL) {
         )`);
 
         // Menu items table
-        db.run(`CREATE TABLE IF NOT EXISTS menu_items (
+        sqliteDb.run(`CREATE TABLE IF NOT EXISTS menu_items (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           name TEXT NOT NULL,
           description TEXT,
@@ -220,7 +302,7 @@ if (usePostgreSQL) {
         )`);
 
         // Events table
-        db.run(`CREATE TABLE IF NOT EXISTS events (
+        sqliteDb.run(`CREATE TABLE IF NOT EXISTS events (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           title TEXT NOT NULL,
           description TEXT,
@@ -233,7 +315,7 @@ if (usePostgreSQL) {
         )`);
 
         // Gallery items table
-        db.run(`CREATE TABLE IF NOT EXISTS gallery_items (
+        sqliteDb.run(`CREATE TABLE IF NOT EXISTS gallery_items (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           title TEXT,
           description TEXT,
@@ -245,7 +327,7 @@ if (usePostgreSQL) {
         )`);
 
         // Party packages table
-        db.run(`CREATE TABLE IF NOT EXISTS party_packages (
+        sqliteDb.run(`CREATE TABLE IF NOT EXISTS party_packages (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           name TEXT NOT NULL,
           description TEXT,
@@ -258,7 +340,7 @@ if (usePostgreSQL) {
         )`);
 
         // Games table
-        db.run(`CREATE TABLE IF NOT EXISTS games (
+        sqliteDb.run(`CREATE TABLE IF NOT EXISTS games (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           name TEXT NOT NULL,
           description TEXT,
@@ -270,7 +352,7 @@ if (usePostgreSQL) {
         )`);
 
         // Contact messages table
-        db.run(`CREATE TABLE IF NOT EXISTS contact_messages (
+        sqliteDb.run(`CREATE TABLE IF NOT EXISTS contact_messages (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           name TEXT NOT NULL,
           email TEXT NOT NULL,
@@ -280,11 +362,47 @@ if (usePostgreSQL) {
           created_at DATETIME DEFAULT CURRENT_TIMESTAMP
         )`);
 
+        // Chat user authentication table
+        sqliteDb.run(`CREATE TABLE IF NOT EXISTS chat_users (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          phone TEXT UNIQUE NOT NULL,
+          otp TEXT,
+          otp_expires_at DATETIME,
+          is_verified BOOLEAN DEFAULT 0,
+          last_login DATETIME,
+          created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+          updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        )`);
+
+        // User chat history table
+        sqliteDb.run(`CREATE TABLE IF NOT EXISTS user_chats (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          user_id INTEGER REFERENCES chat_users(id),
+          session_id TEXT,
+          message TEXT NOT NULL,
+          sender TEXT NOT NULL,
+          timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+        )`);
+
+        // User bookings table
+        sqliteDb.run(`CREATE TABLE IF NOT EXISTS user_bookings (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          user_id INTEGER REFERENCES chat_users(id),
+          package_name TEXT NOT NULL,
+          package_price DECIMAL(10,2) NOT NULL,
+          guest_count INTEGER NOT NULL,
+          booking_date DATE NOT NULL,
+          event_date DATE NOT NULL,
+          status TEXT DEFAULT 'confirmed',
+          details TEXT,
+          created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        )`);
+
         // Insert default admin user if not exists
         const bcrypt = require('bcryptjs');
         const defaultPassword = bcrypt.hashSync('admin123', 10);
         
-        db.run(`INSERT OR IGNORE INTO users (username, email, password_hash, role) 
+        sqliteDb.run(`INSERT OR IGNORE INTO users (username, email, password_hash, role) 
                  VALUES ('admin', 'admin@kiik69.com', ?, 'admin')`, 
                  [defaultPassword], (err) => {
           if (err) {
@@ -304,7 +422,7 @@ if (usePostgreSQL) {
           ['Margarita', 'Fresh lime margarita with premium tequila', 8.99, 'Drinks', null, 1]
         ];
 
-        const insertMenuStmt = db.prepare(`INSERT OR IGNORE INTO menu_items 
+        const insertMenuStmt = sqliteDb.prepare(`INSERT OR IGNORE INTO menu_items 
           (name, description, price, category, image_url, is_available) VALUES (?, ?, ?, ?, ?, ?)`);
         
         sampleMenuItems.forEach(item => {
@@ -319,7 +437,7 @@ if (usePostgreSQL) {
           ['Karaoke Night', 'Sing your heart out every Saturday', '2024-01-22', '21:00', null, 0]
         ];
 
-        const insertEventStmt = db.prepare(`INSERT OR IGNORE INTO events 
+        const insertEventStmt = sqliteDb.prepare(`INSERT OR IGNORE INTO events 
           (title, description, date, time, image_url, is_featured) VALUES (?, ?, ?, ?, ?, ?)`);
         
         sampleEvents.forEach(event => {

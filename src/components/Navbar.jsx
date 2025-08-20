@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaBars, FaTimes } from 'react-icons/fa';
+import { FaBars, FaTimes, FaComments } from 'react-icons/fa';
+import Chat from './Chat';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
   const [isDesktop, setIsDesktop] = useState(false);
+  const [isChatOpen, setIsChatOpen] = useState(false);
+
 
   // Handle screen size changes
   useEffect(() => {
@@ -29,7 +32,7 @@ const Navbar = () => {
       setIsScrolled(window.scrollY > 50);
       
       // Scrollspy effect - detect active section
-      const sections = ['home', 'whats-inside', 'menu', 'packages', 'vibes', 'reviews', 'about', 'contact'];
+      const sections = ['home', 'whats-inside', 'menu', 'party-packages', 'vibes', 'reviews', 'about', 'contact'];
       const scrollPosition = window.scrollY + 100;
       
       for (let i = sections.length - 1; i >= 0; i--) {
@@ -50,6 +53,13 @@ const Navbar = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
+  // Handle chat toggle
+  const toggleChat = () => {
+    setIsChatOpen(!isChatOpen);
+  };
+
+
+
   // Handle navigation click
   const handleNavClick = (sectionId) => {
     setIsMenuOpen(false);
@@ -62,7 +72,7 @@ const Navbar = () => {
   const navLinks = [
     { id: 'whats-inside', label: "What's Inside" },
     { id: 'menu', label: 'Menu' },
-    { id: 'packages', label: 'Party Packages' },
+    { id: 'party-packages', label: 'Party Packages' },
     { id: 'vibes', label: 'Gallery' },
     { id: 'reviews', label: 'Reviews' },
     { id: 'contact', label: 'Contact' }
@@ -215,6 +225,44 @@ const Navbar = () => {
                   />
                 </motion.button>
               ))}
+              
+              {/* Chat Button */}
+              <motion.button
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: navLinks.length * 0.1 + 0.1, duration: 0.5 }}
+                whileHover={{ 
+                  y: -3, 
+                  scale: 1.08,
+                  textShadow: '0 0 20px rgba(255, 255, 255, 0.8)',
+                  boxShadow: '0 8px 25px rgba(0, 0, 60, 0.3)',
+                  transition: { duration: 0.2 }
+                }}
+                whileTap={{ scale: 0.92 }}
+                onClick={toggleChat}
+                style={{
+                  background: 'linear-gradient(135deg, rgba(0, 0, 60, 0.8), rgba(0, 0, 120, 0.8))',
+                  border: '1px solid rgba(0, 0, 60, 0.3)',
+                  color: 'var(--color-white)',
+                  fontSize: '0.9rem',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  padding: '0.75rem 1.25rem',
+                  borderRadius: '25px',
+                  transition: 'all 0.3s ease',
+                  fontFamily: 'var(--font-body)',
+                  position: 'relative',
+                  overflow: 'hidden',
+                  letterSpacing: '0.02em',
+                  whiteSpace: 'nowrap',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem'
+                }}
+              >
+                <FaComments />
+                Chat
+              </motion.button>
             </div>
           )}
 
@@ -312,11 +360,46 @@ const Navbar = () => {
                     )}
                   </motion.button>
                 ))}
+                
+                {/* Chat Button in Mobile Menu */}
+                <motion.button
+                  initial={{ x: -20, opacity: 0 }}
+                  animate={{ x: 0, opacity: 1 }}
+                  exit={{ x: -20, opacity: 0 }}
+                  transition={{ duration: 0.2, delay: navLinks.length * 0.1 + 0.1 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => {
+                    toggleChat();
+                    setIsMenuOpen(false);
+                  }}
+                  style={{
+                    background: 'linear-gradient(135deg, rgba(0, 0, 60, 0.8), rgba(0, 0, 120, 0.8))',
+                    border: '1px solid rgba(0, 0, 60, 0.3)',
+                    color: 'var(--color-white)',
+                    fontSize: '1rem',
+                    fontWeight: '600',
+                    cursor: 'pointer',
+                    padding: '1rem',
+                    textAlign: 'left',
+                    borderRadius: '12px',
+                    transition: 'all 0.3s ease',
+                    fontFamily: 'var(--font-body)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem'
+                  }}
+                >
+                  <FaComments />
+                  Chat with KIKKI
+                </motion.button>
               </div>
             </motion.div>
           )}
         </AnimatePresence>
       )}
+      
+      {/* Chat Modal */}
+      <Chat isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} />
     </motion.header>
   );
 };

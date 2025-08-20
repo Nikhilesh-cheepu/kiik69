@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KIIK 69 - Party Packages</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #000000;
+            color: #ffffff;
+            line-height: 1.6;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .logo {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #ffd700 0%, #ff6b35 50%, #ff003c 100%);
+            border-radius: 50%;
+            margin: 0 auto 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            box-shadow: 0 20px 60px rgba(255, 215, 0, 0.3);
+        }
+
+        .title {
+            font-size: 3.5rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #ffd700 0%, #ff6b35 50%, #ff003c 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 1.5rem;
+            color: #cccccc;
+            margin-bottom: 30px;
+        }
+
+        .description {
+            font-size: 1.2rem;
+            color: #aaaaaa;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.8;
+        }
+
+        .package-section {
+            margin-bottom: 80px;
+            height: 85vh;
+            display: flex;
+            align-items: center;
+        }
+
+        .package-card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 25px;
+            padding: 30px;
+            position: relative;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            overflow: visible;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: #fff;
+            z-index: 10;
+        }
+
+        .discount-badge {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            padding: 8px 16px;
+            background: linear-gradient(135deg, #ff003c, #ff6b35);
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: #fff;
+            z-index: 10;
+        }
+
+        .package-header {
+            text-align: center;
+            margin-bottom: 20px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .package-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+            flex-shrink: 0;
+        }
+
+        .package-info {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            flex: 1;
+        }
+
+        .package-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #ffffff;
+            margin: 0;
+        }
+
+        .package-price {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin: 0;
+        }
+
+        .current-price {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #ffd700;
+        }
+
+        .original-price {
+            font-size: 1rem;
+            color: #666666;
+            text-decoration: line-through;
+        }
+
+        .price-note {
+            font-size: 0.8rem;
+            color: #aaaaaa;
+            text-align: center;
+            margin: 0;
+        }
+
+        .package-subtitle {
+            font-size: 0.8rem;
+            color: #aaaaaa;
+            text-align: center;
+            margin: 0;
+            font-style: italic;
+            line-height: 1.2;
+            max-height: 1.9em;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+
+        .package-details-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            flex: 1;
+            overflow: visible;
+        }
+
+        .detail-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 15px;
+            transition: transform 0.3s ease;
+            position: relative;
+            overflow: visible;
+            display: flex;
+            flex-direction: column;
+            min-height: 140px;
+        }
+
+        .detail-card.long-content {
+            min-height: 180px;
+        }
+
+        .detail-card.extra-long {
+            min-height: 220px;
+        }
+
+        .detail-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 2;
+            flex-shrink: 0;
+        }
+
+        .detail-icon {
+            color: #ffd700;
+            font-size: 1.3rem;
+        }
+
+        .detail-title {
+            font-size: 1rem;
+            font-weight: bold;
+            color: #ffffff;
+            margin: 0;
+        }
+
+        .detail-subtitle {
+            font-size: 0.85rem;
+            color: #888888;
+            margin: 0;
+            font-style: italic;
+        }
+
+        .detail-list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            flex: 1;
+            overflow: visible;
+        }
+
+        .detail-list li {
+            padding: 4px 0;
+            color: #cccccc;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            position: relative;
+            padding-left: 15px;
+        }
+
+        .detail-list li::before {
+            content: '•';
+            position: absolute;
+            left: 0;
+            color: #ffd700;
+            font-weight: bold;
+        }
+
+        .detail-list li.highlight {
+            color: #ffd700;
+            font-weight: bold;
+            font-size: 0.95rem;
+        }
+
+        .detail-list li.highlight::before {
+            content: '✔';
+            color: #10b981;
+        }
+
+        @media print {
+            body {
+                background: #000000 !important;
+                color: #ffffff !important;
+            }
+            
+            .package-section {
+                page-break-inside: avoid;
+                margin-bottom: 60px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">🎯</div>
+            <h1 class="title">PARTY PACKAGES</h1>
+            <h2 class="subtitle">Choose Your Championship Experience</h2>
+            <p class="description">
+                From Power Play to World Cup Edition, every package is designed to deliver an unforgettable night of unlimited food, drinks, and entertainment.
+            </p>
+        </div>
+
+        <!-- Power Play Package -->
+        <div class="package-section">
+            <div class="package-card">
+                <div class="discount-badge">28% OFF</div>
+                <div class="badge" style="background: linear-gradient(135deg, #10b981, #059669);">POPULAR</div>
+                
+                <div class="package-header">
+                    <div class="package-icon" style="background: linear-gradient(135deg, #10b981, #059669);">🏆</div>
+                    <div class="package-info">
+                        <h3 class="package-title">Power Play</h3>
+                        <div class="package-price">
+                            <span class="current-price">₹1300</span>
+                            <span class="original-price">₹1800</span>
+                        </div>
+                        <p class="price-note">+ 5% Taxes per person</p>
+                        <p class="package-subtitle">For the chill squads who want amazing food and games - No Alcohol Included</p>
+                    </div>
+                </div>
+
+                <div class="package-details-grid">
+                    <div class="detail-card">
+                        <div class="detail-header">
+                            <span class="detail-icon">🥜</span>
+                            <div>
+                                <h4 class="detail-title">Bar Snack</h4>
+                                <p class="detail-subtitle">Served throughout the party</p>
+                            </div>
+                        </div>
+                        <ul class="detail-list">
+                            <li>Peanut Masala placed on each table</li>
+                            <li>Replenished as needed</li>
+                        </ul>
+                    </div>
+
+                    <div class="detail-card">
+                        <div class="detail-header">
+                            <span class="detail-icon">🍢</span>
+                            <div>
+                                <h4 class="detail-title">Starters</h4>
+                                <p class="detail-subtitle">90 Minutes - passed around</p>
+                            </div>
+                        </div>
+                        <ul class="detail-list">
+                            <li>3 Vegetarian Starters</li>
+                            <li>3 Non-Vegetarian Starters</li>
+                            <li>Served hot and fresh continuously</li>
+                        </ul>
+                    </div>
+
+                    <div class="detail-card long-content">
+                        <div class="detail-header">
+                            <span class="detail-icon">🍽️</span>
+                            <div>
+                                <h4 class="detail-title">Main Course</h4>
+                                <p class="detail-subtitle">60 Minutes - buffet or pre-plated</p>
+                            </div>
+                        </div>
+                        <ul class="detail-list">
+                            <li>2 Vegetarian Main Course Dishes</li>
+                            <li>2 Non-Vegetarian Main Course Dishes</li>
+                            <li>1 Dal (lentil preparation)</li>
+                            <li>Steamed Rice</li>
+                            <li>Roti & Naan Basket (assorted Indian breads)</li>
+                            <li>2 Salads (fresh cut and mixed)</li>
+                        </ul>
+                    </div>
+
+                    <div class="detail-card">
+                        <div class="detail-header">
+                            <span class="detail-icon">🍨</span>
+                            <div>
+                                <h4 class="detail-title">Desserts</h4>
+                                <p class="detail-subtitle">Sweet endings</p>
+                            </div>
+                        </div>
+                        <ul class="detail-list">
+                            <li>1 Ice Cream Scoop (choice of flavor may vary)</li>
+                            <li>1 Hot Gulab Jamun (classic Indian dessert)</li>
+                        </ul>
+                    </div>
+
+                    <div class="detail-card long-content">
+                        <div class="detail-header">
+                            <span class="detail-icon">🎮</span>
+                            <div>
+                                <h4 class="detail-title">Game Access</h4>
+                                <p class="detail-subtitle">Unlimited access during party</p>
+                            </div>
+                        </div>
+                        <ul class="detail-list">
+                            <li>Carroms</li>
+                            <li>Pool Table</li>
+                            <li>Foosball</li>
+                            <li class="highlight">Unlimited access to these games during the party duration</li>
+                        </ul>
+                    </div>
+
+                    <div class="detail-card">
+                        <div class="detail-header">
+                            <span class="detail-icon">⏰</span>
+                            <div>
+                                <h4 class="detail-title">Duration</h4>
+                                <p class="detail-subtitle">Timing details</p>
+                            </div>
+                        </div>
+                        <ul class="detail-list">
+                            <li>Total party time: 3 Hours</li>
+                            <li>Food and games run simultaneously</li>
+                        </ul>
+                    </div>
+
+                    <div class="detail-card">
+                        <div class="detail-header">
+                            <span class="detail-icon">🍷</span>
+                            <div>
+                                <h4 class="detail-title">Alcohol</h4>
+                                <p class="detail-subtitle">No alcohol included</p>
+                            </div>
+                        </div>
+                        <ul class="detail-list">
+                            <li>No alcoholic drinks are included in this package</li>
+                        </ul>
+                    </div>
+
+                    <div class="detail-card">
+                        <div class="detail-header">
+                            <span class="detail-icon">🎯</span>
+                            <div>
+                                <h4 class="detail-title">Best For</h4>
+                                <p class="detail-subtitle">Perfect for</p>
+                            </div>
+                        </div>
+                        <ul class="detail-list">
+                            <li>Family-style celebrations</li>
+                        </ul>
+                    </div>
+
+                    <div class="detail-card">
+                        <div class="detail-header">
+                            <span class="detail-icon">📋</span>
+                            <div>
+                                <h4 class="detail-title">Terms</h4>
+                                <p class="detail-subtitle">Important notes</p>
+                            </div>
+                        </div>
+                        <ul class="detail-list">
+                            <li>Minimum 25 pax required</li>
+                            <li>50% advance payment required</li>
+                            <li>No outside alcohol allowed</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- World Cup Package -->
+        <div class="package-section">
+            <div class="package-card">
+                <div class="discount-badge">25% OFF</div>
+                <div class="badge" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8);">PREMIUM</div>
+                
+                <div class="package-header">
+                    <div class="package-icon" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8);">🏆</div>
+                    <div class="package-info">
+                        <h3 class="package-title">World Cup Edition</h3>
+                        <div class="package-price">
+                            <span class="current-price">₹1800</span>
+                            <span class="original-price">₹2400</span>
+                        </div>
+                        <p class="price-note">+ 5% Taxes per person</p>
+                        <p class="package-subtitle">The ultimate celebration package with premium drinks and exclusive access</p>
+                    </div>
+                </div>
+
+                <div class="package-details-grid">
+                    <div class="detail-card">
+                        <div class="detail-header">
+                            <span class="detail-icon">🥜</span>
+                            <div>
+                                <h4 class="detail-title">Premium Snacks</h4>
+                                <p class="detail-subtitle">Served throughout the party</p>
+                            </div>
+                        </div>
+                        <ul class="detail-list">
+                            <li>Premium Mixed Nuts</li>
+                            <li>Cheese Platter</li>
+                            <li>Replenished continuously</li>
+                        </ul>
+                    </div>
+
+                    <div class="detail-card">
+                        <div class="detail-header">
+                            <span class="detail-icon">🍢</span>
+                            <div>
+                                <h4 class="detail-title">Premium Starters</h4>
+                                <p class="detail-subtitle">90 Minutes - passed around</p>
+                            </div>
+                        </div>
+                        <ul class="detail-list">
+                            <li>4 Vegetarian Starters</li>
+                            <li>4 Non-Vegetarian Starters</li>
+                            <li>Premium quality ingredients</li>
+                            <li>Served hot and fresh continuously</li>
+                        </ul>
+                    </div>
+
+                    <div class="detail-card">
+                        <div class="detail-header">
+                            <span class="detail-icon">🍨</span>
+                            <div>
+                                <h4 class="detail-title">Premium Desserts</h4>
+                                <p class="detail-subtitle">Sweet endings</p>
+                            </div>
+                        </div>
+                        <ul class="detail-list">
+                            <li>2 Ice Cream Scoops (choice of flavors)</li>
+                            <li>2 Hot Gulab Jamun</li>
+                            <li>Premium Pastry Selection</li>
+                        </ul>
+                    </div>
+
+                    <div class="detail-card">
+                        <div class="detail-header">
+                            <span class="detail-icon">🎮</span>
+                            <div>
+                                <h4 class="detail-title">Exclusive Game Access</h4>
+                                <p class="detail-subtitle">Priority access during party</p>
+                            </div>
+                        </div>
+                        <ul class="detail-list">
+                            <li>Carroms (Priority Access)</li>
+                            <li>Pool Table (Priority Access)</li>
+                            <li>Foosball (Priority Access)</li>
+                            <li>Exclusive Gaming Zone</li>
+                            <li class="highlight">Priority access to all games</li>
+                        </ul>
+                    </div>
+
+                    <div class="detail-card">
+                        <div class="detail-header">
+                            <span class="detail-icon">⏰</span>
+                            <div>
+                                <h4 class="detail-title">Duration</h4>
+                                <p class="detail-subtitle">Extended timing</p>
+                            </div>
+                        </div>
+                        <ul class="detail-list">
+                            <li>Total party time: 3.5 Hours</li>
+                            <li>Extended food and drinks service</li>
+                        </ul>
+                    </div>
+
+                    <div class="detail-card">
+                        <div class="detail-header">
+                            <span class="detail-icon">🎯</span>
+                            <div>
+                                <h4 class="detail-title">Best For</h4>
+                                <p class="detail-subtitle">Perfect for</p>
+                            </div>
+                        </div>
+                        <ul class="detail-list">
+                            <li>Corporate celebrations</li>
+                            <li>Premium social gatherings</li>
+                            <li>Special occasions</li>
+                        </ul>
+                    </div>
+
+                    <div class="detail-card">
+                        <div class="detail-header">
+                            <span class="detail-icon">📋</span>
+                            <div>
+                                <h4 class="detail-title">Terms</h4>
+                                <p class="detail-subtitle">Important notes</p>
+                            </div>
+                        </div>
+                        <ul class="detail-list">
+                            <li>Minimum 30 pax required</li>
+                            <li>60% advance payment required</li>
+                            <li>Age 21+ for alcohol</li>
+                            <li>No outside alcohol allowed</li>
+                        </ul>
+                    </div>
+                </div>
+
+                    <div class="detail-card extra-long">
+                        <div class="detail-header">
+                            <span class="detail-icon">🍽️</span>
+                            <div>
+                                <h4 class="detail-title">Premium Main Course</h4>
+                                <p class="detail-subtitle">60 Minutes - buffet or pre-plated</p>
+                            </div>
+                        </div>
+                        <ul class="detail-list">
+                            <li>3 Vegetarian Main Course Dishes</li>
+                            <li>3 Non-Vegetarian Main Course Dishes</li>
+                            <li>2 Dal varieties</li>
+                            <li>Steamed Rice & Biryani</li>
+                            <li>Premium Roti & Naan Basket</li>
+                            <li>3 Fresh Salads</li>
+                        </ul>
+                    </div>
+
+                    <div class="detail-card extra-long">
+                        <div class="detail-header">
+                            <span class="detail-icon">🍺</span>
+                            <div>
+                                <h4 class="detail-title">Premium Drinks</h4>
+                                <p class="detail-subtitle">120 Minutes - unlimited</p>
+                            </div>
+                        </div>
+                        <ul class="detail-list">
+                            <li>Premium Beer Selection</li>
+                            <li>Premium Whiskey & Vodka</li>
+                            <li>Premium Rum & Gin</li>
+                            <li>Soft Drinks & Mocktails</li>
+                            <li class="highlight">Unlimited premium drinks for 120 minutes</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Champions League Package -->
+        <div class="package-section">
+            <div class="package-card">
+                <div class="discount-badge">30% OFF</div>
+                <div class="badge" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">ELITE</div>
+                
+                <div class="package-header">
+                    <div class="package-icon" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">🏆</div>
+                    <div class="package-info">
+                        <h3 class="package-title">Champions League</h3>
+                        <div class="package-price">
+                            <span class="current-price">₹2200</span>
+                            <span class="original-price">₹3100</span>
+                        </div>
+                        <p class="price-note">+ 5% Taxes per person</p>
+                        <p class="package-subtitle">The most exclusive package with VIP treatment and luxury amenities</p>
+                    </div>
+                </div>
+
+                <div class="package-details-grid">
+                    <div class="detail-card">
+                        <div class="detail-header">
+                            <span class="detail-icon">🥜</span>
+                            <div>
+                                <h4 class="detail-title">Luxury Snacks</h4>
+                                <p class="detail-subtitle">Premium service throughout</p>
+                            </div>
+                        </div>
+                        <ul class="detail-list">
+                            <li>Premium Mixed Nuts & Dry Fruits</li>
+                            <li>Cheese & Charcuterie Platter</li>
+                            <li>Premium Chips & Dips</li>
+                            <li>Replenished continuously</li>
+                        </ul>
+                    </div>
+
+                    <div class="detail-card">
+                        <div class="detail-header">
+                            <span class="detail-icon">🍢</span>
+                            <div>
+                                <h4 class="detail-title">Luxury Starters</h4>
+                                <p class="detail-subtitle">90 Minutes - premium service</p>
+                            </div>
+                        </div>
+                        <ul class="detail-list">
+                            <li>5 Vegetarian Starters</li>
+                            <li>5 Non-Vegetarian Starters</li>
+                            <li>Premium imported ingredients</li>
+                            <li>Chef's special preparations</li>
+                            <li>Served hot and fresh continuously</li>
+                        </ul>
+                    </div>
+
+                    <div class="detail-card">
+                        <div class="detail-header">
+                            <span class="detail-icon">🍨</span>
+                            <div>
+                                <h4 class="detail-title">Luxury Desserts</h4>
+                                <p class="detail-subtitle">Sweet endings</p>
+                            </div>
+                        </div>
+                        <ul class="detail-list">
+                            <li>3 Ice Cream Scoops (premium flavors)</li>
+                            <li>3 Hot Gulab Jamun</li>
+                            <li>Premium Pastry Selection</li>
+                            <li>Chef's Special Dessert</li>
+                        </ul>
+                    </div>
+
+                    <div class="detail-card">
+                        <div class="detail-header">
+                            <span class="detail-icon">🎮</span>
+                            <div>
+                                <h4 class="detail-title">VIP Game Access</h4>
+                                <p class="detail-subtitle">Exclusive access during party</p>
+                            </div>
+                        </div>
+                        <ul class="detail-list">
+                            <li>Carroms (VIP Access)</li>
+                            <li>Pool Table (VIP Access)</li>
+                            <li>Foosball (VIP Access)</li>
+                            <li>Exclusive Gaming Zone</li>
+                            <li>Private Gaming Area</li>
+                            <li class="highlight">VIP access to all games</li>
+                        </ul>
+                    </div>
+
+                    <div class="detail-card">
+                        <div class="detail-header">
+                            <span class="detail-icon">⏰</span>
+                            <div>
+                                <h4 class="detail-title">Duration</h4>
+                                <p class="detail-subtitle">Extended luxury timing</p>
+                            </div>
+                        </div>
+                        <ul class="detail-list">
+                            <li>Total party time: 4 Hours</li>
+                            <li>Extended food and drinks service</li>
+                            <li>VIP treatment throughout</li>
+                        </ul>
+                    </div>
+
+                    <div class="detail-card">
+                        <div class="detail-header">
+                            <span class="detail-icon">🎯</span>
+                            <div>
+                                <h4 class="detail-title">Best For</h4>
+                                <p class="detail-subtitle">Perfect for</p>
+                            </div>
+                        </div>
+                        <ul class="detail-list">
+                            <li>VIP corporate events</li>
+                            <li>Luxury social gatherings</li>
+                            <li>Premium celebrations</li>
+                            <li>Exclusive parties</li>
+                        </ul>
+                    </div>
+
+                    <div class="detail-card">
+                        <div class="detail-header">
+                            <span class="detail-icon">📋</span>
+                            <div>
+                                <h4 class="detail-title">Terms</h4>
+                                <p class="detail-subtitle">Important notes</p>
+                            </div>
+                        </div>
+                        <ul class="detail-list">
+                            <li>Minimum 35 pax required</li>
+                            <li>70% advance payment required</li>
+                            <li>Age 21+ for alcohol</li>
+                            <li>No outside alcohol allowed</li>
+                            <li>VIP service included</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="package-details-bottom">
+                    <div class="detail-card extra-long">
+                        <div class="detail-header">
+                            <span class="detail-icon">🍽️</span>
+                            <div>
+                                <h4 class="detail-title">Luxury Main Course</h4>
+                                <p class="detail-subtitle">60 Minutes - premium buffet</p>
+                            </div>
+                        </div>
+                        <ul class="detail-list">
+                            <li>4 Vegetarian Main Course Dishes</li>
+                            <li>4 Non-Vegetarian Main Course Dishes</li>
+                            <li>3 Dal varieties</li>
+                            <li>Steamed Rice, Biryani & Pulao</li>
+                            <li>Premium Roti, Naan & Paratha Basket</li>
+                            <li>4 Fresh Salads & Raita</li>
+                        </ul>
+                    </div>
+
+                    <div class="detail-card extra-long">
+                        <div class="detail-header">
+                            <span class="detail-icon">🍺</span>
+                            <div>
+                                <h4 class="detail-title">Luxury Drinks</h4>
+                                <p class="detail-subtitle">150 Minutes - unlimited premium</p>
+                            </div>
+                        </div>
+                        <ul class="detail-list">
+                            <li>Premium International Beer</li>
+                            <li>Premium International Whiskey</li>
+                            <li>Premium International Vodka</li>
+                            <li>Premium International Rum & Gin</li>
+                            <li>Premium Cocktails & Mocktails</li>
+                            <li>Soft Drinks & Juices</li>
+                            <li class="highlight">Unlimited premium drinks for 150 minutes</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

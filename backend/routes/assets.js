@@ -252,7 +252,7 @@ router.delete('/:id', [authenticateToken, requireAdmin], (req, res) => {
 // Import existing files from public folders
 router.post('/import-existing', [authenticateToken, requireAdmin], (req, res) => {
   const { category } = req.body;
-  const publicFolders = ['public/events', 'public/gallery', 'public/logos', 'public/menu', 'public/music', 'public/videos'];
+  const publicFolders = ['public/events', 'public/gallery', 'public/logos', 'public/menu', 'public/videos'];
   const importedFiles = [];
 
   publicFolders.forEach(folder => {

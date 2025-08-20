@@ -8,7 +8,7 @@
 The main website is being rebuilt with a mobile-first responsive design. This repository currently contains:
 
 - ✅ **Under Construction Page**: A clean, mobile-friendly holding page
-- ✅ **Media Assets**: All images, videos, and music files preserved
+- ✅ **Media Assets**: All images and videos preserved
 - ✅ **Backend Files**: API routes and server files intact
 - 🔄 **Main Website**: Being rebuilt with modern responsive design
 
@@ -53,7 +53,7 @@ kiik69/
 │   ├── logos/                   # KIIK 69 brand assets
 │   ├── videos/                  # Hero and promotional videos
 │   ├── images/                  # Gallery and content images
-│   ├── music/                   # Background music tracks
+
 │   └── events/                  # Event-specific assets
 ├── backend/                     # Express.js backend (preserved)
 ├── package.json                 # Minimal dependencies
@@ -65,7 +65,7 @@ kiik69/
 ### ✅ Media Assets
 - All images in `/public/images/`
 - All videos in `/public/videos/`
-- All music files in `/public/music/`
+
 - Logo and brand assets in `/public/logos/`
 - Event images in `/public/events/`
 

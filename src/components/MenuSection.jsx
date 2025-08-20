@@ -11,6 +11,26 @@ const MenuSection = () => {
   const [showCart, setShowCart] = useState(false);
   const [cart, setCart] = useState([]);
   const [cartAnimation, setCartAnimation] = useState(false);
+  const [isMenuImageModalOpen, setIsMenuImageModalOpen] = useState(false);
+  const [selectedMenuImage, setSelectedMenuImage] = useState('');
+  const [selectedMenuTitle, setSelectedMenuTitle] = useState('');
+
+  // Add section IDs for navigation
+  useEffect(() => {
+    // Add section IDs to menu categories for navigation
+    const addSectionIds = () => {
+      const startersSection = document.querySelector('[data-category="Starters"]');
+      const mainCourseSection = document.querySelector('[data-category="Burger"], [data-category="Pizza"], [data-category="Indian"], [data-category="Chinese"]');
+      const drinksSection = document.querySelector('[data-category="Drink & Munch at 69"]');
+      
+      if (startersSection) startersSection.id = 'starters-section';
+      if (mainCourseSection) mainCourseSection.id = 'main-course-section';
+      if (drinksSection) drinksSection.id = 'drinks-section';
+    };
+    
+    // Add IDs after component mounts
+    setTimeout(addSectionIds, 100);
+  }, []);
 
   // Load cart from localStorage on component mount
   useEffect(() => {
@@ -192,78 +212,193 @@ const MenuSection = () => {
           </p>
         </motion.div>
 
-        {/* Category Tags */}
+        {/* Menu Image Buttons */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.15 }}
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            gap: 'clamp(1rem, 3vw, 2rem)',
+            marginBottom: '3rem',
+            flexWrap: 'nowrap'
+          }}
+        >
+          {/* Food Menu Button */}
+          <motion.button
+            onClick={() => {
+              setSelectedMenuImage('/menu/FoodMenu.jpeg');
+              setSelectedMenuTitle('Food Menu');
+              setIsMenuImageModalOpen(true);
+            }}
+            style={{
+              position: 'relative',
+              width: 'clamp(200px, 35vw, 280px)',
+              height: 'clamp(130px, 25vw, 180px)',
+              borderRadius: '20px',
+              border: '2px solid rgba(255, 255, 255, 0.2)',
+              background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05))',
+              backdropFilter: 'blur(15px)',
+              cursor: 'pointer',
+              overflow: 'hidden',
+              transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+              boxShadow: '0 8px 25px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
+            }}
+            whileHover={{
+              scale: 1.05,
+              border: '2px solid rgba(255, 255, 255, 0.4)',
+              boxShadow: '0 12px 35px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2)',
+              transform: 'translateY(-5px)'
+            }}
+            whileTap={{ scale: 0.98 }}
+          >
+            {/* Background Image */}
+            <div style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundImage: 'url(/menu/FoodMenu.jpeg)',
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              filter: 'brightness(0.7)',
+              transition: 'filter 0.3s ease'
+            }} />
+            
+            {/* Overlay */}
+            <div style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              background: 'linear-gradient(135deg, rgba(255, 0, 60, 0.3), rgba(0, 0, 0, 0.6))',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: 'white',
+              textAlign: 'center',
+              padding: 'clamp(0.5rem, 2vw, 1rem)'
+            }}>
+              <span style={{ fontSize: 'clamp(1.8rem, 4vw, 2.5rem)', marginBottom: '0.5rem' }}>🍽️</span>
+              <h3 style={{
+                fontFamily: 'Bebas Neue, Arial Black, sans-serif',
+                fontSize: 'clamp(1.2rem, 3vw, 1.8rem)',
+                fontWeight: '400',
+                margin: '0',
+                letterSpacing: '0.02em',
+                textTransform: 'uppercase'
+              }}>
+                View Food Menu
+              </h3>
+            </div>
+          </motion.button>
+
+          {/* Liquor Menu Button */}
+          <motion.button
+            onClick={() => {
+              setSelectedMenuImage('/menu/LIquorMenu.jpeg');
+              setSelectedMenuTitle('Liquor Menu');
+              setIsMenuImageModalOpen(true);
+            }}
+            style={{
+              position: 'relative',
+              width: 'clamp(200px, 35vw, 280px)',
+              height: 'clamp(130px, 25vw, 180px)',
+              borderRadius: '20px',
+              border: '2px solid rgba(255, 255, 255, 0.2)',
+              background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05))',
+              backdropFilter: 'blur(15px)',
+              cursor: 'pointer',
+              overflow: 'hidden',
+              transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+              boxShadow: '0 8px 25px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
+            }}
+            whileHover={{
+              scale: 1.05,
+              border: '2px solid rgba(255, 255, 255, 0.4)',
+              boxShadow: '0 12px 35px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2)',
+              transform: 'translateY(-5px)'
+            }}
+            whileTap={{ scale: 0.98 }}
+          >
+            {/* Background Image */}
+            <div style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundImage: 'url(/menu/LIquorMenu.jpeg)',
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              filter: 'brightness(0.7)',
+              transition: 'filter 0.3s ease'
+            }} />
+            
+            {/* Overlay */}
+            <div style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              background: 'linear-gradient(135deg, rgba(255, 0, 60, 0.3), rgba(0, 0, 0, 0.6))',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: 'white',
+              textAlign: 'center',
+              padding: 'clamp(0.5rem, 2vw, 1rem)'
+            }}>
+              <span style={{ fontSize: 'clamp(1.8rem, 4vw, 2.5rem)', marginBottom: '0.5rem' }}>🍷</span>
+              <h3 style={{
+                fontFamily: 'Bebas Neue, Arial Black, sans-serif',
+                fontSize: 'clamp(1.2rem, 3vw, 1.8rem)',
+                fontWeight: '400',
+                margin: '0',
+                letterSpacing: '0.02em',
+                textTransform: 'uppercase'
+              }}>
+                View Liquor Menu
+              </h3>
+            </div>
+          </motion.button>
+        </motion.div>
+
+        {/* Intro Text */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          style={{
-            display: 'flex',
-            justifyContent: 'center',
-            gap: '1rem',
-            marginBottom: '3rem',
-            flexWrap: 'wrap'
-          }}
+          style={{ textAlign: 'center', marginBottom: '3rem' }}
         >
-          {[
-            { icon: '🍛', label: 'Indian', category: 'Indian' },
-            { icon: '🍜', label: 'Asian / Chinese', category: 'Chinese' },
-            { icon: '🍸', label: 'Drinks & Cocktails', category: 'liquor' }
-          ].map((tag, index) => (
-                      <motion.button
-            key={tag.label}
-            onClick={() => {
-              setActiveTab(tag.category === 'liquor' ? 'liquor' : 'food');
-              setSelectedCategory(tag.category === 'liquor' ? 'All' : tag.category);
-              openModal();
-            }}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.75rem',
-              padding: '1rem 2rem',
-              border: '1px solid rgba(255, 255, 255, 0.15)',
-              borderRadius: '20px',
-              background: 'rgba(255, 255, 255, 0.06)',
-              backdropFilter: 'blur(15px)',
-              color: 'var(--color-white)',
-              fontSize: '1rem',
-              fontWeight: '500',
-              cursor: 'pointer',
-              transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-              boxShadow: '0 4px 20px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.08)',
-              position: 'relative',
-              overflow: 'hidden'
-            }}
-            whileHover={{
-              background: 'rgba(255, 255, 255, 0.1)',
-              border: '1px solid rgba(255, 255, 255, 0.25)',
-              boxShadow: '0 8px 30px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.15)',
-              transform: 'translateY(-3px)'
-            }}
-            whileTap={{ scale: 0.97 }}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.3 + index * 0.1 }}
-          >
-            <span style={{ fontSize: '1.4rem' }}>{tag.icon}</span>
-            {tag.label}
-          </motion.button>
-          ))}
+          <p style={{
+            fontFamily: 'Manrope, Inter, Segoe UI, Arial, sans-serif',
+            fontSize: 'clamp(1rem, 2.5vw, 1.1rem)',
+            color: 'rgba(255, 255, 255, 0.7)',
+            maxWidth: '600px',
+            margin: '0 auto',
+            lineHeight: '1.6',
+            fontWeight: '400'
+          }}>
+            Use these quick links to directly place your food and drinks order. We'll handle the rest. 🍽️🍹
+          </p>
         </motion.div>
 
-
-
-        {/* CTA Buttons */}
+        {/* Full Menu & Order Button */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.5 }}
+          transition={{ duration: 0.6, delay: 0.3 }}
           style={{
             display: 'flex',
             justifyContent: 'center',
-            gap: '1.5rem',
-            flexWrap: 'wrap'
+            marginBottom: '3rem'
           }}
         >
           <motion.button
@@ -274,70 +409,124 @@ const MenuSection = () => {
             style={{
               display: 'flex',
               alignItems: 'center',
-              gap: '0.75rem',
-              padding: '1.25rem 2.5rem',
-              border: '1px solid rgba(255, 255, 255, 0.2)',
-              borderRadius: '16px',
-              background: 'rgba(255, 255, 255, 0.08)',
-              backdropFilter: 'blur(20px)',
-              color: 'var(--color-white)',
-              fontSize: '1.1rem',
-              fontWeight: '600',
+              gap: '1.2rem',
+              padding: 'clamp(1.8rem, 4.5vw, 2.2rem) clamp(3rem, 7vw, 4rem)',
+              border: '3px solid rgba(255, 255, 255, 0.3)',
+              borderRadius: '25px',
+              background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1))',
+              backdropFilter: 'blur(30px)',
+              color: '#ffffff',
+              fontSize: 'clamp(1.2rem, 3.5vw, 1.4rem)',
+              fontWeight: '800',
               cursor: 'pointer',
               transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-              boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
+              boxShadow: '0 12px 40px rgba(0, 0, 0, 0.4), inset 0 2px 0 rgba(255, 255, 255, 0.2), 0 0 20px rgba(255, 255, 255, 0.1)',
               position: 'relative',
-              overflow: 'hidden'
+              overflow: 'hidden',
+              textTransform: 'uppercase',
+              letterSpacing: '0.03em',
+              fontFamily: 'Bebas Neue, Arial Black, sans-serif'
             }}
             whileHover={{
-              scale: 1.02,
-              background: 'rgba(255, 255, 255, 0.12)',
-              border: '1px solid rgba(255, 255, 255, 0.3)',
-              boxShadow: '0 12px 40px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2)',
-              transform: 'translateY(-2px)'
+              background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.15))',
+              border: '3px solid rgba(255, 255, 255, 0.5)',
+              boxShadow: '0 16px 50px rgba(0, 0, 0, 0.5), inset 0 2px 0 rgba(255, 255, 255, 0.3), 0 0 30px rgba(255, 255, 255, 0.2)',
+              transform: 'translateY(-6px)'
             }}
-            whileTap={{ scale: 0.98 }}
+            whileTap={{ scale: 0.94 }}
           >
-            <span style={{ fontSize: '1.3rem' }}>🔥</span>
-            View All Dishes
-          </motion.button>
-
-          <motion.button
-            onClick={() => {
-              setActiveTab('liquor');
-              openModal();
-            }}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.75rem',
-              padding: '1.25rem 2.5rem',
-              border: '1px solid rgba(255, 0, 60, 0.3)',
-              borderRadius: '16px',
-              background: 'rgba(255, 0, 60, 0.08)',
-              backdropFilter: 'blur(20px)',
-              color: 'var(--color-primary)',
-              fontSize: '1.1rem',
-              fontWeight: '600',
-              cursor: 'pointer',
-              transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-              boxShadow: '0 8px 32px rgba(255, 0, 60, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
-              position: 'relative',
-              overflow: 'hidden'
-            }}
-            whileHover={{
-              scale: 1.02,
-              background: 'rgba(255, 0, 60, 0.15)',
-              border: '1px solid rgba(255, 0, 60, 0.5)',
-              boxShadow: '0 12px 40px rgba(255, 0, 60, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2)',
-              transform: 'translateY(-2px)'
-            }}
-            whileTap={{ scale: 0.98 }}
-          >
-            <span style={{ fontSize: '1.3rem' }}>🍹</span>
-            Drinks & Cocktails Only
+            <span style={{ 
+              fontSize: 'clamp(1.6rem, 4vw, 1.8rem)',
+              filter: 'drop-shadow(0 3px 6px rgba(0, 0, 0, 0.4))'
+            }}>🧾</span>
+            Full Menu & Order
           </motion.button>
         </motion.div>
+
+        {/* Menu Image Popup Modal */}
+        <AnimatePresence>
+          {isMenuImageModalOpen && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ duration: 0.3, ease: "easeOut" }}
+              style={{
+                position: 'fixed',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                background: 'rgba(0, 0, 0, 0.95)',
+                backdropFilter: 'blur(15px)',
+                zIndex: 1000,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '2rem'
+              }}
+              onClick={() => setIsMenuImageModalOpen(false)}
+            >
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 20 }}
+                transition={{ duration: 0.3, delay: 0.1 }}
+                style={{
+                  position: 'relative',
+                  maxWidth: '90vw',
+                  maxHeight: '90vh',
+                  borderRadius: '20px',
+                  overflow: 'hidden',
+                  boxShadow: '0 20px 60px rgba(0, 0, 0, 0.5)'
+                }}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <img
+                  src={selectedMenuImage}
+                  alt={selectedMenuTitle}
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'contain',
+                    display: 'block'
+                  }}
+                />
+                <button
+                  onClick={() => setIsMenuImageModalOpen(false)}
+                  style={{
+                    position: 'absolute',
+                    top: '1rem',
+                    right: '1rem',
+                    width: '40px',
+                    height: '40px',
+                    borderRadius: '50%',
+                    background: 'rgba(255, 255, 255, 0.2)',
+                    border: '1px solid rgba(255, 255, 255, 0.3)',
+                    color: 'white',
+                    fontSize: '1.2rem',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    backdropFilter: 'blur(10px)',
+                    transition: 'all 0.3s ease'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.target.style.background = 'rgba(255, 255, 255, 0.3)';
+                    e.target.style.transform = 'scale(1.1)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.background = 'rgba(255, 255, 255, 0.2)';
+                    e.target.style.transform = 'scale(1)';
+                  }}
+                >
+                  ✕
+                </button>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Full Screen Modal */}
         <AnimatePresence>
@@ -591,14 +780,17 @@ const MenuSection = () => {
                 }}>
                   {sortedCategories.map(category => (
                     <div key={category} style={{ marginBottom: '2rem' }}>
-                      <h3 style={{
-                        color: 'var(--color-white)',
-                        fontSize: '1.2rem',
-                        fontWeight: '600',
-                        marginBottom: '1rem',
-                        paddingBottom: '0.5rem',
-                        borderBottom: '1px solid rgba(255, 255, 255, 0.1)'
-                      }}>
+                      <h3 
+                        data-category={category}
+                        style={{
+                          color: 'var(--color-white)',
+                          fontSize: '1.2rem',
+                          fontWeight: '600',
+                          marginBottom: '1rem',
+                          paddingBottom: '0.5rem',
+                          borderBottom: '1px solid rgba(255, 255, 255, 0.1)'
+                        }}
+                      >
                         {category}
                       </h3>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>

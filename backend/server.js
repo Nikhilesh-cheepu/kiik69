@@ -4,7 +4,7 @@ const helmet = require('helmet');
 const morgan = require('morgan');
 const compression = require('compression');
 const path = require('path');
-require('dotenv').config();
+require('dotenv').config({ path: '.env.local' });
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -15,7 +15,7 @@ const db = require('./config/database');
 // Middleware
 app.use(helmet());
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+  origin: ['http://localhost:5173', 'http://localhost:5001', 'http://127.0.0.1:5001'],
   credentials: true
 }));
 app.use(compression());
@@ -25,9 +25,17 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Static files
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/public', express.static(path.join(__dirname, 'public')));
+
+// Dashboard route
+app.get('/dashboard', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'dashboard.html'));
+});
 
 // Routes
 app.use('/api/auth', require('./routes/auth'));
+app.use('/api/chat-auth', require('./routes/chatAuth'));
+app.use('/api/instagram-bot', require('./routes/instagramBot'));
 app.use('/api/menu', require('./routes/menu'));
 app.use('/api/events', require('./routes/events'));
 app.use('/api/gallery', require('./routes/gallery'));
@@ -41,7 +49,8 @@ app.get('/api/health', (req, res) => {
   res.json({ 
     status: 'OK', 
     message: 'KIIK 69 Backend is running!',
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
+    dashboard: `http://localhost:${PORT}/dashboard`
   });
 });
 
