@@ -9,11 +9,17 @@ export default defineConfig({
       output: {
         manualChunks: undefined
       }
-    }
+    },
+    target: 'es2015',
+    minify: 'esbuild',
+    sourcemap: false
   },
   resolve: {
     alias: {
       '@': '/src'
     }
+  },
+  optimizeDeps: {
+    include: ['react', 'react-dom']
   }
 })
