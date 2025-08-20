@@ -85,7 +85,7 @@ jspm_packages/
 
 # Gatsby files
 .cache/
-public
+# public - REMOVED: This directory contains static assets needed for production
 
 # Storybook build outputs
 .out

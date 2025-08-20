@@ -3,11 +3,31 @@ import { motion } from 'framer-motion';
 
 const HeroSection = () => {
   const [isVideoLoaded, setIsVideoLoaded] = useState(false);
+  const [videoError, setVideoError] = useState(false);
+  const [videoExists, setVideoExists] = useState(true);
 
   useEffect(() => {
+    // Check if video file exists
+    const checkVideoExists = async () => {
+      try {
+        const response = await fetch('/videos/hero.mp4', { method: 'HEAD' });
+        if (!response.ok) {
+          setVideoExists(false);
+          setIsVideoLoaded(true); // Show content immediately if video doesn't exist
+        }
+      } catch (error) {
+        console.warn('Video file not found, using fallback background');
+        setVideoExists(false);
+        setIsVideoLoaded(true);
+      }
+    };
+
+    checkVideoExists();
+
+    // Show content after a delay, regardless of video status
     const timer = setTimeout(() => {
       setIsVideoLoaded(true);
-    }, 100);
+    }, 1000);
     return () => clearTimeout(timer);
   }, []);
 
@@ -28,20 +48,57 @@ const HeroSection = () => {
       paddingTop: '6rem'
     }}>
       {/* Background Video */}
-      <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 1 }}>
-        <video
-          autoPlay
-          muted
-          loop
-          playsInline
-          style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center' }}
-          onLoadedData={() => setIsVideoLoaded(true)}
-          poster="/videos/hero-poster.jpg"
-        >
-          <source src="/videos/hero.mp4" type="video/mp4" />
-          <source src="/videos/hero.mp4" type="video/webm" />
-          Your browser does not support the video tag.
-        </video>
+      <div style={{ 
+        position: 'absolute', 
+        top: 0, 
+        left: 0, 
+        width: '100%', 
+        height: '100%', 
+        zIndex: 1,
+        background: 'linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%)' // Fallback background
+      }}>
+        {videoExists && !videoError && (
+          <video
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="metadata"
+            style={{ 
+              width: '100%', 
+              height: '100%', 
+              objectFit: 'cover', 
+              objectPosition: 'center',
+              opacity: isVideoLoaded ? 1 : 0,
+              transition: 'opacity 0.5s ease-in-out'
+            }}
+            onLoadedData={() => setIsVideoLoaded(true)}
+            onError={(e) => {
+              console.error('Video loading error:', e);
+              setVideoError(true);
+              setIsVideoLoaded(true); // Show content even if video fails
+            }}
+          >
+            <source src="/videos/hero.mp4" type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+        )}
+        
+        {/* Loading indicator */}
+        {!isVideoLoaded && !videoError && videoExists && (
+          <div style={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            color: 'var(--color-white)',
+            fontSize: '1.2rem',
+            fontFamily: 'var(--font-body)',
+            zIndex: 2
+          }}>
+            Loading...
+          </div>
+        )}
       </div>
 
       {/* Gradient Overlay */}
