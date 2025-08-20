@@ -159,7 +159,8 @@ const Navbar = () => {
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          width: '100%'
+          width: '100%',
+          position: 'relative'
         }}>
           {/* Logo - Always visible, bigger size */}
           <motion.div
@@ -286,7 +287,7 @@ const Navbar = () => {
             alignItems: 'center',
             gap: '1rem'
           }}>
-            {/* Chat Button - Always visible */}
+            {/* Chat Button - Positioned based on screen size */}
             <motion.button
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -317,7 +318,14 @@ const Navbar = () => {
                 whiteSpace: 'nowrap',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '0.5rem'
+                gap: '0.5rem',
+                // Center on mobile, right side on desktop
+                ...(isDesktop ? {} : {
+                  position: 'absolute',
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  zIndex: 1001
+                })
               }}
             >
               <FaComments />
