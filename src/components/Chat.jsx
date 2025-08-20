@@ -1,20 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaTimes, FaPaperPlane, FaRobot, FaUser, FaComments, FaExclamationTriangle, FaSignInAlt, FaSignOutAlt } from 'react-icons/fa';
+import { FaTimes, FaPaperPlane, FaRobot, FaUser, FaComments, FaExclamationTriangle, FaSignOutAlt, FaPhone, FaEnvelope, FaSignInAlt } from 'react-icons/fa';
 import { generateAIResponse, isOpenAIConfigured } from '../lib/openai.js';
 import { 
   isLoggedIn, 
   getCurrentUser, 
-  logout, 
+  logoutUser, 
   getGuestSessionId, 
-  requiresLogin,
   saveChatMessage,
   getUserProfile,
-  detectLanguage,
-  getGreetingResponse
+  loginUser
 } from '../lib/chatAuth.js';
 import { getNavigationButtonsForMessage, handleNavigationClick } from '../lib/chatNavigation.js';
-import LoginModal from './LoginModal';
 import ChatNavigationButtons from './ChatNavigationButtons';
 
 const Chat = ({ isOpen, onClose }) => {
@@ -23,8 +20,11 @@ const Chat = ({ isOpen, onClose }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isAIConfigured, setIsAIConfigured] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
-  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [sessionId, setSessionId] = useState('');
+  const [loginIdentifier, setLoginIdentifier] = useState('');
+  const [loginError, setLoginError] = useState('');
+  const [isLoginLoading, setIsLoginLoading] = useState(false);
+  const [isLoginPopupOpen, setIsLoginPopupOpen] = useState(false);
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
 
@@ -112,8 +112,8 @@ const Chat = ({ isOpen, onClose }) => {
       // Save chat message to database if user is logged in
       if (currentUser) {
         try {
-          await saveChatMessage(currentUser.id, sessionId, messageText, 'user');
-          await saveChatMessage(currentUser.id, sessionId, greetingResponse, 'bot');
+          await saveChatMessage(messageText, false);
+          await saveChatMessage(greetingResponse, true);
         } catch (error) {
           console.error('Failed to save chat:', error);
         }
@@ -180,8 +180,8 @@ const Chat = ({ isOpen, onClose }) => {
       // Save chat message to database if user is logged in
       if (currentUser) {
         try {
-          await saveChatMessage(currentUser.id, sessionId, messageText, 'user');
-          await saveChatMessage(currentUser.id, sessionId, botResponse, 'bot');
+          await saveChatMessage(messageText, false);
+          await saveChatMessage(botResponse, true);
         } catch (error) {
           console.error('Failed to save chat:', error);
         }
@@ -230,7 +230,7 @@ const Chat = ({ isOpen, onClose }) => {
     // Add welcome message
     const welcomeMessage = {
       id: Date.now(),
-      text: `Welcome back, ${user.phone} 🎉`,
+      text: `Welcome back, ${user.phone || user.email} 🎉`,
       sender: 'bot',
       timestamp: new Date().toISOString()
     };
@@ -238,9 +238,11 @@ const Chat = ({ isOpen, onClose }) => {
     setMessages(prev => [prev[0], welcomeMessage]);
   };
 
+
+
   // Handle logout
   const handleLogout = () => {
-    logout();
+    logoutUser();
     setCurrentUser(null);
     setSessionId(getGuestSessionId());
     
@@ -255,12 +257,63 @@ const Chat = ({ isOpen, onClose }) => {
     setMessages(prev => [prev[0], guestMessage]);
   };
 
+  // Handle login form submission
+  const handleLoginSubmit = async (e) => {
+    e.preventDefault();
+    
+    if (!loginIdentifier.trim()) {
+      setLoginError('Please enter your email or phone number');
+      return;
+    }
+
+    // Check if it's a phone number (10 digits) or email
+    const isPhone = /^\d{10}$/.test(loginIdentifier.replace(/\D/g, ''));
+    const isEmail = loginIdentifier.includes('@') && loginIdentifier.includes('.');
+
+    if (!isPhone && !isEmail) {
+      setLoginError('Please enter a valid 10-digit phone number or email address');
+      return;
+    }
+
+    setIsLoginLoading(true);
+    setLoginError('');
+
+    try {
+      const result = await loginUser({ identifier: loginIdentifier });
+      
+      if (result.success) {
+        setCurrentUser(result.user);
+        setSessionId(result.user.sessionId);
+        setLoginIdentifier('');
+        setIsLoginPopupOpen(false);
+        
+        // Add welcome message
+        const welcomeMessage = {
+          id: Date.now(),
+          text: `Welcome back! You're now logged in as ${result.user.phone || result.user.email}`,
+          sender: 'bot',
+          timestamp: new Date().toISOString(),
+          navigationButtons: []
+        };
+        
+        setMessages(prev => [welcomeMessage, ...prev]);
+      } else {
+        setLoginError(result.message || 'Login failed. Please try again.');
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      setLoginError('Login failed. Please try again.');
+    } finally {
+      setIsLoginLoading(false);
+    }
+  };
+
   // Check if message requires login
   const checkLoginRequirement = (message) => {
-    if (requiresLogin(message) && !currentUser) {
-      return true;
-    }
-    return false;
+    // Simple check for login-required keywords
+    const loginKeywords = ['reservation', 'booking', 'my data', 'profile', 'history'];
+    const lowerMessage = message.toLowerCase();
+    return loginKeywords.some(keyword => lowerMessage.includes(keyword)) && !currentUser;
   };
 
   // Check if message is a greeting
@@ -276,8 +329,14 @@ const Chat = ({ isOpen, onClose }) => {
 
   // Get appropriate response for greeting
   const getGreetingResponseForUser = (message) => {
-    const language = detectLanguage(message);
-    return getGreetingResponse(language);
+    // Simple greeting responses
+    const responses = [
+      "Hi there! Welcome to KIIK 69 Sports Bar! 🎮",
+      "Hello! How can I help you today? 🏆",
+      "Hey! Ready for some gaming fun? 🎯",
+      "Namaste! What would you like to know about KIIK 69? 🎪"
+    ];
+    return responses[Math.floor(Math.random() * responses.length)];
   };
 
   return (
@@ -420,8 +479,8 @@ const Chat = ({ isOpen, onClose }) => {
                 alignItems: 'center',
                 gap: '0.5rem'
               }}>
-                {/* Login/Logout Button */}
-                {currentUser ? (
+                {/* Logout Button - Only show when user is logged in */}
+                {currentUser && (
                   <button
                     onClick={handleLogout}
                     style={{
@@ -443,7 +502,7 @@ const Chat = ({ isOpen, onClose }) => {
                     onMouseEnter={(e) => {
                       e.target.style.background = 'rgba(255, 255, 255, 0.25)';
                       e.target.style.transform = 'scale(1.05)';
-                      e.target.style.boxShadow = '0 4px 15px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.15)';
+                      e.target.style.boxShadow = '0 4px 15px rgba(255, 0, 60, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.15)';
                     }}
                     onMouseLeave={(e) => {
                       e.target.style.background = 'rgba(255, 255, 255, 0.15)';
@@ -454,9 +513,12 @@ const Chat = ({ isOpen, onClose }) => {
                     <FaSignOutAlt />
                     Logout
                   </button>
-                ) : (
+                )}
+
+                {/* Login Button - Only show when user is not logged in */}
+                {!currentUser && (
                   <button
-                    onClick={() => setIsLoginModalOpen(true)}
+                    onClick={() => setIsLoginPopupOpen(true)}
                     style={{
                       padding: '0.5rem 1rem',
                       background: 'rgba(255, 0, 60, 0.25)',
@@ -481,7 +543,6 @@ const Chat = ({ isOpen, onClose }) => {
                     }}
                     onMouseLeave={(e) => {
                       e.target.style.transform = 'scale(1)';
-                      e.target.style.background = 'rgba(255, 0, 60, 0.25)';
                       e.target.style.boxShadow = '0 2px 8px rgba(255, 0, 60, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)';
                     }}
                   >
@@ -703,6 +764,8 @@ const Chat = ({ isOpen, onClose }) => {
               <div ref={messagesEndRef} />
             </div>
 
+
+
             {/* Input Section */}
             <div style={{
               padding: '1.5rem 2rem',
@@ -814,13 +877,220 @@ const Chat = ({ isOpen, onClose }) => {
           </motion.div>
         </motion.div>
       )}
-      
-      {/* Login Modal */}
-      <LoginModal 
-        isOpen={isLoginModalOpen}
-        onClose={() => setIsLoginModalOpen(false)}
-        onLoginSuccess={handleLoginSuccess}
-      />
+
+      {/* Login Popup Modal */}
+      <AnimatePresence>
+        {isLoginPopupOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              background: 'rgba(0, 0, 0, 0.8)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              zIndex: 10000,
+              padding: '1rem'
+            }}
+            onClick={() => setIsLoginPopupOpen(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              style={{
+                width: '100%',
+                maxWidth: '400px',
+                background: 'rgba(0, 0, 0, 0.95)',
+                borderRadius: '20px',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)',
+                overflow: 'hidden'
+              }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Header */}
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: '1.5rem 2rem',
+                borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+                background: 'rgba(255, 255, 255, 0.05)'
+              }}>
+                <h2 style={{
+                  fontFamily: 'var(--font-heading)',
+                  fontSize: '1.5rem',
+                  color: 'var(--color-white)',
+                  margin: 0
+                }}>
+                  Login to Chat
+                </h2>
+                <button
+                  onClick={() => setIsLoginPopupOpen(false)}
+                  style={{
+                    width: '40px',
+                    height: '40px',
+                    borderRadius: '50%',
+                    background: 'rgba(255, 255, 255, 0.1)',
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                    color: 'var(--color-white)',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '1.1rem',
+                    transition: 'all 0.3s ease'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.target.style.background = 'rgba(255, 255, 255, 0.2)';
+                    e.target.style.transform = 'scale(1.1)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.background = 'rgba(255, 255, 255, 0.1)';
+                    e.target.style.transform = 'scale(1)';
+                  }}
+                >
+                  <FaTimes />
+                </button>
+              </div>
+
+              {/* Content */}
+              <div style={{ padding: '2rem' }}>
+                <form onSubmit={handleLoginSubmit}>
+                  <div style={{ marginBottom: '1.5rem' }}>
+                    <label style={{
+                      display: 'block',
+                      fontFamily: 'var(--font-body)',
+                      fontSize: '0.9rem',
+                      color: 'var(--color-gray)',
+                      marginBottom: '0.5rem'
+                    }}>
+                      Email or Phone Number
+                    </label>
+                    <div style={{
+                      position: 'relative',
+                      display: 'flex',
+                      alignItems: 'center'
+                    }}>
+                      <div style={{
+                        position: 'absolute',
+                        left: '1rem',
+                        color: 'var(--color-gray)',
+                        fontSize: '1.1rem',
+                        zIndex: 1
+                      }}>
+                        {loginIdentifier.includes('@') ? <FaEnvelope /> : <FaPhone />}
+                      </div>
+                      <input
+                        type="text"
+                        value={loginIdentifier}
+                        onChange={(e) => setLoginIdentifier(e.target.value)}
+                        placeholder="Enter email or 10-digit phone number"
+                        style={{
+                          width: '100%',
+                          background: 'rgba(255, 255, 255, 0.05)',
+                          border: '1px solid rgba(255, 255, 255, 0.1)',
+                          borderColor: loginError ? 'rgba(255, 0, 0, 0.5)' : 'rgba(255, 255, 255, 0.1)',
+                          borderRadius: '12px',
+                          padding: '1rem 1rem 1rem 3rem',
+                          color: 'var(--color-white)',
+                          fontFamily: 'var(--font-body)',
+                          fontSize: '1rem',
+                          outline: 'none',
+                          transition: 'all 0.3s ease'
+                        }}
+                        onFocus={(e) => {
+                          e.target.style.border = '1px solid var(--color-primary)';
+                          e.target.style.boxShadow = '0 0 0 3px rgba(255, 0, 60, 0.1)';
+                        }}
+                        onBlur={(e) => {
+                          e.target.style.border = '1px solid rgba(255, 255, 255, 0.1)';
+                          e.target.style.boxShadow = 'none';
+                        }}
+                      />
+                    </div>
+                    <p style={{
+                      fontSize: '0.75rem',
+                      color: 'var(--color-gray)',
+                      marginTop: '0.5rem',
+                      fontFamily: 'var(--font-body)'
+                    }}>
+                      {loginIdentifier.includes('@') 
+                        ? 'We\'ll use your email as your unique identifier'
+                        : 'We\'ll automatically add +91 country code for India'
+                      }
+                    </p>
+                  </div>
+
+                  {loginError && (
+                    <div style={{
+                      background: 'rgba(255, 0, 0, 0.1)',
+                      border: '1px solid rgba(255, 0, 0, 0.3)',
+                      borderRadius: '8px',
+                      padding: '0.75rem',
+                      marginBottom: '1rem',
+                      color: '#ff6b6b',
+                      fontSize: '0.9rem'
+                    }}>
+                      {loginError}
+                    </div>
+                  )}
+
+                  <button
+                    type="submit"
+                    disabled={isLoginLoading || !loginIdentifier.trim()}
+                    style={{
+                      width: '100%',
+                      background: 'linear-gradient(135deg, var(--color-primary), rgba(255, 0, 60, 0.8))',
+                      border: 'none',
+                      borderRadius: '12px',
+                      padding: '1rem',
+                      color: 'var(--color-white)',
+                      fontFamily: 'var(--font-body)',
+                      fontSize: '1rem',
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                      transition: 'all 0.3s ease',
+                      boxShadow: '0 4px 20px rgba(255, 0, 60, 0.3)',
+                      opacity: isLoginLoading || !loginIdentifier.trim() ? 0.6 : 1
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!e.target.disabled) {
+                        e.target.style.transform = 'translateY(-2px)';
+                        e.target.style.boxShadow = '0 6px 25px rgba(255, 0, 60, 0.4)';
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      e.target.style.transform = 'translateY(0)';
+                      e.target.style.boxShadow = '0 4px 20px rgba(255, 0, 60, 0.3)';
+                    }}
+                  >
+                    {isLoginLoading ? 'Logging in...' : 'Login'}
+                  </button>
+                </form>
+
+                <p style={{
+                  fontSize: '0.8rem',
+                  color: 'var(--color-gray)',
+                  textAlign: 'center',
+                  marginTop: '1rem',
+                  fontFamily: 'var(--font-body)'
+                }}>
+                  No password required! Just enter your phone or email to start chatting.
+                </p>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
     </AnimatePresence>
   );
 };

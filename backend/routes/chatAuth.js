@@ -26,49 +26,63 @@ router.get('/test', async (req, res) => {
 // Simple login with phone or email
 router.post('/login', async (req, res) => {
   try {
-    const { phone, email } = req.body;
+    const { identifier } = req.body;
     
-    if (!phone && !email) {
+    if (!identifier) {
       return res.status(400).json({ 
         success: false, 
-        message: 'Please provide either phone number or email' 
+        message: 'Please provide your email or phone number' 
+      });
+    }
+
+    // Auto-detect if it's a phone number or email
+    const isPhone = /^\d{10}$/.test(identifier.replace(/\D/g, ''));
+    const isEmail = identifier.includes('@') && identifier.includes('.');
+    
+    if (!isPhone && !isEmail) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Please provide a valid 10-digit phone number or email address' 
       });
     }
 
     let formattedPhone = null;
+    let emailValue = null;
     let userIdentifier = null;
 
-    if (phone) {
-      if (!validatePhone(phone)) {
+    if (isPhone) {
+      const cleanPhone = identifier.replace(/\D/g, '');
+      if (!validatePhone(cleanPhone)) {
         return res.status(400).json({ 
           success: false, 
           message: 'Please provide a valid 10-digit mobile number' 
         });
       }
-      formattedPhone = formatPhoneNumber(phone);
+      formattedPhone = formatPhoneNumber(cleanPhone);
       userIdentifier = formattedPhone;
-    } else if (email) {
-      if (!validateEmail(email)) {
+    } else {
+      if (!validateEmail(identifier)) {
         return res.status(400).json({ 
           success: false, 
           message: 'Please provide a valid email address' 
         });
       }
-      userIdentifier = email;
+      emailValue = identifier;
+      userIdentifier = identifier;
     }
     
-    // Check if user exists
+    // Check if user exists (by phone or email)
     let existingUser;
     if (formattedPhone) {
-      existingUser = await db.get('SELECT * FROM chat_users WHERE phone = ?', [formattedPhone]);
+      existingUser = await db.get('SELECT * FROM chat_users WHERE phone = $1', [formattedPhone]);
     } else {
-      existingUser = await db.get('SELECT * FROM chat_users WHERE email = ?', [email]);
+      existingUser = await db.get('SELECT * FROM chat_users WHERE email = $1', [emailValue]);
     }
     
     if (existingUser) {
       // Update existing user's session and last login
       const newSessionId = generateSessionId();
-      await db.run('UPDATE chat_users SET session_id = ?, last_login = ?, updated_at = ? WHERE id = ?', 
+      await db.run('UPDATE chat_users SET session_id = $1, last_login = $2, updated_at = $3 WHERE id = $4', 
         [newSessionId, new Date(), new Date(), existingUser.id]);
       
       res.json({
@@ -85,8 +99,8 @@ router.post('/login', async (req, res) => {
       // Create new user
       const newSessionId = generateSessionId();
       const result = await db.run(
-        'INSERT INTO chat_users (phone, email, session_id, last_login) VALUES (?, ?, ?, ?)', 
-        [formattedPhone, email, newSessionId, new Date()]
+        'INSERT INTO chat_users (phone, email, session_id, last_login) VALUES ($1, $2, $3, $4) RETURNING id', 
+        [formattedPhone, emailValue, newSessionId, new Date()]
       );
       
       res.json({
@@ -95,7 +109,7 @@ router.post('/login', async (req, res) => {
         user: {
           id: result.lastID,
           phone: formattedPhone,
-          email: email,
+          email: emailValue,
           sessionId: newSessionId
         }
       });
@@ -116,7 +130,7 @@ router.get('/profile/:sessionId', async (req, res) => {
     const { sessionId } = req.params;
     
     // Get user details
-    const user = await db.get('SELECT id, phone, email, last_login, created_at FROM chat_users WHERE session_id = ?', [sessionId]);
+    const user = await db.get('SELECT id, phone, email, last_login, created_at FROM chat_users WHERE session_id = $1', [sessionId]);
     
     if (!user) {
       return res.status(404).json({ 
@@ -126,7 +140,7 @@ router.get('/profile/:sessionId', async (req, res) => {
     }
     
     // Get recent chat history
-    const recentChats = await db.all('SELECT * FROM user_chats WHERE user_id = ? ORDER BY timestamp DESC LIMIT 20', [user.id]);
+    const recentChats = await db.all('SELECT id, user_id, session_id, message, sender, timestamp FROM user_chats WHERE user_id = $1 ORDER BY timestamp DESC LIMIT 20', [user.id]);
     
     res.json({
       success: true,
@@ -158,7 +172,7 @@ router.post('/save-chat', async (req, res) => {
     }
     
     // Get user ID from session
-    const user = await db.get('SELECT id FROM chat_users WHERE session_id = ?', [sessionId]);
+    const user = await db.get('SELECT id FROM chat_users WHERE session_id = $1', [sessionId]);
     if (!user) {
       return res.status(404).json({ 
         success: false, 
@@ -167,8 +181,8 @@ router.post('/save-chat', async (req, res) => {
     }
     
     // Save chat message
-    const result = await db.run('INSERT INTO user_chats (user_id, session_id, message, is_bot) VALUES (?, ?, ?, ?)', 
-      [user.id, sessionId, message, isBot]);
+    const result = await db.run('INSERT INTO user_chats (user_id, session_id, message, sender) VALUES ($1, $2, $3, $4)',
+      [user.id, sessionId, message, isBot ? 'bot' : 'user']);
     
     res.json({
       success: true,
@@ -190,7 +204,7 @@ router.get('/chat-history/:sessionId', async (req, res) => {
   try {
     const { sessionId } = req.params;
     
-    const chatHistory = await db.all('SELECT * FROM user_chats WHERE session_id = ? ORDER BY timestamp ASC', [sessionId]);
+    const chatHistory = await db.all('SELECT id, user_id, session_id, message, sender, timestamp FROM user_chats WHERE session_id = $1 ORDER BY timestamp ASC', [sessionId]);
     
     res.json({
       success: true,
@@ -220,7 +234,7 @@ router.post('/logout', async (req, res) => {
     
     // Generate new session ID to invalidate current one
     const newSessionId = generateSessionId();
-    await db.run('UPDATE chat_users SET session_id = ? WHERE session_id = ?', [newSessionId, sessionId]);
+    await db.run('UPDATE chat_users SET session_id = $1 WHERE session_id = $2', [newSessionId, sessionId]);
     
     res.json({
       success: true,

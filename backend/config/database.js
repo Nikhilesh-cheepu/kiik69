@@ -55,9 +55,9 @@ const initializeDatabase = async () => {
         name TEXT NOT NULL,
         description TEXT,
         price DECIMAL(10,2),
-        features TEXT[],
+        includes TEXT,
         image_url TEXT,
-        is_active BOOLEAN DEFAULT true,
+        is_available BOOLEAN DEFAULT true,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )

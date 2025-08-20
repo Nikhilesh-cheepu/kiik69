@@ -1,40 +1,37 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaTimes, FaPhone, FaEnvelope, FaArrowLeft, FaCheck } from 'react-icons/fa';
+import { FaTimes, FaPhone, FaEnvelope, FaCheck } from 'react-icons/fa';
 import { loginUser } from '../lib/chatAuth';
 
 const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
-  const [phone, setPhone] = useState('');
-  const [email, setEmail] = useState('');
-  const [loginMethod, setLoginMethod] = useState('phone'); // 'phone' or 'email'
+  const [identifier, setIdentifier] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   
-  const phoneInputRef = useRef(null);
-  const emailInputRef = useRef(null);
+  const inputRef = useRef(null);
 
   // Focus input when modal opens
   useEffect(() => {
-    if (isOpen) {
-      if (loginMethod === 'phone' && phoneInputRef.current) {
-        setTimeout(() => phoneInputRef.current.focus(), 100);
-      } else if (loginMethod === 'email' && emailInputRef.current) {
-        setTimeout(() => emailInputRef.current.focus(), 100);
-      }
+    if (isOpen && inputRef.current) {
+      setTimeout(() => inputRef.current.focus(), 100);
     }
-  }, [isOpen, loginMethod]);
+  }, [isOpen]);
 
   const handleLogin = async (e) => {
     e.preventDefault();
     
-    if (loginMethod === 'phone' && (!phone || phone.length < 10)) {
-      setError('Please enter a valid 10-digit mobile number');
+    if (!identifier.trim()) {
+      setError('Please enter your email or phone number');
       return;
     }
+
+    // Check if it's a phone number (10 digits) or email
+    const isPhone = /^\d{10}$/.test(identifier.replace(/\D/g, ''));
+    const isEmail = identifier.includes('@') && identifier.includes('.');
     
-    if (loginMethod === 'email' && (!email || !email.includes('@'))) {
-      setError('Please enter a valid email address');
+    if (!isPhone && !isEmail) {
+      setError('Please enter a valid 10-digit phone number or email address');
       return;
     }
 
@@ -42,8 +39,7 @@ const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
     setError('');
 
     try {
-      const loginData = loginMethod === 'phone' ? { phone } : { email };
-      const result = await loginUser(loginData);
+      const result = await loginUser({ identifier });
       
       setSuccess('Login successful!');
       setTimeout(() => {
@@ -58,24 +54,10 @@ const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
   };
 
   const handleClose = () => {
-    setPhone('');
-    setEmail('');
+    setIdentifier('');
     setError('');
     setSuccess('');
-    setLoginMethod('phone');
     onClose();
-  };
-
-  const switchToPhone = () => {
-    setLoginMethod('phone');
-    setError('');
-    setSuccess('');
-  };
-
-  const switchToEmail = () => {
-    setLoginMethod('email');
-    setError('');
-    setSuccess('');
   };
 
   return (
@@ -95,7 +77,7 @@ const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            zIndex: 1000,
+            zIndex: 10000,
             padding: '1rem'
           }}
           onClick={handleClose}
@@ -163,194 +145,80 @@ const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
 
             {/* Content */}
             <div style={{ padding: '2rem' }}>
-              {/* Login Method Tabs */}
-              <div style={{
-                display: 'flex',
-                marginBottom: '1.5rem',
-                background: 'rgba(255, 255, 255, 0.05)',
-                borderRadius: '12px',
-                padding: '4px'
-              }}>
-                <button
-                  onClick={switchToPhone}
-                  style={{
-                    flex: 1,
-                    padding: '0.75rem',
-                    background: loginMethod === 'phone' ? 'var(--color-primary)' : 'transparent',
-                    border: 'none',
-                    borderRadius: '8px',
-                    color: loginMethod === 'phone' ? 'white' : 'var(--color-gray)',
-                    cursor: 'pointer',
-                    transition: 'all 0.3s ease',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '0.5rem'
-                  }}
-                >
-                  <FaPhone />
-                  Phone
-                </button>
-                <button
-                  onClick={switchToEmail}
-                  style={{
-                    flex: 1,
-                    padding: '0.75rem',
-                    background: loginMethod === 'email' ? 'var(--color-primary)' : 'transparent',
-                    border: 'none',
-                    borderRadius: '8px',
-                    color: loginMethod === 'email' ? 'white' : 'var(--color-gray)',
-                    cursor: 'pointer',
-                    transition: 'all 0.3s ease',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '0.5rem'
-                  }}
-                >
-                  <FaEnvelope />
-                  Email
-                </button>
-              </div>
-
               <form onSubmit={handleLogin}>
-                {loginMethod === 'phone' ? (
-                  <div style={{ marginBottom: '1.5rem' }}>
-                    <label style={{
-                      display: 'block',
-                      fontFamily: 'var(--font-body)',
-                      fontSize: '0.9rem',
-                      color: 'var(--color-gray)',
-                      marginBottom: '0.5rem'
-                    }}>
-                      Mobile Number
-                    </label>
+                <div style={{ marginBottom: '1.5rem' }}>
+                  <label style={{
+                    display: 'block',
+                    fontFamily: 'var(--font-body)',
+                    fontSize: '0.9rem',
+                    color: 'var(--color-gray)',
+                    marginBottom: '0.5rem'
+                  }}>
+                    Email or Phone Number
+                  </label>
+                  <div style={{
+                    position: 'relative',
+                    display: 'flex',
+                    alignItems: 'center'
+                  }}>
                     <div style={{
-                      position: 'relative',
-                      display: 'flex',
-                      alignItems: 'center'
-                    }}>
-                      <div style={{
-                        position: 'absolute',
-                        left: '1rem',
-                        color: 'var(--color-gray)',
-                        fontSize: '1.1rem'
-                      }}>
-                        <FaPhone />
-                      </div>
-                      <div style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        width: '100%'
-                      }}>
-                        <div style={{
-                          background: 'rgba(255, 255, 255, 0.1)',
-                          border: '1px solid rgba(255, 255, 255, 0.1)',
-                          borderRight: 'none',
-                          borderRadius: '12px 0 0 12px',
-                          padding: '1rem 0.75rem',
-                          color: 'var(--color-white)',
-                          fontFamily: 'var(--font-body)',
-                          fontSize: '0.9rem',
-                          fontWeight: '600',
-                          minWidth: '60px',
-                          textAlign: 'center'
-                        }}>
-                          +91
-                        </div>
-                        <input
-                          ref={phoneInputRef}
-                          type="tel"
-                          value={phone}
-                          onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
-                          placeholder="Enter 10-digit number"
-                          maxLength={10}
-                          style={{
-                            flex: 1,
-                            background: 'rgba(255, 255, 255, 0.05)',
-                            border: '1px solid rgba(255, 255, 255, 0.1)',
-                            borderRadius: '0 12px 12px 0',
-                            padding: '1rem 1rem 1rem 0.75rem',
-                            color: 'var(--color-white)',
-                            fontFamily: 'var(--font-body)',
-                            fontSize: '1rem',
-                            outline: 'none',
-                            transition: 'all 0.3s ease'
-                          }}
-                          onFocus={(e) => {
-                            e.target.style.border = '1px solid var(--color-primary)';
-                            e.target.style.boxShadow = '0 0 0 3px rgba(255, 0, 60, 0.1)';
-                          }}
-                          onBlur={(e) => {
-                            e.target.style.border = '1px solid rgba(255, 255, 255, 0.1)';
-                            e.target.style.boxShadow = 'none';
-                          }}
-                        />
-                      </div>
-                    </div>
-                    <p style={{
-                      fontSize: '0.75rem',
+                      position: 'absolute',
+                      left: '1rem',
                       color: 'var(--color-gray)',
-                      marginTop: '0.5rem',
-                      fontFamily: 'var(--font-body)'
+                      fontSize: '1.1rem',
+                      zIndex: 1
                     }}>
-                      We'll automatically add the +91 country code for India
-                    </p>
-                  </div>
-                ) : (
-                  <div style={{ marginBottom: '1.5rem' }}>
-                    <label style={{
-                      display: 'block',
-                      fontFamily: 'var(--font-body)',
-                      fontSize: '0.9rem',
-                      color: 'var(--color-gray)',
-                      marginBottom: '0.5rem'
-                    }}>
-                      Email Address
-                    </label>
-                    <div style={{
-                      position: 'relative',
-                      display: 'flex',
-                      alignItems: 'center'
-                    }}>
-                      <div style={{
-                        position: 'absolute',
-                        left: '1rem',
-                        color: 'var(--color-gray)',
-                        fontSize: '1.1rem'
-                      }}>
-                        <FaEnvelope />
-                      </div>
-                      <input
-                        ref={emailInputRef}
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        placeholder="Enter your email address"
-                        style={{
-                          width: '100%',
-                          background: 'rgba(255, 255, 255, 0.05)',
-                          border: '1px solid rgba(255, 255, 255, 0.1)',
-                          borderRadius: '12px',
-                          padding: '1rem 1rem 1rem 3rem',
-                          color: 'var(--color-white)',
-                          fontFamily: 'var(--font-body)',
-                          fontSize: '1rem',
-                          outline: 'none',
-                          transition: 'all 0.3s ease'
-                        }}
-                        onFocus={(e) => {
-                          e.target.style.border = '1px solid var(--color-primary)';
-                          e.target.style.boxShadow = '0 0 0 3px rgba(255, 0, 60, 0.1)';
-                        }}
-                        onBlur={(e) => {
-                          e.target.style.border = '1px solid rgba(255, 255, 255, 0.1)';
-                          e.target.style.boxShadow = 'none';
-                        }}
-                      />
+                      {identifier.includes('@') ? <FaEnvelope /> : <FaPhone />}
                     </div>
+                    <input
+                      ref={inputRef}
+                      type="text"
+                      value={identifier}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        setIdentifier(value);
+                        // Auto-format phone numbers
+                        if (/^\d+$/.test(value) && value.length <= 10) {
+                          setIdentifier(value);
+                        } else if (value.includes('@')) {
+                          setIdentifier(value);
+                        }
+                      }}
+                      placeholder="Enter email or 10-digit phone number"
+                      style={{
+                        width: '100%',
+                        background: 'rgba(255, 255, 255, 0.05)',
+                        border: '1px solid rgba(255, 255, 255, 0.1)',
+                        borderRadius: '12px',
+                        padding: '1rem 1rem 1rem 3rem',
+                        color: 'var(--color-white)',
+                        fontFamily: 'var(--font-body)',
+                        fontSize: '1rem',
+                        outline: 'none',
+                        transition: 'all 0.3s ease'
+                      }}
+                      onFocus={(e) => {
+                        e.target.style.border = '1px solid var(--color-primary)';
+                        e.target.style.boxShadow = '0 0 0 3px rgba(255, 0, 60, 0.1)';
+                      }}
+                      onBlur={(e) => {
+                        e.target.style.border = '1px solid rgba(255, 255, 255, 0.1)';
+                        e.target.style.boxShadow = 'none';
+                      }}
+                    />
                   </div>
-                )}
+                  <p style={{
+                    fontSize: '0.75rem',
+                    color: 'var(--color-gray)',
+                    marginTop: '0.5rem',
+                    fontFamily: 'var(--font-body)'
+                  }}>
+                    {identifier.includes('@') 
+                      ? 'We\'ll use your email as your unique identifier'
+                      : 'We\'ll automatically add +91 country code for India'
+                    }
+                  </p>
+                </div>
 
                 {/* Error Message */}
                 {error && (
@@ -384,7 +252,7 @@ const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
 
                 <button
                   type="submit"
-                  disabled={isLoading || (loginMethod === 'phone' ? phone.length < 10 : !email)}
+                  disabled={isLoading || !identifier.trim()}
                   style={{
                     width: '100%',
                     background: 'linear-gradient(135deg, var(--color-primary), rgba(255, 0, 60, 0.8))',
@@ -398,7 +266,7 @@ const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
                     cursor: 'pointer',
                     transition: 'all 0.3s ease',
                     boxShadow: '0 4px 20px rgba(255, 0, 60, 0.3)',
-                    opacity: isLoading || (loginMethod === 'phone' ? phone.length < 10 : !email) ? 0.6 : 1
+                    opacity: isLoading || !identifier.trim() ? 0.6 : 1
                   }}
                   onMouseEnter={(e) => {
                     if (!e.target.disabled) {
