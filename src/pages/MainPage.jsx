@@ -8,12 +8,9 @@ import MenuSection from '../components/MenuSection';
 import PartyPackages from '../components/PartyPackages';
 import Footer from '../components/Footer';
 
-
-
 const MainPage = () => {
   return (
     <div className="main-page">
-
       <Navbar />
       <main>
         <section id="home" aria-label="Hero section">
@@ -32,15 +29,10 @@ const MainPage = () => {
         <section id="party-packages" aria-label="Party packages and deals">
           <PartyPackages />
         </section>
-
-
-
-
         <section id="contact-section" aria-label="Contact information and social links">
           <Footer />
         </section>
       </main>
-
     </div>
   );
 };
