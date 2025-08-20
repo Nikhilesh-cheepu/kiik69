@@ -261,35 +261,64 @@ const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
                       }}>
                         <FaPhone />
                       </div>
-                      <input
-                        ref={phoneInputRef}
-                        type="tel"
-                        value={phone}
-                        onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
-                        placeholder="Enter your mobile number"
-                        maxLength={10}
-                        style={{
-                          width: '100%',
-                          background: 'rgba(255, 255, 255, 0.05)',
+                      <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        width: '100%'
+                      }}>
+                        <div style={{
+                          background: 'rgba(255, 255, 255, 0.1)',
                           border: '1px solid rgba(255, 255, 255, 0.1)',
-                          borderRadius: '12px',
-                          padding: '1rem 1rem 1rem 3rem',
+                          borderRight: 'none',
+                          borderRadius: '12px 0 0 12px',
+                          padding: '1rem 0.75rem',
                           color: 'var(--color-white)',
                           fontFamily: 'var(--font-body)',
-                          fontSize: '1rem',
-                          outline: 'none',
-                          transition: 'all 0.3s ease'
-                        }}
-                        onFocus={(e) => {
-                          e.target.style.border = '1px solid var(--color-primary)';
-                          e.target.style.boxShadow = '0 0 0 3px rgba(255, 0, 60, 0.1)';
-                        }}
-                        onBlur={(e) => {
-                          e.target.style.border = '1px solid rgba(255, 255, 255, 0.1)';
-                          e.target.style.boxShadow = 'none';
-                        }}
-                      />
+                          fontSize: '0.9rem',
+                          fontWeight: '600',
+                          minWidth: '60px',
+                          textAlign: 'center'
+                        }}>
+                          +91
+                        </div>
+                        <input
+                          ref={phoneInputRef}
+                          type="tel"
+                          value={phone}
+                          onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
+                          placeholder="Enter 10-digit number"
+                          maxLength={10}
+                          style={{
+                            flex: 1,
+                            background: 'rgba(255, 255, 255, 0.05)',
+                            border: '1px solid rgba(255, 255, 255, 0.1)',
+                            borderRadius: '0 12px 12px 0',
+                            padding: '1rem 1rem 1rem 0.75rem',
+                            color: 'var(--color-white)',
+                            fontFamily: 'var(--font-body)',
+                            fontSize: '1rem',
+                            outline: 'none',
+                            transition: 'all 0.3s ease'
+                          }}
+                          onFocus={(e) => {
+                            e.target.style.border = '1px solid var(--color-primary)';
+                            e.target.style.boxShadow = '0 0 0 3px rgba(255, 0, 60, 0.1)';
+                          }}
+                          onBlur={(e) => {
+                            e.target.style.border = '1px solid rgba(255, 255, 255, 0.1)';
+                            e.target.style.boxShadow = 'none';
+                          }}
+                        />
+                      </div>
                     </div>
+                    <p style={{
+                      fontSize: '0.75rem',
+                      color: 'var(--color-gray)',
+                      marginTop: '0.5rem',
+                      fontFamily: 'var(--font-body)'
+                    }}>
+                      We'll automatically add the +91 country code for India
+                    </p>
                   </div>
 
                   <button

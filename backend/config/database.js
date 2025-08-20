@@ -41,6 +41,10 @@ if (usePostgreSQL) {
           id SERIAL PRIMARY KEY,
           phone TEXT UNIQUE NOT NULL,
           session_id TEXT UNIQUE NOT NULL,
+          otp TEXT,
+          otp_expires_at TIMESTAMP,
+          is_verified BOOLEAN DEFAULT false,
+          last_login TIMESTAMP,
           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
           updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
@@ -129,6 +133,10 @@ if (usePostgreSQL) {
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           phone TEXT UNIQUE NOT NULL,
           session_id TEXT UNIQUE NOT NULL,
+          otp TEXT,
+          otp_expires_at TIMESTAMP,
+          is_verified BOOLEAN DEFAULT false,
+          last_login TIMESTAMP,
           created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
           updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
         )`);

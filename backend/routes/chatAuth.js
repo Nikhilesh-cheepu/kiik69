@@ -1,18 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const { db } = require('../config/database');
+const { sendOTP, generateOTP, formatPhoneNumber } = require('../services/otpService');
 
-// Generate a random 6-digit OTP
-const generateOTP = () => {
-  return Math.floor(100000 + Math.random() * 900000).toString();
-};
-
-// Send OTP to mobile number (mock implementation)
-const sendOTP = async (phone, otp) => {
-  // In production, integrate with SMS service like Twilio, AWS SNS, etc.
-  console.log(`📱 OTP ${otp} sent to ${phone}`);
-  return true;
-};
+// OTP functions are now imported from otpService
 
 // Test endpoint to verify database connection
 router.get('/test', async (req, res) => {
@@ -46,8 +37,8 @@ router.post('/request-otp', async (req, res) => {
       });
     }
 
-    // Format phone number to +91XXXXXXXXXX
-    const formattedPhone = phone.startsWith('+91') ? phone : `+91${phone.replace(/\D/g, '')}`;
+    // Format phone number with automatic India country code (+91)
+    const formattedPhone = formatPhoneNumber(phone);
     
     // Generate OTP
     const otp = generateOTP();
@@ -61,9 +52,10 @@ router.post('/request-otp', async (req, res) => {
       await db.run('UPDATE chat_users SET otp = ?, otp_expires_at = ? WHERE phone = ?', 
         [otp, otpExpiresAt, formattedPhone]);
     } else {
-      // Create new user
-      await db.run('INSERT INTO chat_users (phone, otp, otp_expires_at) VALUES (?, ?, ?)', 
-        [formattedPhone, otp, otpExpiresAt]);
+      // Create new user with session_id
+      const sessionId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      await db.run('INSERT INTO chat_users (phone, session_id, otp, otp_expires_at) VALUES (?, ?, ?, ?)', 
+        [formattedPhone, sessionId, otp, otpExpiresAt]);
     }
     
     // Send OTP (mock)
@@ -96,7 +88,7 @@ router.post('/verify-otp', async (req, res) => {
       });
     }
     
-    const formattedPhone = phone.startsWith('+91') ? phone : `+91${phone.replace(/\D/g, '')}`;
+    const formattedPhone = formatPhoneNumber(phone);
     
     // Find user and verify OTP
     const user = await db.get('SELECT * FROM chat_users WHERE phone = ?', [formattedPhone]);
