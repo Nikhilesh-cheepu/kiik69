@@ -386,10 +386,11 @@ const Chat = ({ isOpen, onClose }) => {
       return;
     }
 
-    // Determine what's still needed
+    // Determine what's still needed - FIXED LOGIC
     const missingInfo = [];
     if (!updatedBookingData.people) missingInfo.push('number of people');
-    if (!updatedBookingData.date && !updatedBookingData.time) missingInfo.push('date and time');
+    if (!updatedBookingData.date) missingInfo.push('date');
+    if (!updatedBookingData.time) missingInfo.push('time');
 
     let botResponseText = '';
     
@@ -403,7 +404,16 @@ const Chat = ({ isOpen, onClose }) => {
       }, 1000);
       return;
     } else if (missingInfo.length === 1) {
-      botResponseText = `Great! I just need to know the ${missingInfo[0]}.`;
+      // More specific responses based on what's missing
+      if (missingInfo[0] === 'number of people') {
+        botResponseText = `Perfect! I have the date and time. How many people will be joining us?`;
+      } else if (missingInfo[0] === 'date') {
+        botResponseText = `Great! I have the number of people and time. What date would you like to book for?`;
+      } else if (missingInfo[0] === 'time') {
+        botResponseText = `Excellent! I have the number of people and date. What time would you prefer?`;
+      } else {
+        botResponseText = `Great! I just need to know the ${missingInfo[0]}.`;
+      }
     } else {
       const lastItem = missingInfo.pop();
       botResponseText = `I need a few more details: ${missingInfo.join(', ')} and ${lastItem}.`;
@@ -474,10 +484,11 @@ const Chat = ({ isOpen, onClose }) => {
         return;
       }
 
-      // Check what's still missing
+      // Check what's still missing - FIXED LOGIC
       const missingInfo = [];
       if (!updatedData.people) missingInfo.push('number of people');
-      if (!updatedData.date && !updatedData.time) missingInfo.push('date and time');
+      if (!updatedData.date) missingInfo.push('date');
+      if (!updatedData.time) missingInfo.push('time');
 
       let botResponseText = '';
       
@@ -489,7 +500,16 @@ const Chat = ({ isOpen, onClose }) => {
           completeBooking();
         }, 1000);
       } else if (missingInfo.length === 1) {
-        botResponseText = `Great! I just need to know the ${missingInfo[0]}.`;
+        // More specific responses based on what's missing
+        if (missingInfo[0] === 'number of people') {
+          botResponseText = `Perfect! I have the date and time. How many people will be joining us?`;
+        } else if (missingInfo[0] === 'date') {
+          botResponseText = `Great! I have the number of people and time. What date would you like to book for?`;
+        } else if (missingInfo[0] === 'time') {
+          botResponseText = `Excellent! I have the number of people and date. What time would you prefer?`;
+        } else {
+          botResponseText = `Great! I just need to know the ${missingInfo[0]}.`;
+        }
       } else {
         const lastItem = missingInfo.pop();
         botResponseText = `I still need: ${missingInfo.join(', ')} and ${lastItem}.`;
