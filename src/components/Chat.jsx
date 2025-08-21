@@ -306,29 +306,30 @@ const Chat = ({ isOpen, onClose }) => {
             right: 0,
             bottom: 0,
             zIndex: 9999,
-            background: 'linear-gradient(135deg, rgba(0, 0, 0, 0.95) 0%, rgba(255, 0, 60, 0.05) 50%, rgba(0, 0, 0, 0.95) 100%)',
+            background: 'rgba(0, 0, 0, 0.3)',
             backdropFilter: 'blur(20px)',
             display: 'flex',
-            alignItems: 'stretch',
-            justifyContent: 'stretch',
-            padding: 0
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '1rem'
           }}
         >
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.25, ease: 'easeOut' }}
+            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.9, y: 20 }}
+            transition={{ duration: 0.3, ease: 'easeOut' }}
             className="chat-container"
             style={{
-              width: '100vw',
-              height: '100vh',
-              maxWidth: '100vw',
-              maxHeight: '100vh',
-              background: 'rgba(0, 0, 0, 0.90)',
-              borderRadius: 0,
-              border: '1px solid rgba(255, 255, 255, 0.06)',
-              boxShadow: '0 10px 40px rgba(0,0,0,0.6)',
+              width: '100%',
+              maxWidth: '500px',
+              height: '90vh',
+              maxHeight: '700px',
+              background: 'rgba(255, 255, 255, 0.1)',
+              backdropFilter: 'blur(25px)',
+              borderRadius: '24px',
+              border: '1px solid rgba(255, 255, 255, 0.2)',
+              boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3), 0 8px 32px rgba(255, 255, 255, 0.1)',
               overflow: 'hidden',
               display: 'flex',
               flexDirection: 'column'
@@ -339,9 +340,10 @@ const Chat = ({ isOpen, onClose }) => {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
-              padding: '1rem 1.25rem',
-              borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
-              background: 'rgba(255, 255, 255, 0.05)'
+              padding: '1.5rem 1.5rem',
+              borderBottom: '1px solid rgba(255, 255, 255, 0.15)',
+              background: 'rgba(255, 255, 255, 0.08)',
+              backdropFilter: 'blur(15px)'
             }}>
                               <div style={{
                   display: 'flex',
@@ -415,9 +417,9 @@ const Chat = ({ isOpen, onClose }) => {
                     width: '45px',
                     height: '45px',
                     borderRadius: '50%',
-                    background: 'rgba(255, 255, 255, 0.15)',
-                    backdropFilter: 'blur(10px)',
-                    border: '1px solid rgba(255, 255, 255, 0.25)',
+                    background: 'rgba(255, 255, 255, 0.12)',
+                    backdropFilter: 'blur(15px)',
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
                     color: 'var(--color-white)',
                     cursor: 'pointer',
                     display: 'flex',
@@ -425,17 +427,17 @@ const Chat = ({ isOpen, onClose }) => {
                     justifyContent: 'center',
                     fontSize: '1.2rem',
                     transition: 'all 0.3s ease',
-                    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
+                    boxShadow: '0 4px 15px rgba(0, 0, 0, 0.2)'
                   }}
                   onMouseEnter={(e) => {
-                    e.target.style.background = 'rgba(255, 255, 255, 0.25)';
-                    e.target.style.transform = 'scale(1.1)';
-                    e.target.style.boxShadow = '0 4px 15px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.15)';
+                    e.target.style.background = 'rgba(255, 255, 255, 0.2)';
+                    e.target.style.transform = 'scale(1.05)';
+                    e.target.style.boxShadow = '0 6px 20px rgba(0, 0, 0, 0.3)';
                   }}
                   onMouseLeave={(e) => {
-                    e.target.style.background = 'rgba(255, 255, 255, 0.15)';
+                    e.target.style.background = 'rgba(255, 255, 255, 0.12)';
                     e.target.style.transform = 'scale(1)';
-                    e.target.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)';
+                    e.target.style.boxShadow = '0 4px 15px rgba(0, 0, 0, 0.2)';
                   }}
                 >
                   <FaTimes />
@@ -448,12 +450,13 @@ const Chat = ({ isOpen, onClose }) => {
               flex: 1,
               overflowY: 'auto',
               overflowX: 'hidden',
-              padding: '1rem',
-              paddingBottom: '0.5rem',
+              padding: '1.5rem',
+              paddingBottom: '1rem',
               display: 'flex',
               flexDirection: 'column',
-              gap: '0.75rem',
-              minHeight: 0
+              gap: '1rem',
+              minHeight: 0,
+              background: 'rgba(255, 255, 255, 0.02)'
             }}>
               {messages.map((message) => (
                 <motion.div
@@ -697,9 +700,10 @@ const Chat = ({ isOpen, onClose }) => {
 
             {/* Input Section */}
             <div style={{
-              padding: '0.8rem 1rem',
-              borderTop: '1px solid rgba(255, 255, 255, 0.08)',
-              background: 'rgba(0, 0, 0, 0.6)',
+              padding: '1.5rem',
+              borderTop: '1px solid rgba(255, 255, 255, 0.15)',
+              background: 'rgba(255, 255, 255, 0.08)',
+              backdropFilter: 'blur(15px)',
               position: 'sticky',
               bottom: 0,
               left: 0,
@@ -736,11 +740,11 @@ const Chat = ({ isOpen, onClose }) => {
                     maxWidth: '100%',
                     minHeight: '48px',
                     maxHeight: '120px',
-                    background: 'rgba(255, 255, 255, 0.06)',
-                    backdropFilter: 'blur(10px)',
-                    border: '1px solid rgba(255, 255, 255, 0.12)',
+                    background: 'rgba(255, 255, 255, 0.1)',
+                    backdropFilter: 'blur(15px)',
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
                     borderRadius: '24px',
-                    padding: '0.9rem 1.2rem',
+                    padding: '1rem 1.5rem',
                     color: 'var(--color-white)',
                     fontFamily: 'var(--font-body)',
                     fontSize: '16px',
@@ -751,7 +755,8 @@ const Chat = ({ isOpen, onClose }) => {
                     WebkitBorderRadius: '24px',
                     resize: 'none',
                     overflowY: 'auto',
-                    lineHeight: '1.4'
+                    lineHeight: '1.4',
+                    boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)'
                   }}
                   onFocus={(e) => {
                     e.target.style.border = '1px solid var(--color-primary)';
@@ -769,10 +774,10 @@ const Chat = ({ isOpen, onClose }) => {
                   style={{
                     width: '48px',
                     height: '48px',
-                    background: 'rgba(255, 0, 60, 0.28)',
-                    backdropFilter: 'blur(10px)',
+                    background: 'rgba(255, 0, 60, 0.25)',
+                    backdropFilter: 'blur(15px)',
                     borderRadius: '50%',
-                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                    border: '1px solid rgba(255, 255, 255, 0.25)',
                     color: 'var(--color-white)',
                     cursor: 'pointer',
                     display: 'flex',
@@ -780,19 +785,19 @@ const Chat = ({ isOpen, onClose }) => {
                     justifyContent: 'center',
                     fontSize: '1.2rem',
                     transition: 'all 0.3s ease',
-                    boxShadow: '0 4px 15px rgba(255, 0, 60, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
+                    boxShadow: '0 4px 15px rgba(255, 0, 60, 0.3)'
                   }}
                   onMouseEnter={(e) => {
                     if (!e.target.disabled) {
-                      e.target.style.transform = 'scale(1.1)';
+                      e.target.style.transform = 'scale(1.05)';
                       e.target.style.background = 'rgba(255, 0, 60, 0.35)';
-                      e.target.style.boxShadow = '0 6px 20px rgba(255, 0, 60, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.15)';
+                      e.target.style.boxShadow = '0 6px 20px rgba(255, 0, 60, 0.4)';
                     }
                   }}
                   onMouseLeave={(e) => {
                     e.target.style.transform = 'scale(1)';
                     e.target.style.background = 'rgba(255, 0, 60, 0.25)';
-                    e.target.style.boxShadow = '0 4px 15px rgba(255, 0, 60, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)';
+                    e.target.style.boxShadow = '0 4px 15px rgba(255, 0, 60, 0.3)';
                   }}
                 >
                   <FaPaperPlane />

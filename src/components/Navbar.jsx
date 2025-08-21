@@ -281,57 +281,12 @@ const Navbar = () => {
             </div>
           )}
 
-          {/* Right Side - Chat Button and Mobile Menu */}
+          {/* Right Side - Mobile Menu Only */}
           <div style={{
             display: 'flex',
             alignItems: 'center',
             gap: '1rem'
           }}>
-            {/* Chat Button - Enhanced glassmorphism styling */}
-            <motion.button
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3, duration: 0.5 }}
-              whileHover={{ 
-                y: -3, 
-                scale: 1.05,
-                boxShadow: '0 8px 25px rgba(255, 0, 60, 0.4)',
-                transition: { duration: 0.2 }
-              }}
-              whileTap={{ scale: 0.95 }}
-              onClick={toggleChat}
-              style={{
-                background: 'rgba(255, 255, 255, 0.1)',
-                backdropFilter: 'blur(20px)',
-                border: '1px solid rgba(255, 255, 255, 0.2)',
-                color: 'var(--color-white)',
-                fontSize: '0.9rem',
-                fontWeight: '600',
-                cursor: 'pointer',
-                padding: '0.75rem 1.25rem',
-                borderRadius: '25px',
-                transition: 'all 0.3s ease',
-                fontFamily: 'var(--font-body)',
-                position: 'relative',
-                overflow: 'hidden',
-                letterSpacing: '0.02em',
-                whiteSpace: 'nowrap',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.5rem',
-                boxShadow: '0 4px 15px rgba(0, 0, 0, 0.2)',
-                // Center on mobile, right side on desktop
-                ...(isDesktop ? {} : {
-                  position: 'absolute',
-                  left: '50%',
-                  transform: 'translateX(-50%)',
-                  zIndex: 1001
-                })
-              }}
-            >
-              <FaComments style={{ fontSize: '1rem' }} />
-              Chat
-            </motion.button>
 
             {/* Mobile Menu Button - Only visible on mobile */}
             {!isDesktop && (
