@@ -197,12 +197,7 @@ const Chat = ({ isOpen, onClose }) => {
     }
   };
 
-  const handleKeyPress = (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSendMessage();
-    }
-  };
+
 
   const clearChat = () => {
     setMessages([
@@ -259,33 +254,42 @@ const Chat = ({ isOpen, onClose }) => {
     setMessages(prev => [...prev, userMessage]);
     setInputMessage('');
 
-    // Simple parsing logic - in a real app, you'd use NLP
-    const lowerMessage = messageText.toLowerCase();
-    
-    // Extract people count
-    if (!bookingData.people) {
-      const peopleMatch = messageText.match(/(\d+)/);
-      if (peopleMatch) {
-        const peopleCount = parseInt(peopleMatch[1]);
-        setBookingData(prev => ({ ...prev, people: peopleCount }));
-        
-        const botResponse = {
-          id: Date.now() + 1,
-          text: `Perfect! ${peopleCount} people. 📅 What date and time?`,
-          sender: 'bot',
-          timestamp: new Date().toISOString(),
-          navigationButtons: []
-        };
-        setMessages(prev => [...prev, botResponse]);
-        return;
+    // Wait a moment to simulate thinking, then respond
+    setTimeout(() => {
+      // Extract people count
+      if (!bookingData.people) {
+        const peopleMatch = messageText.match(/(\d+)/);
+        if (peopleMatch) {
+          const peopleCount = parseInt(peopleMatch[1]);
+          setBookingData(prev => ({ ...prev, people: peopleCount }));
+          
+          const botResponse = {
+            id: Date.now() + 1,
+            text: `Perfect! ${peopleCount} people. 📅 What date and time?`,
+            sender: 'bot',
+            timestamp: new Date().toISOString(),
+            navigationButtons: []
+          };
+          setMessages(prev => [...prev, botResponse]);
+          return;
+        } else {
+          // If no number found, ask again
+          const botResponse = {
+            id: Date.now() + 1,
+            text: `I need to know how many people. Please enter a number (e.g., "5 people" or just "5").`,
+            sender: 'bot',
+            timestamp: new Date().toISOString(),
+            navigationButtons: []
+          };
+          setMessages(prev => [...prev, botResponse]);
+          return;
+        }
       }
-    }
-    
-    // Extract date/time
-    if (!bookingData.date && !bookingData.time) {
-      const dateTimeMatch = messageText.match(/(\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4})|(\d{1,2}:\d{2})|(today|tomorrow|next week)/i);
-      if (dateTimeMatch) {
-        setBookingData(prev => ({ ...prev, date: messageText, time: messageText }));
+      
+      // Extract date/time
+      if (bookingData.people && !bookingData.date) {
+        // Accept any text as date/time for now
+        setBookingData(prev => ({ ...prev, date: messageText }));
         
         const botResponse = {
           id: Date.now() + 1,
@@ -297,15 +301,15 @@ const Chat = ({ isOpen, onClose }) => {
         setMessages(prev => [...prev, botResponse]);
         return;
       }
-    }
-    
-    // Extract occasion/message
-    if (!bookingData.occasion) {
-      setBookingData(prev => ({ ...prev, occasion: messageText }));
       
-      // Complete booking and show options
-      completeBooking();
-    }
+      // Extract occasion/message
+      if (bookingData.people && bookingData.date && !bookingData.occasion) {
+        setBookingData(prev => ({ ...prev, occasion: messageText }));
+        
+        // Complete booking and show options
+        completeBooking();
+      }
+    }, 500); // Small delay to make conversation feel natural
   };
 
   // Complete booking and show options
@@ -437,21 +441,11 @@ const Chat = ({ isOpen, onClose }) => {
                       style={{ 
                         width: '100%', 
                         height: '100%', 
-                        objectFit: 'cover',
-                        filter: 'brightness(0) invert(1)' // Make logo white
+                        objectFit: 'cover'
                       }} 
                     />
                   </div>
                   <div>
-                    <h2 style={{
-                      fontFamily: 'var(--font-heading)',
-                      fontSize: '1.6rem',
-                      color: 'var(--color-white)',
-                      margin: 0,
-                      letterSpacing: '0.02em'
-                    }}>
-                      KIIK69
-                    </h2>
                     <p style={{
                       fontFamily: 'var(--font-body)',
                       fontSize: '0.9rem',
@@ -572,8 +566,7 @@ const Chat = ({ isOpen, onClose }) => {
                           style={{ 
                             width: '100%', 
                             height: '100%', 
-                            objectFit: 'cover',
-                            filter: 'brightness(0) invert(1)' // Make logo white
+                            objectFit: 'cover'
                           }} 
                         />
                       </div>
@@ -674,8 +667,7 @@ const Chat = ({ isOpen, onClose }) => {
                         style={{ 
                           width: '100%', 
                           height: '100%', 
-                          objectFit: 'cover',
-                          filter: 'brightness(0) invert(1)' // Make logo white
+                          objectFit: 'cover'
                         }} 
                       />
                     </div>
@@ -749,17 +741,29 @@ const Chat = ({ isOpen, onClose }) => {
                 maxWidth: '100%',
                 overflow: 'hidden'
               }}>
-                <input
+                <textarea
                   ref={inputRef}
-                  type="text"
                   value={inputMessage}
-                  onChange={(e) => setInputMessage(e.target.value)}
-                  onKeyPress={handleKeyPress}
+                  onChange={(e) => {
+                    setInputMessage(e.target.value);
+                    // Auto-resize the textarea
+                    e.target.style.height = 'auto';
+                    e.target.style.height = Math.min(e.target.scrollHeight, 120) + 'px';
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                      e.preventDefault();
+                      handleSendMessage();
+                    }
+                  }}
                   placeholder="Type a message"
+                  rows={1}
                   style={{
                     flex: '1 1 auto',
                     minWidth: '0',
                     maxWidth: '100%',
+                    minHeight: '48px',
+                    maxHeight: '120px',
                     background: 'rgba(255, 255, 255, 0.06)',
                     backdropFilter: 'blur(10px)',
                     border: '1px solid rgba(255, 255, 255, 0.12)',
@@ -772,14 +776,17 @@ const Chat = ({ isOpen, onClose }) => {
                     transition: 'all 0.3s ease',
                     boxSizing: 'border-box',
                     WebkitAppearance: 'none',
-                    WebkitBorderRadius: '24px'
+                    WebkitBorderRadius: '24px',
+                    resize: 'none',
+                    overflowY: 'auto',
+                    lineHeight: '1.4'
                   }}
                   onFocus={(e) => {
                     e.target.style.border = '1px solid var(--color-primary)';
                     e.target.style.boxShadow = '0 0 0 3px rgba(255, 0, 60, 0.1)';
                   }}
                   onBlur={(e) => {
-                    e.target.style.border = '1px solid rgba(255, 255, 255, 0.1)';
+                    e.target.style.border = '1px solid rgba(255, 255, 255, 0.12)';
                     e.target.style.boxShadow = 'none';
                   }}
                   disabled={isLoading}
