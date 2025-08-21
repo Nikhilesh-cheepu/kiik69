@@ -125,77 +125,8 @@ const Chat = ({ isOpen, onClose }) => {
       return;
     }
     
-    // Check if message is about booking/reservation
-    if (isBookingRequest(messageText)) {
-      handleBookingRequest(messageText);
-      return;
-    }
-    
-    // Handle booking data collection
-    if (bookingData.isActive) {
-      handleBookingDataCollection(messageText);
-      return;
-    }
-
-    const userMessage = {
-      id: Date.now(),
-      text: messageText,
-      sender: 'user',
-      timestamp: new Date().toISOString()
-    };
-
-    setMessages(prev => [...prev, userMessage]);
-    setInputMessage('');
-    setIsLoading(true);
-
-    try {
-      let botResponse;
-      
-      if (isAIConfigured) {
-        // Use real OpenAI API
-        botResponse = await generateAIResponse(messageText, messages);
-      } else {
-        // Fallback response if OpenAI not configured
-        botResponse = "I'm currently in demo mode. Please configure your OpenAI API key to get real AI responses!";
-      }
-      
-      // Generate navigation buttons based on user message
-      const navigationButtons = getNavigationButtonsForMessage(messageText);
-      
-      const botMessage = {
-        id: Date.now() + 1,
-        text: botResponse,
-        sender: 'bot',
-        timestamp: new Date().toISOString(),
-        navigationButtons: navigationButtons
-      };
-
-      setMessages(prev => [...prev, botMessage]);
-
-      // Save chat message to database if user is logged in
-      if (currentUser) {
-        try {
-          await saveChatMessage(messageText, false);
-          await saveChatMessage(botResponse, true);
-        } catch (error) {
-          console.error('Failed to save chat:', error);
-        }
-      }
-    } catch (error) {
-      console.error('Error generating response:', error);
-      
-      const errorMessage = {
-        id: Date.now() + 1,
-        text: error.message || "Sorry, I'm having trouble responding right now. Please try again!",
-        sender: 'bot',
-        timestamp: new Date().toISOString(),
-        navigationButtons: [] // No navigation buttons for error messages
-      };
-
-      setMessages(prev => [...prev, errorMessage]);
-    } finally {
-      setIsLoading(false);
-    }
+    // Use intelligent conversation handler for everything else
+    await handleIntelligentConversation(messageText);
   };
 
 
@@ -334,15 +265,8 @@ const Chat = ({ isOpen, onClose }) => {
     }
   };
 
-  // Check if message is about booking/reservation
-  const isBookingRequest = (message) => {
-    const bookingKeywords = ['book', 'booking', 'reservation', 'reserve', 'table', 'party', 'event', 'celebration', 'reserve', 'arrange'];
-    const lowerMessage = message.toLowerCase();
-    return bookingKeywords.some(keyword => lowerMessage.includes(keyword));
-  };
-
-  // Handle initial booking request with smart parsing
-  const handleBookingRequest = (messageText) => {
+  // Intelligent conversation handler - like ChatGPT but with KIIK69 knowledge
+  const handleIntelligentConversation = async (messageText) => {
     const userMessage = {
       id: Date.now(),
       text: messageText,
@@ -350,14 +274,84 @@ const Chat = ({ isOpen, onClose }) => {
       timestamp: new Date().toISOString()
     };
 
-    // Parse the message for any existing details
+    setMessages(prev => [...prev, userMessage]);
+    setInputMessage('');
+    setIsLoading(true);
+
+    try {
+      // Check if this is a booking-related conversation
+      const isBookingContext = bookingData.isActive || 
+        messageText.toLowerCase().includes('book') || 
+        messageText.toLowerCase().includes('reservation') ||
+        messageText.toLowerCase().includes('reserve') ||
+        messageText.toLowerCase().includes('table') ||
+        messageText.toLowerCase().includes('party');
+
+      if (isBookingContext) {
+        // Handle booking conversation intelligently
+        await handleBookingConversation(messageText);
+      } else {
+        // Handle general conversation with AI
+        let botResponse;
+        
+        if (isAIConfigured) {
+          // Use real OpenAI API with KIIK69 context
+          botResponse = await generateAIResponse(messageText, messages);
+        } else {
+          // Fallback response if OpenAI not configured
+          botResponse = "I'm currently in demo mode. Please configure your OpenAI API key to get real AI responses!";
+        }
+        
+        // Generate navigation buttons based on user message
+        const navigationButtons = getNavigationButtonsForMessage(messageText);
+        
+        const botMessage = {
+          id: Date.now() + 1,
+          text: botResponse,
+          sender: 'bot',
+          timestamp: new Date().toISOString(),
+          navigationButtons: navigationButtons
+        };
+
+        setMessages(prev => [...prev, botMessage]);
+
+        // Save chat message to database if user is logged in
+        if (currentUser) {
+          try {
+            await saveChatMessage(messageText, false);
+            await saveChatMessage(botResponse, true);
+          } catch (error) {
+            console.error('Failed to save chat:', error);
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Error generating response:', error);
+      
+      const errorMessage = {
+        id: Date.now() + 1,
+        text: "I'm having trouble processing that right now. Could you try rephrasing your question?",
+        sender: 'bot',
+        timestamp: new Date().toISOString(),
+        navigationButtons: []
+      };
+
+      setMessages(prev => [...prev, errorMessage]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Intelligent booking conversation handler
+  const handleBookingConversation = async (messageText) => {
+    // Parse the message for any details
     const parsedDetails = parseReservationDetails(messageText);
     
     // Update booking data with any found details
     const updatedBookingData = { ...bookingData };
-    if (parsedDetails.people) updatedBookingData.people = parsedDetails.people;
-    if (parsedDetails.date) updatedBookingData.date = parsedDetails.date;
-    if (parsedDetails.time) updatedBookingData.time = parsedDetails.time;
+    if (parsedDetails.people && !updatedBookingData.people) updatedBookingData.people = parsedDetails.people;
+    if (parsedDetails.date && !updatedBookingData.date) updatedBookingData.date = parsedDetails.date;
+    if (parsedDetails.time && !updatedBookingData.time) updatedBookingData.time = parsedDetails.time;
     
     setBookingData(prev => ({ ...prev, ...updatedBookingData, isActive: true, context: [...prev.context, messageText] }));
 
@@ -372,7 +366,7 @@ const Chat = ({ isOpen, onClose }) => {
       
       setBookingData(prev => ({ ...prev, ...finalData }));
       
-      botResponseText = `Great! I can complete your booking with smart defaults:\n\n👥 People: ${finalData.people}\n📅 Date: ${finalData.date}\n🕔 Time: ${finalData.time}\n\nShould I proceed with these details?`;
+      const botResponseText = `Great! I can complete your booking with smart defaults:\n\n👥 People: ${finalData.people}\n📅 Date: ${finalData.date}\n🕔 Time: ${finalData.time}\n\nShould I proceed with these details?`;
       
       const botResponse = {
         id: Date.now() + 1,
@@ -382,12 +376,11 @@ const Chat = ({ isOpen, onClose }) => {
         navigationButtons: ['confirm_booking', 'modify_booking']
       };
       
-      setMessages(prev => [...prev, userMessage, botResponse]);
-      setInputMessage('');
+      setMessages(prev => [...prev, botResponse]);
       return;
     }
 
-    // Determine what's still needed - FIXED LOGIC
+    // Determine what's still needed
     const missingInfo = [];
     if (!updatedBookingData.people) missingInfo.push('number of people');
     if (!updatedBookingData.date) missingInfo.push('date');
@@ -398,12 +391,10 @@ const Chat = ({ isOpen, onClose }) => {
     if (missingInfo.length === 0) {
       // All info provided! Complete the booking
       botResponseText = "Perfect! I have all the details. Let me process your booking...";
-      setMessages(prev => [...prev, userMessage]);
       
       setTimeout(() => {
         completeBooking();
       }, 1000);
-      return;
     } else if (missingInfo.length === 1) {
       // More specific responses based on what's missing
       if (missingInfo[0] === 'number of people') {
@@ -428,109 +419,10 @@ const Chat = ({ isOpen, onClose }) => {
       navigationButtons: []
     };
 
-    setMessages(prev => [...prev, userMessage, botResponse]);
-    setInputMessage('');
+    setMessages(prev => [...prev, botResponse]);
   };
 
-  // Smart booking data collection with context awareness
-  const handleBookingDataCollection = (messageText) => {
-    console.log('🔍 handleBookingDataCollection called with:', messageText);
-    
-    const userMessage = {
-      id: Date.now(),
-      text: messageText,
-      sender: 'user',
-      timestamp: new Date().toISOString()
-    };
 
-    setMessages(prev => [...prev, userMessage]);
-    setInputMessage('');
-
-    // Add to context
-    setBookingData(prev => ({ ...prev, context: [...prev.context, messageText] }));
-
-    // Parse the new message for additional details
-    const newDetails = parseReservationDetails(messageText);
-    console.log('🔍 Parsed details:', newDetails);
-    
-    // Update booking data with new information
-    const updatedData = { ...bookingData };
-    if (newDetails.people && !updatedData.people) updatedData.people = newDetails.people;
-    if (newDetails.date && !updatedData.date) updatedData.date = newDetails.date;
-    if (newDetails.time && !updatedData.time) updatedData.time = newDetails.time;
-    
-    console.log('🔍 Updated booking data:', updatedData);
-    setBookingData(prev => ({ ...prev, ...updatedData }));
-
-    // Wait a moment to simulate thinking
-    setTimeout(() => {
-      // Check if we can complete with smart defaults
-      if (canCompleteWithDefaults(updatedData)) {
-        const defaults = getSmartDefaults(updatedData);
-        const finalData = { ...updatedData };
-        
-        // Apply smart defaults
-        if (!finalData.date) finalData.date = defaults.date;
-        if (!finalData.time) finalData.time = defaults.time;
-        
-        setBookingData(prev => ({ ...prev, ...finalData }));
-        
-        botResponseText = `Perfect! I can complete your booking with smart defaults:\n\n👥 People: ${finalData.people}\n📅 Date: ${finalData.date}\n🕔 Time: ${finalData.time}\n\nShould I proceed with these details?`;
-        
-        const botResponse = {
-          id: Date.now() + 1,
-          text: botResponseText,
-          sender: 'bot',
-          timestamp: new Date().toISOString(),
-          navigationButtons: ['confirm_booking', 'modify_booking']
-        };
-        
-        setMessages(prev => [...prev, botResponse]);
-        return;
-      }
-
-      // Check what's still missing - FIXED LOGIC
-      const missingInfo = [];
-      if (!updatedData.people) missingInfo.push('number of people');
-      if (!updatedData.date) missingInfo.push('date');
-      if (!updatedData.time) missingInfo.push('time');
-
-      let botResponseText = '';
-      
-      if (missingInfo.length === 0) {
-        // All info collected! Complete the booking
-        botResponseText = "Excellent! I have all the details now. Let me process your booking...";
-        
-        setTimeout(() => {
-          completeBooking();
-        }, 1000);
-      } else if (missingInfo.length === 1) {
-        // More specific responses based on what's missing
-        if (missingInfo[0] === 'number of people') {
-          botResponseText = `Perfect! I have the date and time. How many people will be joining us?`;
-        } else if (missingInfo[0] === 'date') {
-          botResponseText = `Great! I have the number of people and time. What date would you like to book for?`;
-        } else if (missingInfo[0] === 'time') {
-          botResponseText = `Excellent! I have the number of people and date. What time would you prefer?`;
-        } else {
-          botResponseText = `Great! I just need to know the ${missingInfo[0]}.`;
-        }
-      } else {
-        const lastItem = missingInfo.pop();
-        botResponseText = `I still need: ${missingInfo.join(', ')} and ${lastItem}.`;
-      }
-
-      const botResponse = {
-        id: Date.now() + 1,
-        text: botResponseText,
-        sender: 'bot',
-        timestamp: new Date().toISOString(),
-        navigationButtons: []
-      };
-
-      setMessages(prev => [...prev, botResponse]);
-    }, 500);
-  };
 
   // Complete booking and show options with WhatsApp integration
   const completeBooking = () => {
