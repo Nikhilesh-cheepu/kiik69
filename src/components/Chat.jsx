@@ -219,12 +219,13 @@ const Chat = ({ isOpen, onClose }) => {
     const lowerMessage = message.toLowerCase();
     const details = {};
     
-    // Extract people count (various formats)
+    // Extract people count (various formats) - IMPROVED LOGIC
     const peoplePatterns = [
       /(\d+)\s*(?:people|person|guests?|members?)/i,
       /(?:for|about|around)\s*(\d+)/i,
       /(\d+)\s*(?:guests?|members?)/i,
-      /(\d+)/ // Just a number
+      /^(\d+)$/i, // Just a number (standalone)
+      /(\d+)/ // Any number (fallback)
     ];
     
     for (const pattern of peoplePatterns) {
@@ -433,6 +434,8 @@ const Chat = ({ isOpen, onClose }) => {
 
   // Smart booking data collection with context awareness
   const handleBookingDataCollection = (messageText) => {
+    console.log('🔍 handleBookingDataCollection called with:', messageText);
+    
     const userMessage = {
       id: Date.now(),
       text: messageText,
@@ -448,6 +451,7 @@ const Chat = ({ isOpen, onClose }) => {
 
     // Parse the new message for additional details
     const newDetails = parseReservationDetails(messageText);
+    console.log('🔍 Parsed details:', newDetails);
     
     // Update booking data with new information
     const updatedData = { ...bookingData };
@@ -455,6 +459,7 @@ const Chat = ({ isOpen, onClose }) => {
     if (newDetails.date && !updatedData.date) updatedData.date = newDetails.date;
     if (newDetails.time && !updatedData.time) updatedData.time = newDetails.time;
     
+    console.log('🔍 Updated booking data:', updatedData);
     setBookingData(prev => ({ ...prev, ...updatedData }));
 
     // Wait a moment to simulate thinking
