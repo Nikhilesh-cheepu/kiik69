@@ -167,26 +167,46 @@ const Chat = ({ isOpen, onClose }) => {
       }
     }
     
-    // Extract date/time (various formats)
-    const dateTimePatterns = [
-      // Specific dates
-      /(\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4})/g,
-      /(\d{1,2}\s+(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\s+\d{2,4})/gi,
-      // Relative dates
-      /(today|tomorrow|next\s+(?:monday|tuesday|wednesday|thursday|friday|saturday|sunday|week|month))/gi,
-      // Time
-      /(\d{1,2}:\d{2}\s*(?:am|pm)?)/gi,
-      /(\d{1,2}\s*(?:am|pm))/gi,
-      // Time ranges
-      /(\d{1,2}\s*(?:am|pm)\s*to\s*\d{1,2}\s*(?:am|pm))/gi
-    ];
+    // Extract date/time (various formats) - SIMPLIFIED AND FIXED
+    // Check for relative dates first (most common)
+    if (lowerMessage.includes('today')) {
+      details.date = 'today';
+    } else if (lowerMessage.includes('tomorrow')) {
+      details.date = 'tomorrow';
+    } else if (lowerMessage.includes('tonight')) {
+      details.date = 'tonight';
+    } else if (lowerMessage.includes('next week')) {
+      details.date = 'next week';
+    } else if (lowerMessage.includes('next month')) {
+      details.date = 'next month';
+    }
     
-    for (const pattern of dateTimePatterns) {
-      const matches = lowerMessage.match(pattern);
-      if (matches && matches.length > 0) {
-        if (!details.date) details.date = matches[0];
-        if (!details.time && matches.length > 1) details.time = matches[1];
-      }
+    // Check for specific dates
+    const specificDatePattern = /(\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4})/;
+    const specificDateMatch = lowerMessage.match(specificDatePattern);
+    if (specificDateMatch && !details.date) {
+      details.date = specificDateMatch[1];
+    }
+    
+    // Check for month names
+    const monthPattern = /(\d{1,2}\s+(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\s+\d{2,4})/i;
+    const monthMatch = lowerMessage.match(monthPattern);
+    if (monthMatch && !details.date) {
+      details.date = monthMatch[1];
+    }
+    
+    // Check for time
+    const timePattern = /(\d{1,2}:\d{2}\s*(?:am|pm)?)/i;
+    const timeMatch = lowerMessage.match(timePattern);
+    if (timeMatch) {
+      details.time = timeMatch[1];
+    }
+    
+    // Check for time without colon (like "10pm")
+    const simpleTimePattern = /(\d{1,2}\s*(?:am|pm))/i;
+    const simpleTimeMatch = lowerMessage.match(simpleTimePattern);
+    if (simpleTimeMatch && !details.time) {
+      details.time = simpleTimeMatch[1];
     }
     
 
