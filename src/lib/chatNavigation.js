@@ -14,7 +14,13 @@ export const NAVIGATION_ACTIONS = {
   SCROLL_TO_MAIN_COURSE: 'scroll_to_main_course',
   SCROLL_TO_DESSERTS: 'scroll_to_desserts',
   SCROLL_TO_POLICIES: 'scroll_to_policies',
-  SCROLL_TO_BOOKING: 'scroll_to_booking'
+  SCROLL_TO_BOOKING: 'scroll_to_booking',
+  // Direct contact actions
+  CALL_PHONE: 'call_phone',
+  OPEN_WHATSAPP: 'open_whatsapp',
+  OPEN_LOCATION: 'open_location',
+  OPEN_INSTAGRAM: 'open_instagram',
+  OPEN_FACEBOOK: 'open_facebook'
 };
 
 // Keywords that trigger specific navigation buttons
@@ -70,11 +76,14 @@ const NAVIGATION_KEYWORDS = {
   directions: [NAVIGATION_ACTIONS.SCROLL_TO_LOCATION],
   
   // Contact
-  contact: [NAVIGATION_ACTIONS.SCROLL_TO_CONTACT],
-  phone: [NAVIGATION_ACTIONS.SCROLL_TO_CONTACT],
-  whatsapp: [NAVIGATION_ACTIONS.SCROLL_TO_CONTACT],
-  instagram: [NAVIGATION_ACTIONS.SCROLL_TO_CONTACT],
-  reach: [NAVIGATION_ACTIONS.SCROLL_TO_CONTACT],
+  contact: [NAVIGATION_ACTIONS.CALL_PHONE, NAVIGATION_ACTIONS.OPEN_WHATSAPP, NAVIGATION_ACTIONS.OPEN_LOCATION],
+  phone: [NAVIGATION_ACTIONS.CALL_PHONE, NAVIGATION_ACTIONS.OPEN_WHATSAPP],
+  call: [NAVIGATION_ACTIONS.CALL_PHONE],
+  whatsapp: [NAVIGATION_ACTIONS.OPEN_WHATSAPP],
+  instagram: [NAVIGATION_ACTIONS.OPEN_INSTAGRAM],
+  facebook: [NAVIGATION_ACTIONS.OPEN_FACEBOOK],
+  social: [NAVIGATION_ACTIONS.OPEN_INSTAGRAM, NAVIGATION_ACTIONS.OPEN_FACEBOOK],
+  reach: [NAVIGATION_ACTIONS.CALL_PHONE, NAVIGATION_ACTIONS.OPEN_WHATSAPP],
   
   // Atmosphere
   atmosphere: [NAVIGATION_ACTIONS.SCROLL_TO_ATMOSPHERE],
@@ -157,6 +166,32 @@ const BUTTON_CONFIGS = {
     label: 'Book Now',
     icon: '📅',
     action: NAVIGATION_ACTIONS.SCROLL_TO_BOOKING
+  },
+  // Direct contact buttons
+  [NAVIGATION_ACTIONS.CALL_PHONE]: {
+    label: 'Call Now',
+    icon: '📞',
+    action: NAVIGATION_ACTIONS.CALL_PHONE
+  },
+  [NAVIGATION_ACTIONS.OPEN_WHATSAPP]: {
+    label: 'WhatsApp',
+    icon: '💬',
+    action: NAVIGATION_ACTIONS.OPEN_WHATSAPP
+  },
+  [NAVIGATION_ACTIONS.OPEN_LOCATION]: {
+    label: 'Get Directions',
+    icon: '📍',
+    action: NAVIGATION_ACTIONS.OPEN_LOCATION
+  },
+  [NAVIGATION_ACTIONS.OPEN_INSTAGRAM]: {
+    label: 'Instagram',
+    icon: '📸',
+    action: NAVIGATION_ACTIONS.OPEN_INSTAGRAM
+  },
+  [NAVIGATION_ACTIONS.OPEN_FACEBOOK]: {
+    label: 'Facebook',
+    icon: '👥',
+    action: NAVIGATION_ACTIONS.OPEN_FACEBOOK
   }
 };
 
@@ -228,6 +263,22 @@ export const handleNavigationClick = (action) => {
       break;
     case NAVIGATION_ACTIONS.SCROLL_TO_BOOKING:
       scrollToSection('booking-section');
+      break;
+    // Direct contact actions
+    case NAVIGATION_ACTIONS.CALL_PHONE:
+      window.open('tel:+919274696969', '_self');
+      break;
+    case NAVIGATION_ACTIONS.OPEN_WHATSAPP:
+      window.open('https://wa.me/919274696969', '_blank');
+      break;
+    case NAVIGATION_ACTIONS.OPEN_LOCATION:
+      window.open('https://share.google/BXjbfRXWSfciwBVIS', '_blank');
+      break;
+    case NAVIGATION_ACTIONS.OPEN_INSTAGRAM:
+      window.open('https://www.instagram.com/kiik69sportsbar.gachibowli/', '_blank');
+      break;
+    case NAVIGATION_ACTIONS.OPEN_FACEBOOK:
+      window.open('https://www.facebook.com/kiik69sportsbar/', '_blank');
       break;
     default:
       console.log('Unknown navigation action:', action);

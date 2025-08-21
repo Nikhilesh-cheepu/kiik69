@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { FaPhone, FaEnvelope, FaMapMarkerAlt, FaInstagram, FaFacebook, FaTwitter, FaYoutube } from 'react-icons/fa';
+import { FaPhone, FaEnvelope, FaMapMarkerAlt, FaWhatsapp, FaInstagram, FaFacebook } from 'react-icons/fa';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -9,8 +9,14 @@ const Footer = () => {
     {
       icon: <FaPhone />,
       label: 'Phone',
-      value: '+1 (555) 123-4567',
-      href: 'tel:+15551234567'
+      value: '+91 9274696969',
+      href: 'tel:+919274696969'
+    },
+    {
+      icon: <FaWhatsapp />,
+      label: 'WhatsApp',
+      value: '+91 9274696969',
+      href: 'https://wa.me/919274696969'
     },
     {
       icon: <FaEnvelope />,
@@ -21,16 +27,14 @@ const Footer = () => {
     {
       icon: <FaMapMarkerAlt />,
       label: 'Address',
-      value: '123 Party Street, Nightlife District, NY 10001',
-      href: 'https://maps.google.com'
+      value: 'Gachibowli, Hyderabad, Telangana, India',
+      href: 'https://share.google/BXjbfRXWSfciwBVIS'
     }
   ];
 
   const socialLinks = [
-    { icon: <FaInstagram />, href: 'https://instagram.com/kiik69', label: 'Instagram' },
-    { icon: <FaFacebook />, href: 'https://facebook.com/kiik69', label: 'Facebook' },
-    { icon: <FaTwitter />, href: 'https://twitter.com/kiik69', label: 'Twitter' },
-    { icon: <FaYoutube />, href: 'https://youtube.com/kiik69', label: 'YouTube' }
+    { icon: <FaInstagram />, href: 'https://www.instagram.com/kiik69sportsbar.gachibowli/', label: 'Instagram' },
+    { icon: <FaFacebook />, href: 'https://www.facebook.com/kiik69sportsbar/', label: 'Facebook' }
   ];
 
   const quickLinks = [
@@ -99,7 +103,7 @@ const Footer = () => {
                   }}
                   whileHover={{
                     backgroundColor: 'rgba(255, 0, 60, 0.1)',
-                    transform: 'translateX(10px)'
+                    transform: 'translateX(5px)'
                   }}
                   target={contact.href.startsWith('http') ? '_blank' : undefined}
                   rel={contact.href.startsWith('http') ? 'noopener noreferrer' : undefined}
@@ -160,7 +164,7 @@ const Footer = () => {
                   }}
                   whileHover={{
                     backgroundColor: 'rgba(255, 0, 60, 0.1)',
-                    transform: 'translateX(10px)'
+                    transform: 'translateX(5px)'
                   }}
                 >
                   {link.label}
@@ -206,13 +210,16 @@ const Footer = () => {
                     textDecoration: 'none',
                     fontSize: '1.2rem',
                     transition: 'all 0.3s ease',
-                    border: '1px solid rgba(255, 255, 255, 0.2)'
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                    position: 'relative',
+                    zIndex: 1,
+                    overflow: 'visible'
                   }}
                   whileHover={{
-                    backgroundColor: 'var(--color-primary)',
-                    transform: 'scale(1.1)',
-                    boxShadow: '0 10px 30px rgba(255, 0, 60, 0.3)'
+                    backgroundColor: 'rgba(255, 0, 60, 0.8)',
+                    boxShadow: '0 3px 15px rgba(255, 0, 60, 0.4)'
                   }}
+                  whileTap={{ scale: 0.95 }}
                   aria-label={social.label}
                 >
                   {social.icon}

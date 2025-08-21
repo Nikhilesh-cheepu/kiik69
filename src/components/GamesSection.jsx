@@ -50,7 +50,7 @@ const GamesSection = () => {
             padding: '2rem',
             border: '1px solid rgba(255, 255, 255, 0.1)'
           }}>
-            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🎯</div>
+            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🀄</div>
             <h3 style={{
               fontFamily: 'Bebas Neue, Arial Black, sans-serif',
               fontSize: '1.5rem',
