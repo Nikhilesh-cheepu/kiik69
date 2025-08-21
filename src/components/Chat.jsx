@@ -26,7 +26,8 @@ const Chat = ({ isOpen, onClose }) => {
     date: null,
     time: null,
     occasion: null,
-    isActive: false
+    isActive: false,
+    context: [] // Store conversation context
   });
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
@@ -213,14 +214,75 @@ const Chat = ({ isOpen, onClose }) => {
 
 
 
+  // Enhanced NLP parsing for reservation details
+  const parseReservationDetails = (message) => {
+    const lowerMessage = message.toLowerCase();
+    const details = {};
+    
+    // Extract people count (various formats)
+    const peoplePatterns = [
+      /(\d+)\s*(?:people|person|guests?|members?)/i,
+      /(?:for|about|around)\s*(\d+)/i,
+      /(\d+)\s*(?:guests?|members?)/i,
+      /(\d+)/ // Just a number
+    ];
+    
+    for (const pattern of peoplePatterns) {
+      const match = lowerMessage.match(pattern);
+      if (match && !details.people) {
+        details.people = parseInt(match[1]);
+        break;
+      }
+    }
+    
+    // Extract date/time (various formats)
+    const dateTimePatterns = [
+      // Specific dates
+      /(\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4})/g,
+      /(\d{1,2}\s+(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\s+\d{2,4})/gi,
+      // Relative dates
+      /(today|tomorrow|next\s+(?:monday|tuesday|wednesday|thursday|friday|saturday|sunday|week|month))/gi,
+      // Time
+      /(\d{1,2}:\d{2}\s*(?:am|pm)?)/gi,
+      /(\d{1,2}\s*(?:am|pm))/gi,
+      // Time ranges
+      /(\d{1,2}\s*(?:am|pm)\s*to\s*\d{1,2}\s*(?:am|pm))/gi
+    ];
+    
+    for (const pattern of dateTimePatterns) {
+      const matches = lowerMessage.match(pattern);
+      if (matches && matches.length > 0) {
+        if (!details.date) details.date = matches[0];
+        if (!details.time && matches.length > 1) details.time = matches[1];
+      }
+    }
+    
+    // Extract occasion/event type
+    const occasionPatterns = [
+      /(?:for|celebration\s+of|event\s+is)\s+([a-z\s]+?)(?:\s+(?:tomorrow|today|next|at|on|$))/gi,
+      /(birthday|anniversary|corporate|meeting|party|celebration|dinner|lunch|brunch)/gi,
+      /(?:special\s+occasion|event)\s*:?\s*([a-z\s]+)/gi
+    ];
+    
+    for (const pattern of occasionPatterns) {
+      const match = lowerMessage.match(pattern);
+      if (match && !details.occasion) {
+        details.occasion = match[1] || match[0];
+        break;
+      }
+    }
+    
+    return details;
+  };
+
   // Check if message is about booking/reservation
   const isBookingRequest = (message) => {
-    const bookingKeywords = ['book', 'booking', 'reservation', 'reserve', 'table', 'party', 'event', 'celebration'];
+    const bookingKeywords = ['book', 'booking', 'reservation', 'reserve', 'table', 'party', 'event', 'celebration', 'reserve', 'arrange'];
     const lowerMessage = message.toLowerCase();
     return bookingKeywords.some(keyword => lowerMessage.includes(keyword));
   };
 
-  // Handle initial booking request
+  // Handle initial booking request with smart parsing
   const handleBookingRequest = (messageText) => {
     const userMessage = {
       id: Date.now(),
@@ -229,9 +291,45 @@ const Chat = ({ isOpen, onClose }) => {
       timestamp: new Date().toISOString()
     };
 
+    // Parse the message for any existing details
+    const parsedDetails = parseReservationDetails(messageText);
+    
+    // Update booking data with any found details
+    const updatedBookingData = { ...bookingData };
+    if (parsedDetails.people) updatedBookingData.people = parsedDetails.people;
+    if (parsedDetails.date) updatedBookingData.date = parsedDetails.date;
+    if (parsedDetails.time) updatedBookingData.time = parsedDetails.time;
+    if (parsedDetails.occasion) updatedBookingData.occasion = parsedDetails.occasion;
+    
+    setBookingData(prev => ({ ...prev, ...updatedBookingData, isActive: true, context: [...prev.context, messageText] }));
+
+    // Determine what's still needed
+    const missingInfo = [];
+    if (!updatedBookingData.people) missingInfo.push('number of people');
+    if (!updatedBookingData.date && !updatedBookingData.time) missingInfo.push('date and time');
+    if (!updatedBookingData.occasion) missingInfo.push('occasion or special message');
+
+    let botResponseText = '';
+    
+    if (missingInfo.length === 0) {
+      // All info provided! Complete the booking
+      botResponseText = "Perfect! I have all the details. Let me process your booking...";
+      setMessages(prev => [...prev, userMessage]);
+      
+      setTimeout(() => {
+        completeBooking();
+      }, 1000);
+      return;
+    } else if (missingInfo.length === 1) {
+      botResponseText = `Great! I just need to know the ${missingInfo[0]}.`;
+    } else {
+      const lastItem = missingInfo.pop();
+      botResponseText = `I need a few more details: ${missingInfo.join(', ')} and ${lastItem}.`;
+    }
+
     const botResponse = {
       id: Date.now() + 1,
-      text: "Great! Let's get your booking sorted! 🎉\n\n🧑‍🤝‍🧑 How many people?\n📅 Date and time?\n🎉 Any special occasion or message?",
+      text: botResponseText,
       sender: 'bot',
       timestamp: new Date().toISOString(),
       navigationButtons: []
@@ -239,10 +337,9 @@ const Chat = ({ isOpen, onClose }) => {
 
     setMessages(prev => [...prev, userMessage, botResponse]);
     setInputMessage('');
-    setBookingData(prev => ({ ...prev, isActive: true }));
   };
 
-  // Handle booking data collection
+  // Smart booking data collection with context awareness
   const handleBookingDataCollection = (messageText) => {
     const userMessage = {
       id: Date.now(),
@@ -254,65 +351,58 @@ const Chat = ({ isOpen, onClose }) => {
     setMessages(prev => [...prev, userMessage]);
     setInputMessage('');
 
-    // Wait a moment to simulate thinking, then respond
+    // Add to context
+    setBookingData(prev => ({ ...prev, context: [...prev.context, messageText] }));
+
+    // Parse the new message for additional details
+    const newDetails = parseReservationDetails(messageText);
+    
+    // Update booking data with new information
+    const updatedData = { ...bookingData };
+    if (newDetails.people && !updatedData.people) updatedData.people = newDetails.people;
+    if (newDetails.date && !updatedData.date) updatedData.date = newDetails.date;
+    if (newDetails.time && !updatedData.time) updatedData.time = newDetails.time;
+    if (newDetails.occasion && !updatedData.occasion) updatedData.occasion = newDetails.occasion;
+    
+    setBookingData(prev => ({ ...prev, ...updatedData }));
+
+    // Wait a moment to simulate thinking
     setTimeout(() => {
-      // Extract people count
-      if (!bookingData.people) {
-        const peopleMatch = messageText.match(/(\d+)/);
-        if (peopleMatch) {
-          const peopleCount = parseInt(peopleMatch[1]);
-          setBookingData(prev => ({ ...prev, people: peopleCount }));
-          
-          const botResponse = {
-            id: Date.now() + 1,
-            text: `Perfect! ${peopleCount} people. 📅 What date and time?`,
-            sender: 'bot',
-            timestamp: new Date().toISOString(),
-            navigationButtons: []
-          };
-          setMessages(prev => [...prev, botResponse]);
-          return;
-        } else {
-          // If no number found, ask again
-          const botResponse = {
-            id: Date.now() + 1,
-            text: `I need to know how many people. Please enter a number (e.g., "5 people" or just "5").`,
-            sender: 'bot',
-            timestamp: new Date().toISOString(),
-            navigationButtons: []
-          };
-          setMessages(prev => [...prev, botResponse]);
-          return;
-        }
-      }
+      // Check what's still missing
+      const missingInfo = [];
+      if (!updatedData.people) missingInfo.push('number of people');
+      if (!updatedData.date && !updatedData.time) missingInfo.push('date and time');
+      if (!updatedData.occasion) missingInfo.push('occasion or special message');
+
+      let botResponseText = '';
       
-      // Extract date/time
-      if (bookingData.people && !bookingData.date) {
-        // Accept any text as date/time for now
-        setBookingData(prev => ({ ...prev, date: messageText }));
+      if (missingInfo.length === 0) {
+        // All info collected! Complete the booking
+        botResponseText = "Excellent! I have all the details now. Let me process your booking...";
         
-        const botResponse = {
-          id: Date.now() + 1,
-          text: `Great! 🎉 Any special occasion or message?`,
-          sender: 'bot',
-          timestamp: new Date().toISOString(),
-          navigationButtons: []
-        };
-        setMessages(prev => [...prev, botResponse]);
-        return;
+        setTimeout(() => {
+          completeBooking();
+        }, 1000);
+      } else if (missingInfo.length === 1) {
+        botResponseText = `Great! I just need to know the ${missingInfo[0]}.`;
+      } else {
+        const lastItem = missingInfo.pop();
+        botResponseText = `I still need: ${missingInfo.join(', ')} and ${lastItem}.`;
       }
-      
-      // Extract occasion/message
-      if (bookingData.people && bookingData.date && !bookingData.occasion) {
-        setBookingData(prev => ({ ...prev, occasion: messageText }));
-        
-        // Complete booking and show options
-        completeBooking();
-      }
-    }, 500); // Small delay to make conversation feel natural
+
+      const botResponse = {
+        id: Date.now() + 1,
+        text: botResponseText,
+        sender: 'bot',
+        timestamp: new Date().toISOString(),
+        navigationButtons: []
+      };
+
+      setMessages(prev => [...prev, botResponse]);
+    }, 500);
   };
 
-  // Complete booking and show options
+  // Complete booking and show options with WhatsApp integration
   const completeBooking = () => {
     const { people, date, time, occasion } = bookingData;
     
@@ -328,20 +418,25 @@ const Chat = ({ isOpen, onClose }) => {
         navigationButtons: ['scroll_to_packages']
       };
     } else {
-      // Format WhatsApp message
-      const whatsappMessage = `Hi! I'd like to book a table at KIIK69 Sports Bar:\n\n👥 People: ${people}\n📅 Date/Time: ${date} ${time}\n🎉 Occasion: ${occasion || 'Regular booking'}\n\nCan you help me with this?`;
+      // Generate custom WhatsApp message
+      const whatsappMessage = `Hi, I'd like to book a reservation at KIIK 69 Sports Bar!\n\n👥 People: ${people}\n📅 Date: ${date}\n🕔 Time: ${time}\n🎉 Occasion: ${occasion || 'Regular booking'}\n\nCan you help me with this?`;
+      
+      // Encode the message for WhatsApp URL
+      const encodedMessage = encodeURIComponent(whatsappMessage);
+      const whatsappUrl = `https://wa.me/919247696969?text=${encodedMessage}`;
       
       botResponse = {
         id: Date.now() + 1,
-        text: `Perfect! Here's your booking summary:\n\n👥 People: ${people}\n📅 Date/Time: ${date} ${time}\n🎉 Occasion: ${occasion || 'Regular booking'}\n\nI'll send this to our team on WhatsApp!`,
+        text: `Perfect! Here's your booking summary:\n\n👥 People: ${people}\n📅 Date: ${date}\n🕔 Time: ${time}\n🎉 Occasion: ${occasion || 'Regular booking'}\n\nReady to send this to our team?`,
         sender: 'bot',
         timestamp: new Date().toISOString(),
-        navigationButtons: ['open_whatsapp']
+        navigationButtons: [],
+        whatsappUrl: whatsappUrl // Store WhatsApp URL for the button
       };
     }
     
     setMessages(prev => [...prev, botResponse]);
-    setBookingData({ people: null, date: null, time: null, occasion: null, isActive: false });
+    setBookingData({ people: null, date: null, time: null, occasion: null, isActive: false, context: [] });
   };
 
   // Check if message is a greeting
@@ -616,6 +711,45 @@ const Chat = ({ isOpen, onClose }) => {
                           buttons={message.navigationButtons}
                           onButtonClick={handleNavigationClick}
                         />
+                      )}
+                      
+                      {/* WhatsApp Button for Booking Messages */}
+                      {message.sender === 'bot' && message.whatsappUrl && (
+                        <div style={{ marginTop: '1rem' }}>
+                          <button
+                            onClick={() => window.open(message.whatsappUrl, '_blank')}
+                            style={{
+                              width: '100%',
+                              padding: '0.75rem 1.5rem',
+                              background: 'linear-gradient(135deg, #25D366, #128C7E)',
+                              border: 'none',
+                              borderRadius: '12px',
+                              color: 'white',
+                              fontFamily: 'var(--font-body)',
+                              fontSize: '0.9rem',
+                              fontWeight: '600',
+                              cursor: 'pointer',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              gap: '0.5rem',
+                              transition: 'all 0.3s ease',
+                              boxShadow: '0 4px 15px rgba(37, 211, 102, 0.3)',
+                              textDecoration: 'none'
+                            }}
+                            onMouseEnter={(e) => {
+                              e.target.style.transform = 'translateY(-2px)';
+                              e.target.style.boxShadow = '0 6px 20px rgba(37, 211, 102, 0.4)';
+                            }}
+                            onMouseLeave={(e) => {
+                              e.target.style.transform = 'translateY(0)';
+                              e.target.style.boxShadow = '0 4px 15px rgba(37, 211, 102, 0.3)';
+                            }}
+                          >
+                            <FaWhatsapp style={{ fontSize: '1.1rem' }} />
+                            Send on WhatsApp
+                          </button>
+                        </div>
                       )}
                     </div>
                     
