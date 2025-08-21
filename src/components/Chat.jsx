@@ -257,20 +257,7 @@ const Chat = ({ isOpen, onClose }) => {
       }
     }
     
-    // Extract occasion/event type
-    const occasionPatterns = [
-      /(?:for|celebration\s+of|event\s+is)\s+([a-z\s]+?)(?:\s+(?:tomorrow|today|next|at|on|$))/gi,
-      /(birthday|anniversary|corporate|meeting|party|celebration|dinner|lunch|brunch)/gi,
-      /(?:special\s+occasion|event)\s*:?\s*([a-z\s]+)/gi
-    ];
-    
-    for (const pattern of occasionPatterns) {
-      const match = lowerMessage.match(pattern);
-      if (match && !details.occasion) {
-        details.occasion = match[1] || match[0];
-        break;
-      }
-    }
+
     
     return details;
   };
@@ -299,7 +286,6 @@ const Chat = ({ isOpen, onClose }) => {
     if (parsedDetails.people) updatedBookingData.people = parsedDetails.people;
     if (parsedDetails.date) updatedBookingData.date = parsedDetails.date;
     if (parsedDetails.time) updatedBookingData.time = parsedDetails.time;
-    if (parsedDetails.occasion) updatedBookingData.occasion = parsedDetails.occasion;
     
     setBookingData(prev => ({ ...prev, ...updatedBookingData, isActive: true, context: [...prev.context, messageText] }));
 
@@ -307,7 +293,6 @@ const Chat = ({ isOpen, onClose }) => {
     const missingInfo = [];
     if (!updatedBookingData.people) missingInfo.push('number of people');
     if (!updatedBookingData.date && !updatedBookingData.time) missingInfo.push('date and time');
-    if (!updatedBookingData.occasion) missingInfo.push('occasion or special message');
 
     let botResponseText = '';
     
@@ -362,7 +347,6 @@ const Chat = ({ isOpen, onClose }) => {
     if (newDetails.people && !updatedData.people) updatedData.people = newDetails.people;
     if (newDetails.date && !updatedData.date) updatedData.date = newDetails.date;
     if (newDetails.time && !updatedData.time) updatedData.time = newDetails.time;
-    if (newDetails.occasion && !updatedData.occasion) updatedData.occasion = newDetails.occasion;
     
     setBookingData(prev => ({ ...prev, ...updatedData }));
 
@@ -372,7 +356,6 @@ const Chat = ({ isOpen, onClose }) => {
       const missingInfo = [];
       if (!updatedData.people) missingInfo.push('number of people');
       if (!updatedData.date && !updatedData.time) missingInfo.push('date and time');
-      if (!updatedData.occasion) missingInfo.push('occasion or special message');
 
       let botResponseText = '';
       
@@ -404,7 +387,7 @@ const Chat = ({ isOpen, onClose }) => {
 
   // Complete booking and show options with WhatsApp integration
   const completeBooking = () => {
-    const { people, date, time, occasion } = bookingData;
+    const { people, date, time } = bookingData;
     
     let botResponse;
     let navigationButtons = [];
@@ -412,14 +395,14 @@ const Chat = ({ isOpen, onClose }) => {
     if (people >= 20) {
       botResponse = {
         id: Date.now() + 1,
-        text: `Looks like a celebration! 🥳 We have party packages with unlimited food & drinks — want to see the options?`,
+        text: `Perfect! ${people} people is definitely a celebration! 🥳\n\nWe have amazing party packages with unlimited food & drinks. Want to see the options?`,
         sender: 'bot',
         timestamp: new Date().toISOString(),
         navigationButtons: ['scroll_to_packages']
       };
     } else {
       // Generate custom WhatsApp message
-      const whatsappMessage = `Hi, I'd like to book a reservation at KIIK 69 Sports Bar!\n\n👥 People: ${people}\n📅 Date: ${date}\n🕔 Time: ${time}\n🎉 Occasion: ${occasion || 'Regular booking'}\n\nCan you help me with this?`;
+      const whatsappMessage = `Hi, I'd like to book a reservation at KIIK 69 Sports Bar!\n\n👥 People: ${people}\n📅 Date: ${date}\n🕔 Time: ${time}\n\nCan you help me with this?`;
       
       // Encode the message for WhatsApp URL
       const encodedMessage = encodeURIComponent(whatsappMessage);
@@ -427,7 +410,7 @@ const Chat = ({ isOpen, onClose }) => {
       
       botResponse = {
         id: Date.now() + 1,
-        text: `Perfect! Here's your booking summary:\n\n👥 People: ${people}\n📅 Date: ${date}\n🕔 Time: ${time}\n🎉 Occasion: ${occasion || 'Regular booking'}\n\nReady to send this to our team?`,
+        text: `Perfect! Here's your booking summary:\n\n👥 People: ${people}\n📅 Date: ${date}\n🕔 Time: ${time}\n\nReady to send this to our team?`,
         sender: 'bot',
         timestamp: new Date().toISOString(),
         navigationButtons: [],
