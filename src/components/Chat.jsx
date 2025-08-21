@@ -184,6 +184,14 @@ const Chat = ({ isOpen, onClose }) => {
         botResponse.toLowerCase().includes('booking') ||
         botResponse.toLowerCase().includes('reservation');
       
+      // Check if user is confirming a booking (saying yes, ok, sure, etc.)
+      const isConfirmingBooking = messageText.toLowerCase().includes('yes') || 
+        messageText.toLowerCase().includes('ok') || 
+        messageText.toLowerCase().includes('sure') || 
+        messageText.toLowerCase().includes('confirm') ||
+        messageText.toLowerCase().includes('proceed') ||
+        messageText.toLowerCase().includes('go ahead');
+      
       // Generate navigation buttons based on user message
       const navigationButtons = getNavigationButtonsForMessage(messageText);
       
@@ -191,6 +199,30 @@ const Chat = ({ isOpen, onClose }) => {
       let customButtons = navigationButtons;
       if (isBookingContext) {
         customButtons = [...navigationButtons, 'scroll_to_packages', 'scroll_to_menu'];
+      }
+      
+      // If user is confirming a booking, add WhatsApp button
+      if (isConfirmingBooking && isBookingContext) {
+        // Create WhatsApp message with booking details
+        const whatsappMessage = `Hi! I'd like to book a table at KIIK 69 Sports Bar! 🎉\n\nCan you help me with the booking details? Thanks! 😊`;
+        const encodedMessage = encodeURIComponent(whatsappMessage);
+        const whatsappUrl = `https://wa.me/919274696969?text=${encodedMessage}`;
+        
+        // Add WhatsApp URL to the bot message
+        botResponse = botResponse + `\n\nPerfect! I'll create a WhatsApp message for you to send to our team at +91 9274696969! 📱`;
+        
+        // Store WhatsApp URL for the button
+        const botMessage = {
+          id: Date.now() + 1,
+          text: botResponse,
+          sender: 'bot',
+          timestamp: new Date().toISOString(),
+          navigationButtons: customButtons,
+          whatsappUrl: whatsappUrl
+        };
+        
+        setMessages(prev => [...prev, botMessage]);
+        return;
       }
       
       const botMessage = {

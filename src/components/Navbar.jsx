@@ -287,23 +287,23 @@ const Navbar = () => {
             alignItems: 'center',
             gap: '1rem'
           }}>
-            {/* Chat Button - Positioned based on screen size */}
+            {/* Chat Button - Enhanced glassmorphism styling */}
             <motion.button
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3, duration: 0.5 }}
               whileHover={{ 
                 y: -3, 
-                scale: 1.08,
-                textShadow: '0 0 20px rgba(255, 255, 255, 0.8)',
-                boxShadow: '0 8px 25px rgba(0, 0, 60, 0.3)',
+                scale: 1.05,
+                boxShadow: '0 8px 25px rgba(255, 0, 60, 0.4)',
                 transition: { duration: 0.2 }
               }}
-              whileTap={{ scale: 0.92 }}
+              whileTap={{ scale: 0.95 }}
               onClick={toggleChat}
               style={{
-                background: 'linear-gradient(135deg, rgba(0, 0, 60, 0.8), rgba(0, 0, 120, 0.8))',
-                border: '1px solid rgba(0, 0, 60, 0.3)',
+                background: 'rgba(255, 255, 255, 0.1)',
+                backdropFilter: 'blur(20px)',
+                border: '1px solid rgba(255, 255, 255, 0.2)',
                 color: 'var(--color-white)',
                 fontSize: '0.9rem',
                 fontWeight: '600',
@@ -319,6 +319,7 @@ const Navbar = () => {
                 display: 'flex',
                 alignItems: 'center',
                 gap: '0.5rem',
+                boxShadow: '0 4px 15px rgba(0, 0, 0, 0.2)',
                 // Center on mobile, right side on desktop
                 ...(isDesktop ? {} : {
                   position: 'absolute',
@@ -328,7 +329,7 @@ const Navbar = () => {
                 })
               }}
             >
-              <FaComments />
+              <FaComments style={{ fontSize: '1rem' }} />
               Chat
             </motion.button>
 
@@ -370,6 +371,47 @@ const Navbar = () => {
           <Chat onClose={() => setIsChatOpen(false)} />
         )}
       </AnimatePresence>
+
+      {/* Floating Chat Button for Mobile - Bottom Right Corner */}
+      {!isDesktop && (
+        <motion.button
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.5, duration: 0.5 }}
+          whileHover={{ 
+            scale: 1.1,
+            boxShadow: '0 8px 25px rgba(255, 0, 60, 0.4)',
+            transition: { duration: 0.2 }
+          }}
+          whileTap={{ scale: 0.9 }}
+          onClick={toggleChat}
+          style={{
+            position: 'fixed',
+            bottom: '2rem',
+            right: '2rem',
+            width: '60px',
+            height: '60px',
+            background: 'rgba(255, 255, 255, 0.15)',
+            backdropFilter: 'blur(20px)',
+            border: '1px solid rgba(255, 255, 255, 0.25)',
+            borderRadius: '50%',
+            color: 'var(--color-white)',
+            fontSize: '1.5rem',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            transition: 'all 0.3s ease',
+            zIndex: 1000,
+            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
+            // Add a subtle glow effect
+            filter: 'drop-shadow(0 0 10px rgba(255, 255, 255, 0.1))'
+          }}
+          aria-label="Open chat"
+        >
+          <FaComments />
+        </motion.button>
+      )}
 
       {/* Mobile Menu Drawer - Only visible on mobile */}
       {!isDesktop && (
