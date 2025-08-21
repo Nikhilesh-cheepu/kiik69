@@ -25,8 +25,8 @@ const Chat = ({ isOpen, onClose }) => {
     people: null,
     date: null,
     time: null,
-    occasion: null,
     isActive: false,
+    step: 'initial', // 'initial', 'collecting', 'confirming', 'completed'
     context: [] // Store conversation context
   });
   const messagesEndRef = useRef(null);
@@ -141,6 +141,16 @@ const Chat = ({ isOpen, onClose }) => {
       }
     ]);
     localStorage.removeItem('kiik69-chat-history');
+    
+    // Reset booking flow
+    setBookingData({
+      people: null,
+      date: null,
+      time: null,
+      isActive: false,
+      step: 'initial',
+      context: []
+    });
   };
 
 
@@ -150,6 +160,135 @@ const Chat = ({ isOpen, onClose }) => {
 
 
 
+
+  // Enhanced booking flow handler
+  const handleBookingFlow = async (messageText, botResponse) => {
+    const lowerMessage = messageText.toLowerCase();
+    
+    // Check if this is a booking request
+    const isBookingRequest = lowerMessage.includes('book') || 
+      lowerMessage.includes('reservation') ||
+      lowerMessage.includes('reserve') ||
+      lowerMessage.includes('table') ||
+      lowerMessage.includes('party') ||
+      lowerMessage.includes('booking');
+    
+    if (isBookingRequest && bookingData.step === 'initial') {
+      // Start booking flow
+      setBookingData(prev => ({
+        ...prev,
+        isActive: true,
+        step: 'collecting'
+      }));
+      
+      const enhancedResponse = botResponse + `\n\nGreat! Let's get your booking sorted! 🎉\n\nI need a few details:\n\n1️⃣ **How many people?**\n2️⃣ **What date?**\n3️⃣ **What time?**\n\nPlease share these details and I'll help you complete the booking! 😊`;
+      
+      return {
+        text: enhancedResponse,
+        navigationButtons: ['scroll_to_packages', 'scroll_to_menu']
+      };
+    }
+    
+    // If already collecting details, try to extract information
+    if (bookingData.step === 'collecting') {
+      let updatedData = { ...bookingData };
+      let needsMoreInfo = [];
+      
+      // Extract people count
+      const peopleMatch = lowerMessage.match(/(\d+)\s*(?:people|person|guests?|members?|guys?)/i) || 
+                          lowerMessage.match(/(\d+)/);
+      if (peopleMatch && !updatedData.people) {
+        updatedData.people = parseInt(peopleMatch[1]);
+      }
+      
+      // Extract date
+      if (lowerMessage.includes('today')) {
+        updatedData.date = 'today';
+      } else if (lowerMessage.includes('tomorrow')) {
+        updatedData.date = 'tomorrow';
+      } else if (lowerMessage.includes('tonight')) {
+        updatedData.date = 'tonight';
+      } else if (lowerMessage.includes('next week')) {
+        updatedData.date = 'next week';
+      } else if (lowerMessage.includes('next month')) {
+        updatedData.date = 'next month';
+      }
+      
+      // Extract time
+      const timeMatch = lowerMessage.match(/(\d{1,2}:\d{2}\s*(?:am|pm)?)/i) ||
+                       lowerMessage.match(/(\d{1,2}\s*(?:am|pm))/i);
+      if (timeMatch) {
+        updatedData.time = timeMatch[1];
+      }
+      
+      // Check if we have all required info
+      if (updatedData.people && updatedData.date && updatedData.time) {
+        // Move to confirmation step
+        updatedData.step = 'confirming';
+        setBookingData(updatedData);
+        
+        const confirmationResponse = `Perfect! Here's what I have for your booking:\n\n📅 **Date:** ${updatedData.date}\n⏰ **Time:** ${updatedData.time}\n👥 **People:** ${updatedData.people}\n\nDoes this look correct? Please confirm with "yes" or "ok" and I'll create a WhatsApp message for you! 😊`;
+        
+        return {
+          text: confirmationResponse,
+          navigationButtons: ['scroll_to_packages', 'scroll_to_menu']
+        };
+      } else {
+        // Still need more info
+        needsMoreInfo = [];
+        if (!updatedData.people) needsMoreInfo.push('number of people');
+        if (!updatedData.date) needsMoreInfo.push('date');
+        if (!updatedData.time) needsMoreInfo.push('time');
+        
+        setBookingData(updatedData);
+        
+        const followUpResponse = `Thanks! I still need:\n\n${needsMoreInfo.map((item, index) => `${index + 1}️⃣ **${item}**`).join('\n')}\n\nPlease provide these details so I can complete your booking! 😊`;
+        
+        return {
+          text: followUpResponse,
+          navigationButtons: ['scroll_to_packages', 'scroll_to_menu']
+        };
+      }
+    }
+    
+    // If confirming, check for confirmation
+    if (bookingData.step === 'confirming') {
+      const isConfirmed = lowerMessage.includes('yes') || 
+                          lowerMessage.includes('ok') || 
+                          lowerMessage.includes('sure') || 
+                          lowerMessage.includes('confirm') ||
+                          lowerMessage.includes('correct') ||
+                          lowerMessage.includes('perfect');
+      
+      if (isConfirmed) {
+        // Complete booking and show WhatsApp button
+        setBookingData(prev => ({ ...prev, step: 'completed' }));
+        
+        const whatsappMessage = `Hi! I'd like to book a table at KIIK 69 Sports Bar! 🎉\n\n📅 Date: ${bookingData.date}\n⏰ Time: ${bookingData.time}\n👥 People: ${bookingData.people}\n\nCan you help me confirm this booking? Thanks! 😊`;
+        const encodedMessage = encodeURIComponent(whatsappMessage);
+        const whatsappUrl = `https://wa.me/919274696969?text=${encodedMessage}`;
+        
+        const completionResponse = `Excellent! 🎉 Your booking details are ready!\n\n📅 **Date:** ${bookingData.date}\n⏰ **Time:** ${bookingData.time}\n👥 **People:** ${bookingData.people}\n\nI've created a WhatsApp message with all your details. Click the button below to send it to our team at +91 9274696969! 📱`;
+        
+        return {
+          text: completionResponse,
+          navigationButtons: ['scroll_to_packages', 'scroll_to_menu'],
+          whatsappUrl: whatsappUrl
+        };
+      } else {
+        // Not confirmed, ask again
+        const reconfirmationResponse = `I have:\n\n📅 **Date:** ${bookingData.date}\n⏰ **Time:** ${bookingData.time}\n👥 **People:** ${bookingData.people}\n\nPlease confirm with "yes" or "ok" if this is correct, or let me know what needs to be changed! 😊`;
+        
+        return {
+          text: reconfirmationResponse,
+          navigationButtons: ['scroll_to_packages', 'scroll_to_menu']
+        };
+      }
+    }
+    
+    // Default case - no booking flow changes
+    return null;
+  };
 
   // Let OpenAI handle ALL conversations naturally - like ChatGPT
   const handleIntelligentConversation = async (messageText) => {
@@ -175,54 +314,23 @@ const Chat = ({ isOpen, onClose }) => {
         botResponse = "I'm currently in demo mode. Please configure your OpenAI API key to get real AI responses!";
       }
       
-      // Check if this is a booking-related conversation AFTER OpenAI responds
-      const isBookingContext = messageText.toLowerCase().includes('book') || 
-        messageText.toLowerCase().includes('reservation') ||
-        messageText.toLowerCase().includes('reserve') ||
-        messageText.toLowerCase().includes('table') ||
-        messageText.toLowerCase().includes('party') ||
-        botResponse.toLowerCase().includes('booking') ||
-        botResponse.toLowerCase().includes('reservation');
+      // Handle booking flow if applicable
+      const bookingResult = await handleBookingFlow(messageText, botResponse);
       
-      // Check if user is confirming a booking (saying yes, ok, sure, etc.)
-      const isConfirmingBooking = messageText.toLowerCase().includes('yes') || 
-        messageText.toLowerCase().includes('ok') || 
-        messageText.toLowerCase().includes('sure') || 
-        messageText.toLowerCase().includes('confirm') ||
-        messageText.toLowerCase().includes('proceed') ||
-        messageText.toLowerCase().includes('go ahead');
+      if (bookingResult) {
+        // Use the enhanced booking response
+        botResponse = bookingResult.text;
+      }
       
       // Generate navigation buttons based on user message
       const navigationButtons = getNavigationButtonsForMessage(messageText);
       
       // Add custom booking buttons if it's a booking context
       let customButtons = navigationButtons;
-      if (isBookingContext) {
+      if (bookingData.isActive || messageText.toLowerCase().includes('book') || 
+          messageText.toLowerCase().includes('reservation') || 
+          messageText.toLowerCase().includes('reserve')) {
         customButtons = [...navigationButtons, 'scroll_to_packages', 'scroll_to_menu'];
-      }
-      
-      // If user is confirming a booking, add WhatsApp button
-      if (isConfirmingBooking && isBookingContext) {
-        // Create WhatsApp message with booking details
-        const whatsappMessage = `Hi! I'd like to book a table at KIIK 69 Sports Bar! 🎉\n\nCan you help me with the booking details? Thanks! 😊`;
-        const encodedMessage = encodeURIComponent(whatsappMessage);
-        const whatsappUrl = `https://wa.me/919274696969?text=${encodedMessage}`;
-        
-        // Add WhatsApp URL to the bot message
-        botResponse = botResponse + `\n\nPerfect! I'll create a WhatsApp message for you to send to our team at +91 9274696969! 📱`;
-        
-        // Store WhatsApp URL for the button
-        const botMessage = {
-          id: Date.now() + 1,
-          text: botResponse,
-          sender: 'bot',
-          timestamp: new Date().toISOString(),
-          navigationButtons: customButtons,
-          whatsappUrl: whatsappUrl
-        };
-        
-        setMessages(prev => [...prev, botMessage]);
-        return;
       }
       
       const botMessage = {
@@ -230,7 +338,8 @@ const Chat = ({ isOpen, onClose }) => {
         text: botResponse,
         sender: 'bot',
         timestamp: new Date().toISOString(),
-        navigationButtons: customButtons
+        navigationButtons: customButtons,
+        whatsappUrl: bookingResult?.whatsappUrl
       };
 
       setMessages(prev => [...prev, botMessage]);
