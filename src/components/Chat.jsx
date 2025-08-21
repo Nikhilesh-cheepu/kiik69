@@ -262,6 +262,77 @@ const Chat = ({ isOpen, onClose }) => {
     return details;
   };
 
+  // Smart defaults and partial completion logic
+  const getSmartDefaults = (currentData) => {
+    const defaults = {};
+    
+    // If no date given, suggest today/tonight
+    if (!currentData.date && !currentData.time) {
+      const now = new Date();
+      const hour = now.getHours();
+      
+      if (hour < 12) {
+        defaults.date = 'today';
+        defaults.time = 'dinner time (7:00 PM)';
+      } else if (hour < 17) {
+        defaults.date = 'today';
+        defaults.time = 'dinner time (7:00 PM)';
+      } else {
+        defaults.date = 'tonight';
+        defaults.time = '8:00 PM';
+      }
+    } else if (currentData.date && !currentData.time) {
+      // If date given but no time, suggest appropriate meal time
+      const lowerDate = currentData.date.toLowerCase();
+      if (lowerDate.includes('today') || lowerDate.includes('tonight')) {
+        const now = new Date();
+        const hour = now.getHours();
+        
+        if (hour < 12) {
+          defaults.time = 'lunch time (1:00 PM)';
+        } else if (hour < 17) {
+          defaults.time = 'dinner time (7:00 PM)';
+        } else {
+          defaults.time = '8:00 PM';
+        }
+      } else {
+        defaults.time = 'dinner time (7:00 PM)';
+      }
+    } else if (!currentData.date && currentData.time) {
+      // If time given but no date, suggest today
+      defaults.date = 'today';
+    }
+    
+    return defaults;
+  };
+
+  // Check if we can complete booking with smart defaults
+  const canCompleteWithDefaults = (currentData) => {
+    const defaults = getSmartDefaults(currentData);
+    return currentData.people && (currentData.date || defaults.date) && (currentData.time || defaults.time);
+  };
+
+  // Handle booking confirmation with smart defaults
+  const handleBookingConfirmation = (action) => {
+    if (action === 'confirm_booking') {
+      // Complete the booking with smart defaults
+      completeBooking();
+    } else if (action === 'modify_booking') {
+      // Reset to ask for more details
+      setBookingData(prev => ({ ...prev, isActive: true }));
+      
+      const botResponse = {
+        id: Date.now() + 1,
+        text: "Sure! What would you like to change? I need:\n\n👥 Number of people\n📅 Date and time",
+        sender: 'bot',
+        timestamp: new Date().toISOString(),
+        navigationButtons: []
+      };
+      
+      setMessages(prev => [...prev, botResponse]);
+    }
+  };
+
   // Check if message is about booking/reservation
   const isBookingRequest = (message) => {
     const bookingKeywords = ['book', 'booking', 'reservation', 'reserve', 'table', 'party', 'event', 'celebration', 'reserve', 'arrange'];
@@ -288,6 +359,32 @@ const Chat = ({ isOpen, onClose }) => {
     if (parsedDetails.time) updatedBookingData.time = parsedDetails.time;
     
     setBookingData(prev => ({ ...prev, ...updatedBookingData, isActive: true, context: [...prev.context, messageText] }));
+
+    // Check if we can complete with smart defaults
+    if (canCompleteWithDefaults(updatedBookingData)) {
+      const defaults = getSmartDefaults(updatedBookingData);
+      const finalData = { ...updatedBookingData };
+      
+      // Apply smart defaults
+      if (!finalData.date) finalData.date = defaults.date;
+      if (!finalData.time) finalData.time = defaults.time;
+      
+      setBookingData(prev => ({ ...prev, ...finalData }));
+      
+      botResponseText = `Great! I can complete your booking with smart defaults:\n\n👥 People: ${finalData.people}\n📅 Date: ${finalData.date}\n🕔 Time: ${finalData.time}\n\nShould I proceed with these details?`;
+      
+      const botResponse = {
+        id: Date.now() + 1,
+        text: botResponseText,
+        sender: 'bot',
+        timestamp: new Date().toISOString(),
+        navigationButtons: ['confirm_booking', 'modify_booking']
+      };
+      
+      setMessages(prev => [...prev, userMessage, botResponse]);
+      setInputMessage('');
+      return;
+    }
 
     // Determine what's still needed
     const missingInfo = [];
@@ -352,6 +449,31 @@ const Chat = ({ isOpen, onClose }) => {
 
     // Wait a moment to simulate thinking
     setTimeout(() => {
+      // Check if we can complete with smart defaults
+      if (canCompleteWithDefaults(updatedData)) {
+        const defaults = getSmartDefaults(updatedData);
+        const finalData = { ...updatedData };
+        
+        // Apply smart defaults
+        if (!finalData.date) finalData.date = defaults.date;
+        if (!finalData.time) finalData.time = defaults.time;
+        
+        setBookingData(prev => ({ ...prev, ...finalData }));
+        
+        botResponseText = `Perfect! I can complete your booking with smart defaults:\n\n👥 People: ${finalData.people}\n📅 Date: ${finalData.date}\n🕔 Time: ${finalData.time}\n\nShould I proceed with these details?`;
+        
+        const botResponse = {
+          id: Date.now() + 1,
+          text: botResponseText,
+          sender: 'bot',
+          timestamp: new Date().toISOString(),
+          navigationButtons: ['confirm_booking', 'modify_booking']
+        };
+        
+        setMessages(prev => [...prev, botResponse]);
+        return;
+      }
+
       // Check what's still missing
       const missingInfo = [];
       if (!updatedData.people) missingInfo.push('number of people');
@@ -692,7 +814,15 @@ const Chat = ({ isOpen, onClose }) => {
                       {message.sender === 'bot' && message.navigationButtons && (
                         <ChatNavigationButtons 
                           buttons={message.navigationButtons}
-                          onButtonClick={handleNavigationClick}
+                          onButtonClick={(action) => {
+                            // Handle booking-specific actions
+                            if (action === 'confirm_booking' || action === 'modify_booking') {
+                              handleBookingConfirmation(action);
+                            } else {
+                              // Handle regular navigation actions
+                              handleNavigationClick(action);
+                            }
+                          }}
                         />
                       )}
                       

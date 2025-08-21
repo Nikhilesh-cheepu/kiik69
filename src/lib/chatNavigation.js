@@ -20,7 +20,10 @@ export const NAVIGATION_ACTIONS = {
   OPEN_WHATSAPP: 'open_whatsapp',
   OPEN_LOCATION: 'open_location',
   OPEN_INSTAGRAM: 'open_instagram',
-  OPEN_FACEBOOK: 'open_facebook'
+  OPEN_FACEBOOK: 'open_facebook',
+  // Booking actions
+  CONFIRM_BOOKING: 'confirm_booking',
+  MODIFY_BOOKING: 'modify_booking'
 };
 
 // Keywords that trigger specific navigation buttons
@@ -192,6 +195,17 @@ const BUTTON_CONFIGS = {
     label: 'Facebook',
     icon: '👥',
     action: NAVIGATION_ACTIONS.OPEN_FACEBOOK
+  },
+  // Booking confirmation buttons
+  [NAVIGATION_ACTIONS.CONFIRM_BOOKING]: {
+    label: 'Confirm & Book',
+    icon: '✅',
+    action: NAVIGATION_ACTIONS.CONFIRM_BOOKING
+  },
+  [NAVIGATION_ACTIONS.MODIFY_BOOKING]: {
+    label: 'Modify Details',
+    icon: '✏️',
+    action: NAVIGATION_ACTIONS.MODIFY_BOOKING
   }
 };
 
@@ -279,6 +293,15 @@ export const handleNavigationClick = (action) => {
       break;
     case NAVIGATION_ACTIONS.OPEN_FACEBOOK:
       window.open('https://www.facebook.com/kiik69sportsbar/', '_blank');
+      break;
+    // Booking actions
+    case NAVIGATION_ACTIONS.CONFIRM_BOOKING:
+      // This will be handled in the Chat component
+      console.log('Confirming booking with smart defaults...');
+      break;
+    case NAVIGATION_ACTIONS.MODIFY_BOOKING:
+      // This will be handled in the Chat component
+      console.log('Modifying booking details...');
       break;
     default:
       console.log('Unknown navigation action:', action);
