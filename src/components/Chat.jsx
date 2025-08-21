@@ -306,30 +306,29 @@ const Chat = ({ isOpen, onClose }) => {
             right: 0,
             bottom: 0,
             zIndex: 9999,
-            background: 'rgba(0, 0, 0, 0.3)',
+            background: 'rgba(0, 0, 0, 0.95)',
             backdropFilter: 'blur(20px)',
             display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '1rem'
+            alignItems: 'stretch',
+            justifyContent: 'stretch',
+            padding: 0
           }}
         >
           <motion.div
-            initial={{ opacity: 0, scale: 0.9, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            transition={{ duration: 0.3, ease: 'easeOut' }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.25, ease: 'easeOut' }}
             className="chat-container"
             style={{
-              width: '100%',
-              maxWidth: '500px',
-              height: '90vh',
-              maxHeight: '700px',
-              background: 'rgba(255, 255, 255, 0.1)',
-              backdropFilter: 'blur(25px)',
-              borderRadius: '24px',
-              border: '1px solid rgba(255, 255, 255, 0.2)',
-              boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3), 0 8px 32px rgba(255, 255, 255, 0.1)',
+              width: '100vw',
+              height: '100vh',
+              maxWidth: '100vw',
+              maxHeight: '100vh',
+              background: 'rgba(0, 0, 0, 0.90)',
+              borderRadius: 0,
+              border: '1px solid rgba(255, 255, 255, 0.06)',
+              boxShadow: '0 10px 40px rgba(0,0,0,0.6)',
               overflow: 'hidden',
               display: 'flex',
               flexDirection: 'column'
