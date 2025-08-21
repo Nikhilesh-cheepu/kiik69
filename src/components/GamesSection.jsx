@@ -106,6 +106,70 @@ const GamesSection = () => {
               marginBottom: '1rem'
             }}>Fast-paced table football game</p>
           </div>
+
+          {/* New Games Added */}
+          <div style={{
+            background: 'rgba(255, 255, 255, 0.05)',
+            borderRadius: '20px',
+            padding: '2rem',
+            border: '1px solid rgba(255, 255, 255, 0.1)'
+          }}>
+            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🎳</div>
+            <h3 style={{
+              fontFamily: 'Bebas Neue, Arial Black, sans-serif',
+              fontSize: '1.5rem',
+              color: '#ffffff',
+              marginBottom: '0.5rem'
+            }}>Bowling</h3>
+            <p style={{
+              fontFamily: 'Manrope, Inter, Segoe UI, Arial, sans-serif',
+              fontSize: '1rem',
+              color: '#888888',
+              marginBottom: '1rem'
+            }}>Professional bowling lanes with automatic scoring</p>
+          </div>
+
+          <div style={{
+            background: 'rgba(255, 255, 255, 0.05)',
+            borderRadius: '20px',
+            padding: '2rem',
+            border: '1px solid rgba(255, 255, 255, 0.1)'
+          }}>
+            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🎯</div>
+            <h3 style={{
+              fontFamily: 'Bebas Neue, Arial Black, sans-serif',
+              fontSize: '1.5rem',
+              color: '#ffffff',
+              marginBottom: '0.5rem'
+            }}>Darts</h3>
+            <p style={{
+              fontFamily: 'Manrope, Inter, Segoe UI, Arial, sans-serif',
+              fontSize: '1rem',
+              color: '#888888',
+              marginBottom: '1rem'
+            }}>Electronic dart boards for competitive play</p>
+          </div>
+
+          <div style={{
+            background: 'rgba(255, 255, 255, 0.05)',
+            borderRadius: '20px',
+            padding: '2rem',
+            border: '1px solid rgba(255, 255, 255, 0.1)'
+          }}>
+            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>♟️</div>
+            <h3 style={{
+              fontFamily: 'Bebas Neue, Arial Black, sans-serif',
+              fontSize: '1.5rem',
+              color: '#ffffff',
+              marginBottom: '0.5rem'
+            }}>Chess</h3>
+            <p style={{
+              fontFamily: 'Manrope, Inter, Segoe UI, Arial, sans-serif',
+              fontSize: '1rem',
+              color: '#888888',
+              marginBottom: '1rem'
+            }}>Strategic chess sets for intellectual challenges</p>
+          </div>
         </div>
       </div>
     </section>
