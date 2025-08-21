@@ -342,9 +342,9 @@ const Chat = ({ isOpen, onClose }) => {
     }
   };
 
-  // Intelligent booking conversation handler
+  // Friendly, conversational booking handler - no rigid rules!
   const handleBookingConversation = async (messageText) => {
-    // Parse the message for any details
+    // Parse the message for any details naturally
     const parsedDetails = parseReservationDetails(messageText);
     
     // Update booking data with any found details
@@ -355,18 +355,10 @@ const Chat = ({ isOpen, onClose }) => {
     
     setBookingData(prev => ({ ...prev, ...updatedBookingData, isActive: true, context: [...prev.context, messageText] }));
 
-    // Check if we can complete with smart defaults
-    if (canCompleteWithDefaults(updatedBookingData)) {
-      const defaults = getSmartDefaults(updatedBookingData);
-      const finalData = { ...updatedBookingData };
-      
-      // Apply smart defaults
-      if (!finalData.date) finalData.date = defaults.date;
-      if (!finalData.time) finalData.time = defaults.time;
-      
-      setBookingData(prev => ({ ...prev, ...finalData }));
-      
-      const botResponseText = `Great! I can complete your booking with smart defaults:\n\n👥 People: ${finalData.people}\n📅 Date: ${finalData.date}\n🕔 Time: ${finalData.time}\n\nShould I proceed with these details?`;
+    // Check if we have enough info to complete the booking
+    if (updatedBookingData.people && updatedBookingData.date && updatedBookingData.time) {
+      // We have all the info! Show confirmation and WhatsApp button
+      const botResponseText = `Awesome! 🎉 I've got everything I need:\n\n👥 **${updatedBookingData.people} people**\n📅 **${updatedBookingData.date}**\n🕔 **${updatedBookingData.time}**\n\nDoes this look right to you? If yes, I'll create a WhatsApp message for you to send! 😊`;
       
       const botResponse = {
         id: Date.now() + 1,
@@ -380,35 +372,18 @@ const Chat = ({ isOpen, onClose }) => {
       return;
     }
 
-    // Determine what's still needed
-    const missingInfo = [];
-    if (!updatedBookingData.people) missingInfo.push('number of people');
-    if (!updatedBookingData.date) missingInfo.push('date');
-    if (!updatedBookingData.time) missingInfo.push('time');
-
+    // If we don't have all info yet, just chat naturally
     let botResponseText = '';
     
-    if (missingInfo.length === 0) {
-      // All info provided! Complete the booking
-      botResponseText = "Perfect! I have all the details. Let me process your booking...";
-      
-      setTimeout(() => {
-        completeBooking();
-      }, 1000);
-    } else if (missingInfo.length === 1) {
-      // More specific responses based on what's missing
-      if (missingInfo[0] === 'number of people') {
-        botResponseText = `Perfect! I have the date and time. How many people will be joining us?`;
-      } else if (missingInfo[0] === 'date') {
-        botResponseText = `Great! I have the number of people and time. What date would you like to book for?`;
-      } else if (missingInfo[0] === 'time') {
-        botResponseText = `Excellent! I have the number of people and date. What time would you prefer?`;
-      } else {
-        botResponseText = `Great! I just need to know the ${missingInfo[0]}.`;
-      }
-    } else {
-      const lastItem = missingInfo.pop();
-      botResponseText = `I need a few more details: ${missingInfo.join(', ')} and ${lastItem}.`;
+    if (!updatedBookingData.people && !updatedBookingData.date && !updatedBookingData.time) {
+      // Nothing yet - just be friendly
+      botResponseText = `Hey! 😊 I'd love to help you with your reservation! Tell me more about what you have in mind - like how many people, when you want to come, or anything else!`;
+    } else if (!updatedBookingData.people) {
+      botResponseText = `Great! I know you want to come on **${updatedBookingData.date}** at **${updatedBookingData.time}**! 😊 How many people will be joining us?`;
+    } else if (!updatedBookingData.date) {
+      botResponseText = `Perfect! **${updatedBookingData.people} people** sounds like a fun group! 🎉 When would you like to come?`;
+    } else if (!updatedBookingData.time) {
+      botResponseText = `Awesome! **${updatedBookingData.people} people** on **${updatedBookingData.date}** - that's going to be great! 🎊 What time works best for you?`;
     }
 
     const botResponse = {
@@ -449,7 +424,7 @@ const Chat = ({ isOpen, onClose }) => {
       
       botResponse = {
         id: Date.now() + 1,
-        text: `Perfect! Here's your booking summary:\n\n👥 People: ${people}\n📅 Date: ${date}\n🕔 Time: ${time}\n\nReady to send this to our team?`,
+        text: `Perfect! 🎉 Here's your booking summary:\n\n👥 **${people} people**\n📅 **${date}**\n🕔 **${time}**\n\nI've prepared a WhatsApp message for you to send to our team! Just click the button below and it'll open WhatsApp with everything ready to go! 😊`,
         sender: 'bot',
         timestamp: new Date().toISOString(),
         navigationButtons: [],
@@ -458,7 +433,13 @@ const Chat = ({ isOpen, onClose }) => {
     }
     
     setMessages(prev => [...prev, botResponse]);
-    setBookingData({ people: null, date: null, time: null, occasion: null, isActive: false, context: [] });
+    setBookingData({
+      people: null,
+      date: null,
+      time: null,
+      isActive: false,
+      context: []
+    });
   };
 
   // Check if message is a greeting
@@ -750,30 +731,32 @@ const Chat = ({ isOpen, onClose }) => {
                             onClick={() => window.open(message.whatsappUrl, '_blank')}
                             style={{
                               width: '100%',
-                              padding: '0.75rem 1.5rem',
+                              padding: '1rem 2rem',
                               background: 'linear-gradient(135deg, #25D366, #128C7E)',
                               border: 'none',
-                              borderRadius: '12px',
+                              borderRadius: '16px',
                               color: 'white',
                               fontFamily: 'var(--font-body)',
-                              fontSize: '0.9rem',
-                              fontWeight: '600',
+                              fontSize: '1.1rem',
+                              fontWeight: '700',
                               cursor: 'pointer',
                               display: 'flex',
                               alignItems: 'center',
                               justifyContent: 'center',
-                              gap: '0.5rem',
+                              gap: '0.8rem',
                               transition: 'all 0.3s ease',
-                              boxShadow: '0 4px 15px rgba(37, 211, 102, 0.3)',
-                              textDecoration: 'none'
+                              boxShadow: '0 6px 20px rgba(37, 211, 102, 0.4)',
+                              textDecoration: 'none',
+                              textTransform: 'uppercase',
+                              letterSpacing: '0.5px'
                             }}
                             onMouseEnter={(e) => {
-                              e.target.style.transform = 'translateY(-2px)';
-                              e.target.style.boxShadow = '0 6px 20px rgba(37, 211, 102, 0.4)';
+                              e.target.style.transform = 'translateY(-3px) scale(1.02)';
+                              e.target.style.boxShadow = '0 8px 25px rgba(37, 211, 102, 0.5)';
                             }}
                             onMouseLeave={(e) => {
-                              e.target.style.transform = 'translateY(0)';
-                              e.target.style.boxShadow = '0 4px 15px rgba(37, 211, 102, 0.3)';
+                              e.target.style.transform = 'translateY(0) scale(1)';
+                              e.target.style.boxShadow = '0 6px 20px rgba(37, 211, 102, 0.4)';
                             }}
                           >
                             <FaWhatsapp style={{ fontSize: '1.1rem' }} />
