@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaTimes, FaPaperPlane, FaRobot, FaUser, FaComments, FaExclamationTriangle, FaSignOutAlt, FaPhone, FaEnvelope, FaSignInAlt } from 'react-icons/fa';
+import { FaTimes, FaPaperPlane, FaUser, FaComments, FaExclamationTriangle, FaSignOutAlt, FaPhone, FaEnvelope, FaWhatsapp, FaMapMarkerAlt, FaInstagram, FaFacebook, FaCalendarAlt, FaUsers, FaGift } from 'react-icons/fa';
 import { generateAIResponse, isOpenAIConfigured } from '../lib/openai.js';
 import { 
   isLoggedIn, 
@@ -21,10 +21,13 @@ const Chat = ({ isOpen, onClose }) => {
   const [isAIConfigured, setIsAIConfigured] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
   const [sessionId, setSessionId] = useState('');
-  const [loginIdentifier, setLoginIdentifier] = useState('');
-  const [loginError, setLoginError] = useState('');
-  const [isLoginLoading, setIsLoginLoading] = useState(false);
-  const [isLoginPopupOpen, setIsLoginPopupOpen] = useState(false);
+  const [bookingData, setBookingData] = useState({
+    people: null,
+    date: null,
+    time: null,
+    occasion: null,
+    isActive: false
+  });
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
 
@@ -121,24 +124,15 @@ const Chat = ({ isOpen, onClose }) => {
       return;
     }
     
-    // Check if message requires login
-    if (checkLoginRequirement(messageText)) {
-      const loginPromptMessage = {
-        id: Date.now(),
-        text: "👋 Hey! To fetch your past reservations or data, please log in with your number first.",
-        sender: 'bot',
-        timestamp: new Date().toISOString(),
-        navigationButtons: [] // No navigation buttons for login prompts
-      };
-      
-      setMessages(prev => [...prev, {
-        id: Date.now() - 1,
-        text: messageText,
-        sender: 'user',
-        timestamp: new Date().toISOString()
-      }, loginPromptMessage]);
-      
-      setInputMessage('');
+    // Check if message is about booking/reservation
+    if (isBookingRequest(messageText)) {
+      handleBookingRequest(messageText);
+      return;
+    }
+    
+    // Handle booking data collection
+    if (bookingData.isActive) {
+      handleBookingDataCollection(messageText);
       return;
     }
 
@@ -222,98 +216,128 @@ const Chat = ({ isOpen, onClose }) => {
     localStorage.removeItem('kiik69-chat-history');
   };
 
-  // Handle login success
-  const handleLoginSuccess = (user) => {
-    setCurrentUser(user);
-    setSessionId(user.sessionId);
-    
-    // Add welcome message
-    const welcomeMessage = {
-      id: Date.now(),
-      text: `Welcome back, ${user.phone || user.email} 🎉`,
-      sender: 'bot',
-      timestamp: new Date().toISOString()
-    };
-    
-    setMessages(prev => [prev[0], welcomeMessage]);
+
+
+  // Check if message is about booking/reservation
+  const isBookingRequest = (message) => {
+    const bookingKeywords = ['book', 'booking', 'reservation', 'reserve', 'table', 'party', 'event', 'celebration'];
+    const lowerMessage = message.toLowerCase();
+    return bookingKeywords.some(keyword => lowerMessage.includes(keyword));
   };
 
-
-
-  // Handle logout
-  const handleLogout = () => {
-    logoutUser();
-    setCurrentUser(null);
-    setSessionId(getGuestSessionId());
-    
-    // Add guest message
-    const guestMessage = {
+  // Handle initial booking request
+  const handleBookingRequest = (messageText) => {
+    const userMessage = {
       id: Date.now(),
-      text: "You're now chatting as Guest 👤",
-      sender: 'bot',
+      text: messageText,
+      sender: 'user',
       timestamp: new Date().toISOString()
     };
-    
-    setMessages(prev => [prev[0], guestMessage]);
+
+    const botResponse = {
+      id: Date.now() + 1,
+      text: "Great! Let's get your booking sorted! 🎉\n\n🧑‍🤝‍🧑 How many people?\n📅 Date and time?\n🎉 Any special occasion or message?",
+      sender: 'bot',
+      timestamp: new Date().toISOString(),
+      navigationButtons: []
+    };
+
+    setMessages(prev => [...prev, userMessage, botResponse]);
+    setInputMessage('');
+    setBookingData(prev => ({ ...prev, isActive: true }));
   };
 
-  // Handle login form submission
-  const handleLoginSubmit = async (e) => {
-    e.preventDefault();
+  // Handle booking data collection
+  const handleBookingDataCollection = (messageText) => {
+    const userMessage = {
+      id: Date.now(),
+      text: messageText,
+      sender: 'user',
+      timestamp: new Date().toISOString()
+    };
+
+    setMessages(prev => [...prev, userMessage]);
+    setInputMessage('');
+
+    // Simple parsing logic - in a real app, you'd use NLP
+    const lowerMessage = messageText.toLowerCase();
     
-    if (!loginIdentifier.trim()) {
-      setLoginError('Please enter your email or phone number');
-      return;
-    }
-
-    // Check if it's a phone number (10 digits) or email
-    const isPhone = /^\d{10}$/.test(loginIdentifier.replace(/\D/g, ''));
-    const isEmail = loginIdentifier.includes('@') && loginIdentifier.includes('.');
-
-    if (!isPhone && !isEmail) {
-      setLoginError('Please enter a valid 10-digit phone number or email address');
-      return;
-    }
-
-    setIsLoginLoading(true);
-    setLoginError('');
-
-    try {
-      const result = await loginUser({ identifier: loginIdentifier });
-      
-      if (result.success) {
-        setCurrentUser(result.user);
-        setSessionId(result.user.sessionId);
-        setLoginIdentifier('');
-        setIsLoginPopupOpen(false);
+    // Extract people count
+    if (!bookingData.people) {
+      const peopleMatch = messageText.match(/(\d+)/);
+      if (peopleMatch) {
+        const peopleCount = parseInt(peopleMatch[1]);
+        setBookingData(prev => ({ ...prev, people: peopleCount }));
         
-        // Add welcome message
-        const welcomeMessage = {
-          id: Date.now(),
-          text: `Welcome back! You're now logged in as ${result.user.phone || result.user.email}`,
+        const botResponse = {
+          id: Date.now() + 1,
+          text: `Perfect! ${peopleCount} people. 📅 What date and time?`,
           sender: 'bot',
           timestamp: new Date().toISOString(),
           navigationButtons: []
         };
-        
-        setMessages(prev => [welcomeMessage, ...prev]);
-      } else {
-        setLoginError(result.message || 'Login failed. Please try again.');
+        setMessages(prev => [...prev, botResponse]);
+        return;
       }
-    } catch (error) {
-      console.error('Login error:', error);
-      setLoginError('Login failed. Please try again.');
-    } finally {
-      setIsLoginLoading(false);
+    }
+    
+    // Extract date/time
+    if (!bookingData.date && !bookingData.time) {
+      const dateTimeMatch = messageText.match(/(\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4})|(\d{1,2}:\d{2})|(today|tomorrow|next week)/i);
+      if (dateTimeMatch) {
+        setBookingData(prev => ({ ...prev, date: messageText, time: messageText }));
+        
+        const botResponse = {
+          id: Date.now() + 1,
+          text: `Great! 🎉 Any special occasion or message?`,
+          sender: 'bot',
+          timestamp: new Date().toISOString(),
+          navigationButtons: []
+        };
+        setMessages(prev => [...prev, botResponse]);
+        return;
+      }
+    }
+    
+    // Extract occasion/message
+    if (!bookingData.occasion) {
+      setBookingData(prev => ({ ...prev, occasion: messageText }));
+      
+      // Complete booking and show options
+      completeBooking();
     }
   };
 
-  // Check if message requires login
-  const checkLoginRequirement = (message) => {
-    // Simple check for login-required keywords
-    const loginKeywords = ['reservation', 'booking', 'my data', 'profile', 'history'];
-    const lowerMessage = message.toLowerCase();
-    return loginKeywords.some(keyword => lowerMessage.includes(keyword)) && !currentUser;
+  // Complete booking and show options
+  const completeBooking = () => {
+    const { people, date, time, occasion } = bookingData;
+    
+    let botResponse;
+    let navigationButtons = [];
+    
+    if (people >= 20) {
+      botResponse = {
+        id: Date.now() + 1,
+        text: `Looks like a celebration! 🥳 We have party packages with unlimited food & drinks — want to see the options?`,
+        sender: 'bot',
+        timestamp: new Date().toISOString(),
+        navigationButtons: ['scroll_to_packages']
+      };
+    } else {
+      // Format WhatsApp message
+      const whatsappMessage = `Hi! I'd like to book a table at KIIK69 Sports Bar:\n\n👥 People: ${people}\n📅 Date/Time: ${date} ${time}\n🎉 Occasion: ${occasion || 'Regular booking'}\n\nCan you help me with this?`;
+      
+      botResponse = {
+        id: Date.now() + 1,
+        text: `Perfect! Here's your booking summary:\n\n👥 People: ${people}\n📅 Date/Time: ${date} ${time}\n🎉 Occasion: ${occasion || 'Regular booking'}\n\nI'll send this to our team on WhatsApp!`,
+        sender: 'bot',
+        timestamp: new Date().toISOString(),
+        navigationButtons: ['open_whatsapp']
+      };
+    }
+    
+    setMessages(prev => [...prev, botResponse]);
+    setBookingData({ people: null, date: null, time: null, occasion: null, isActive: false });
   };
 
   // Check if message is a greeting
@@ -392,53 +416,51 @@ const Chat = ({ isOpen, onClose }) => {
               borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
               background: 'rgba(255, 255, 255, 0.05)'
             }}>
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '1rem'
-              }}>
-                <div style={{
-                  width: '44px',
-                  height: '44px',
-                  background: 'linear-gradient(135deg, var(--color-primary), rgba(255, 0, 60, 0.8))',
-                  borderRadius: '50%',
+                              <div style={{
                   display: 'flex',
                   alignItems: 'center',
-                  justifyContent: 'center',
-                  boxShadow: '0 4px 20px rgba(255, 0, 60, 0.3)'
+                  gap: '1rem'
                 }}>
-                  <FaRobot style={{ fontSize: '1.5rem', color: 'var(--color-white)' }} />
-                </div>
-                <div>
-                  <h2 style={{
-                    fontFamily: 'var(--font-heading)',
-                    fontSize: '1.6rem',
-                    color: 'var(--color-white)',
-                    margin: 0,
-                    letterSpacing: '0.02em'
+                  <div style={{
+                    width: '44px',
+                    height: '44px',
+                    borderRadius: '50%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    overflow: 'hidden',
+                    boxShadow: '0 4px 20px rgba(255, 0, 60, 0.3)'
                   }}>
-                    KIKKI
-                  </h2>
-                                     <p style={{
-                     fontFamily: 'var(--font-body)',
-                     fontSize: '0.9rem',
-                     color: 'var(--color-gray)',
-                     margin: 0,
-                     fontWeight: '500'
-                   }}>
-                     AI Assistant
-                   </p>
-                   
-                   {/* User Status */}
-                   <p style={{
-                     fontFamily: 'var(--font-body)',
-                     fontSize: '0.8rem',
-                     color: currentUser ? '#51cf66' : 'var(--color-gray)',
-                     margin: '0.25rem 0 0 0',
-                     fontWeight: '400'
-                   }}>
-                     {currentUser ? `Welcome back, ${currentUser.phone} 🎉` : "You're chatting as Guest 👤"}
-                   </p>
+                    <img 
+                      src="/logos/logo.PNG" 
+                      alt="KIIK69" 
+                      style={{ 
+                        width: '100%', 
+                        height: '100%', 
+                        objectFit: 'cover',
+                        filter: 'brightness(0) invert(1)' // Make logo white
+                      }} 
+                    />
+                  </div>
+                  <div>
+                    <h2 style={{
+                      fontFamily: 'var(--font-heading)',
+                      fontSize: '1.6rem',
+                      color: 'var(--color-white)',
+                      margin: 0,
+                      letterSpacing: '0.02em'
+                    }}>
+                      KIIK69
+                    </h2>
+                    <p style={{
+                      fontFamily: 'var(--font-body)',
+                      fontSize: '0.9rem',
+                      color: 'var(--color-gray)',
+                      margin: 0,
+                      fontWeight: '500'
+                    }}>
+                      Welcome to KIIK 69 🥂 Let's plan your night!
+                    </p>
                   {!isAIConfigured && (
                     <div style={{
                       display: 'flex',
@@ -470,78 +492,6 @@ const Chat = ({ isOpen, onClose }) => {
                 alignItems: 'center',
                 gap: '0.5rem'
               }}>
-                {/* Logout Button - Only show when user is logged in */}
-                {currentUser && (
-                  <button
-                    onClick={handleLogout}
-                    style={{
-                      padding: '0.5rem 1rem',
-                      background: 'rgba(255, 255, 255, 0.15)',
-                      backdropFilter: 'blur(10px)',
-                      border: '1px solid rgba(255, 255, 255, 0.25)',
-                      borderRadius: '20px',
-                      color: 'var(--color-white)',
-                      fontFamily: 'var(--font-body)',
-                      fontSize: '0.8rem',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '0.5rem',
-                      transition: 'all 0.3s ease',
-                      boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
-                    }}
-                    onMouseEnter={(e) => {
-                      e.target.style.background = 'rgba(255, 255, 255, 0.25)';
-                      e.target.style.transform = 'scale(1.05)';
-                      e.target.style.boxShadow = '0 4px 15px rgba(255, 0, 60, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.15)';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.target.style.background = 'rgba(255, 255, 255, 0.15)';
-                      e.target.style.transform = 'scale(1)';
-                      e.target.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)';
-                    }}
-                  >
-                    <FaSignOutAlt />
-                    Logout
-                  </button>
-                )}
-
-                {/* Login Button - Only show when user is not logged in */}
-                {!currentUser && (
-                  <button
-                    onClick={() => setIsLoginPopupOpen(true)}
-                    style={{
-                      padding: '0.5rem 1rem',
-                      background: 'rgba(255, 0, 60, 0.25)',
-                      backdropFilter: 'blur(10px)',
-                      border: '1px solid rgba(255, 255, 255, 0.25)',
-                      borderRadius: '20px',
-                      color: 'var(--color-white)',
-                      fontFamily: 'var(--font-body)',
-                      fontSize: '0.8rem',
-                      fontWeight: '600',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '0.5rem',
-                      transition: 'all 0.3s ease',
-                      boxShadow: '0 2px 8px rgba(255, 0, 60, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
-                    }}
-                    onMouseEnter={(e) => {
-                      e.target.style.transform = 'scale(1.05)';
-                      e.target.style.background = 'rgba(255, 0, 60, 0.35)';
-                      e.target.style.boxShadow = '0 4px 15px rgba(255, 0, 60, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.15)';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.target.style.transform = 'scale(1)';
-                      e.target.style.boxShadow = '0 2px 8px rgba(255, 0, 60, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)';
-                    }}
-                  >
-                    <FaSignInAlt />
-                    Login
-                  </button>
-                )}
-                
                 <button
                   onClick={onClose}
                   style={{
@@ -609,14 +559,23 @@ const Chat = ({ isOpen, onClose }) => {
                       <div style={{
                         width: '40px',
                         height: '40px',
-                        background: 'linear-gradient(135deg, var(--color-primary), rgba(255, 0, 60, 0.8))',
                         borderRadius: '50%',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        flexShrink: 0
+                        flexShrink: 0,
+                        overflow: 'hidden'
                       }}>
-                        <FaRobot style={{ color: 'var(--color-white)', fontSize: '1rem' }} />
+                        <img 
+                          src="/logos/logo.PNG" 
+                          alt="KIIK69" 
+                          style={{ 
+                            width: '100%', 
+                            height: '100%', 
+                            objectFit: 'cover',
+                            filter: 'brightness(0) invert(1)' // Make logo white
+                          }} 
+                        />
                       </div>
                     )}
                     
@@ -703,13 +662,22 @@ const Chat = ({ isOpen, onClose }) => {
                     <div style={{
                       width: '40px',
                       height: '40px',
-                      background: 'linear-gradient(135deg, var(--color-primary), rgba(255, 0, 60, 0.8))',
                       borderRadius: '50%',
                       display: 'flex',
                       alignItems: 'center',
-                      justifyContent: 'center'
+                      justifyContent: 'center',
+                      overflow: 'hidden'
                     }}>
-                      <FaRobot style={{ color: 'var(--color-white)', fontSize: '1rem' }} />
+                      <img 
+                        src="/logos/logo.PNG" 
+                        alt="KIIK69" 
+                        style={{ 
+                          width: '100%', 
+                          height: '100%', 
+                          objectFit: 'cover',
+                          filter: 'brightness(0) invert(1)' // Make logo white
+                        }} 
+                      />
                     </div>
                     <div style={{
                       padding: '1rem 1.5rem',
@@ -882,218 +850,7 @@ const Chat = ({ isOpen, onClose }) => {
         </motion.div>
       )}
 
-      {/* Login Popup Modal */}
-      <AnimatePresence>
-        {isLoginPopupOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            style={{
-              position: 'fixed',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              background: 'rgba(0, 0, 0, 0.8)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              zIndex: 10000,
-              padding: '1rem'
-            }}
-            onClick={() => setIsLoginPopupOpen(false)}
-          >
-            <motion.div
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.8, opacity: 0 }}
-              style={{
-                width: '100%',
-                maxWidth: '400px',
-                background: 'rgba(0, 0, 0, 0.95)',
-                borderRadius: '20px',
-                border: '1px solid rgba(255, 255, 255, 0.1)',
-                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)',
-                overflow: 'hidden'
-              }}
-              onClick={(e) => e.stopPropagation()}
-            >
-              {/* Header */}
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                padding: '1.5rem 2rem',
-                borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
-                background: 'rgba(255, 255, 255, 0.05)'
-              }}>
-                <h2 style={{
-                  fontFamily: 'var(--font-heading)',
-                  fontSize: '1.5rem',
-                  color: 'var(--color-white)',
-                  margin: 0
-                }}>
-                  Login to Chat
-                </h2>
-                <button
-                  onClick={() => setIsLoginPopupOpen(false)}
-                  style={{
-                    width: '40px',
-                    height: '40px',
-                    borderRadius: '50%',
-                    background: 'rgba(255, 255, 255, 0.1)',
-                    border: '1px solid rgba(255, 255, 255, 0.2)',
-                    color: 'var(--color-white)',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: '1.1rem',
-                    transition: 'all 0.3s ease'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.target.style.background = 'rgba(255, 255, 255, 0.2)';
-                    e.target.style.transform = 'scale(1.1)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.target.style.background = 'rgba(255, 255, 255, 0.1)';
-                    e.target.style.transform = 'scale(1)';
-                  }}
-                >
-                  <FaTimes />
-                </button>
-              </div>
-
-              {/* Content */}
-              <div style={{ padding: '2rem' }}>
-                <form onSubmit={handleLoginSubmit}>
-                  <div style={{ marginBottom: '1.5rem' }}>
-                    <label style={{
-                      display: 'block',
-                      fontFamily: 'var(--font-body)',
-                      fontSize: '0.9rem',
-                      color: 'var(--color-gray)',
-                      marginBottom: '0.5rem'
-                    }}>
-                      Email or Phone Number
-                    </label>
-                    <div style={{
-                      position: 'relative',
-                      display: 'flex',
-                      alignItems: 'center'
-                    }}>
-                      <div style={{
-                        position: 'absolute',
-                        left: '1rem',
-                        color: 'var(--color-gray)',
-                        fontSize: '1.1rem',
-                        zIndex: 1
-                      }}>
-                        {loginIdentifier.includes('@') ? <FaEnvelope /> : <FaPhone />}
-                      </div>
-                      <input
-                        type="text"
-                        value={loginIdentifier}
-                        onChange={(e) => setLoginIdentifier(e.target.value)}
-                        placeholder="Enter email or 10-digit phone number"
-                        style={{
-                          width: '100%',
-                          background: 'rgba(255, 255, 255, 0.05)',
-                          border: '1px solid rgba(255, 255, 255, 0.1)',
-                          borderColor: loginError ? 'rgba(255, 0, 0, 0.5)' : 'rgba(255, 255, 255, 0.1)',
-                          borderRadius: '12px',
-                          padding: '1rem 1rem 1rem 3rem',
-                          color: 'var(--color-white)',
-                          fontFamily: 'var(--font-body)',
-                          fontSize: '1rem',
-                          outline: 'none',
-                          transition: 'all 0.3s ease'
-                        }}
-                        onFocus={(e) => {
-                          e.target.style.border = '1px solid var(--color-primary)';
-                          e.target.style.boxShadow = '0 0 0 3px rgba(255, 0, 60, 0.1)';
-                        }}
-                        onBlur={(e) => {
-                          e.target.style.border = '1px solid rgba(255, 255, 255, 0.1)';
-                          e.target.style.boxShadow = 'none';
-                        }}
-                      />
-                    </div>
-                    <p style={{
-                      fontSize: '0.75rem',
-                      color: 'var(--color-gray)',
-                      marginTop: '0.5rem',
-                      fontFamily: 'var(--font-body)'
-                    }}>
-                      {loginIdentifier.includes('@') 
-                        ? 'We\'ll use your email as your unique identifier'
-                        : 'We\'ll automatically add +91 country code for India'
-                      }
-                    </p>
-                  </div>
-
-                  {loginError && (
-                    <div style={{
-                      background: 'rgba(255, 0, 0, 0.1)',
-                      border: '1px solid rgba(255, 0, 0, 0.3)',
-                      borderRadius: '8px',
-                      padding: '0.75rem',
-                      marginBottom: '1rem',
-                      color: '#ff6b6b',
-                      fontSize: '0.9rem'
-                    }}>
-                      {loginError}
-                    </div>
-                  )}
-
-                  <button
-                    type="submit"
-                    disabled={isLoginLoading || !loginIdentifier.trim()}
-                    style={{
-                      width: '100%',
-                      background: 'linear-gradient(135deg, var(--color-primary), rgba(255, 0, 60, 0.8))',
-                      border: 'none',
-                      borderRadius: '12px',
-                      padding: '1rem',
-                      color: 'var(--color-white)',
-                      fontFamily: 'var(--font-body)',
-                      fontSize: '1rem',
-                      fontWeight: '600',
-                      cursor: 'pointer',
-                      transition: 'all 0.3s ease',
-                      boxShadow: '0 4px 20px rgba(255, 0, 60, 0.3)',
-                      opacity: isLoginLoading || !loginIdentifier.trim() ? 0.6 : 1
-                    }}
-                    onMouseEnter={(e) => {
-                      if (!e.target.disabled) {
-                        e.target.style.transform = 'translateY(-2px)';
-                        e.target.style.boxShadow = '0 6px 25px rgba(255, 0, 60, 0.4)';
-                      }
-                    }}
-                    onMouseLeave={(e) => {
-                      e.target.style.transform = 'translateY(0)';
-                      e.target.style.boxShadow = '0 4px 20px rgba(255, 0, 60, 0.3)';
-                    }}
-                  >
-                    {isLoginLoading ? 'Logging in...' : 'Login'}
-                  </button>
-                </form>
-
-                <p style={{
-                  fontSize: '0.8rem',
-                  color: 'var(--color-gray)',
-                  textAlign: 'center',
-                  marginTop: '1rem',
-                  fontFamily: 'var(--font-body)'
-                }}>
-                  No password required! Just enter your phone or email to start chatting.
-                </p>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      
 
     </AnimatePresence>
   );
