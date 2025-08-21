@@ -145,147 +145,13 @@ const Chat = ({ isOpen, onClose }) => {
 
 
 
-  // Enhanced NLP parsing for reservation details
-  const parseReservationDetails = (message) => {
-    const lowerMessage = message.toLowerCase();
-    const details = {};
-    
-    // Extract people count (various formats) - IMPROVED LOGIC
-    const peoplePatterns = [
-      /(\d+)\s*(?:people|person|guests?|members?)/i,
-      /(?:for|about|around)\s*(\d+)/i,
-      /(\d+)\s*(?:guests?|members?)/i,
-      /^(\d+)$/i, // Just a number (standalone)
-      /(\d+)/ // Any number (fallback)
-    ];
-    
-    for (const pattern of peoplePatterns) {
-      const match = lowerMessage.match(pattern);
-      if (match && !details.people) {
-        details.people = parseInt(match[1]);
-        break;
-      }
-    }
-    
-    // Extract date/time (various formats) - SIMPLIFIED AND FIXED
-    // Check for relative dates first (most common)
-    if (lowerMessage.includes('today')) {
-      details.date = 'today';
-    } else if (lowerMessage.includes('tomorrow')) {
-      details.date = 'tomorrow';
-    } else if (lowerMessage.includes('tonight')) {
-      details.date = 'tonight';
-    } else if (lowerMessage.includes('next week')) {
-      details.date = 'next week';
-    } else if (lowerMessage.includes('next month')) {
-      details.date = 'next month';
-    }
-    
-    // Check for specific dates
-    const specificDatePattern = /(\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4})/;
-    const specificDateMatch = lowerMessage.match(specificDatePattern);
-    if (specificDateMatch && !details.date) {
-      details.date = specificDateMatch[1];
-    }
-    
-    // Check for month names
-    const monthPattern = /(\d{1,2}\s+(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\s+\d{2,4})/i;
-    const monthMatch = lowerMessage.match(monthPattern);
-    if (monthMatch && !details.date) {
-      details.date = monthMatch[1];
-    }
-    
-    // Check for time
-    const timePattern = /(\d{1,2}:\d{2}\s*(?:am|pm)?)/i;
-    const timeMatch = lowerMessage.match(timePattern);
-    if (timeMatch) {
-      details.time = timeMatch[1];
-    }
-    
-    // Check for time without colon (like "10pm")
-    const simpleTimePattern = /(\d{1,2}\s*(?:am|pm))/i;
-    const simpleTimeMatch = lowerMessage.match(simpleTimePattern);
-    if (simpleTimeMatch && !details.time) {
-      details.time = simpleTimeMatch[1];
-    }
-    
+  
 
-    
-    return details;
-  };
 
-  // Smart defaults and partial completion logic
-  const getSmartDefaults = (currentData) => {
-    const defaults = {};
-    
-    // If no date given, suggest today/tonight
-    if (!currentData.date && !currentData.time) {
-      const now = new Date();
-      const hour = now.getHours();
-      
-      if (hour < 12) {
-        defaults.date = 'today';
-        defaults.time = 'dinner time (7:00 PM)';
-      } else if (hour < 17) {
-        defaults.date = 'today';
-        defaults.time = 'dinner time (7:00 PM)';
-      } else {
-        defaults.date = 'tonight';
-        defaults.time = '8:00 PM';
-      }
-    } else if (currentData.date && !currentData.time) {
-      // If date given but no time, suggest appropriate meal time
-      const lowerDate = currentData.date.toLowerCase();
-      if (lowerDate.includes('today') || lowerDate.includes('tonight')) {
-        const now = new Date();
-        const hour = now.getHours();
-        
-        if (hour < 12) {
-          defaults.time = 'lunch time (1:00 PM)';
-        } else if (hour < 17) {
-          defaults.time = 'dinner time (7:00 PM)';
-        } else {
-          defaults.time = '8:00 PM';
-        }
-      } else {
-        defaults.time = 'dinner time (7:00 PM)';
-      }
-    } else if (!currentData.date && currentData.time) {
-      // If time given but no date, suggest today
-      defaults.date = 'today';
-    }
-    
-    return defaults;
-  };
 
-  // Check if we can complete booking with smart defaults
-  const canCompleteWithDefaults = (currentData) => {
-    const defaults = getSmartDefaults(currentData);
-    return currentData.people && (currentData.date || defaults.date) && (currentData.time || defaults.time);
-  };
 
-  // Handle booking confirmation with smart defaults
-  const handleBookingConfirmation = (action) => {
-    if (action === 'confirm_booking') {
-      // Complete the booking with smart defaults
-      completeBooking();
-    } else if (action === 'modify_booking') {
-      // Reset to ask for more details
-      setBookingData(prev => ({ ...prev, isActive: true }));
-      
-      const botResponse = {
-        id: Date.now() + 1,
-        text: "Sure! What would you like to change? I need:\n\n👥 Number of people\n📅 Date and time",
-        sender: 'bot',
-        timestamp: new Date().toISOString(),
-        navigationButtons: []
-      };
-      
-      setMessages(prev => [...prev, botResponse]);
-    }
-  };
 
-  // Intelligent conversation handler - like ChatGPT but with KIIK69 knowledge
+  // Let OpenAI handle ALL conversations naturally - like ChatGPT
   const handleIntelligentConversation = async (messageText) => {
     const userMessage = {
       id: Date.now(),
@@ -299,50 +165,51 @@ const Chat = ({ isOpen, onClose }) => {
     setIsLoading(true);
 
     try {
-      // Check if this is a booking-related conversation
-      const isBookingContext = bookingData.isActive || 
-        messageText.toLowerCase().includes('book') || 
+      let botResponse;
+      
+      if (isAIConfigured) {
+        // Use real OpenAI API with KIIK69 context - handle ALL conversations
+        botResponse = await generateAIResponse(messageText, messages);
+      } else {
+        // Fallback response if OpenAI not configured
+        botResponse = "I'm currently in demo mode. Please configure your OpenAI API key to get real AI responses!";
+      }
+      
+      // Check if this is a booking-related conversation AFTER OpenAI responds
+      const isBookingContext = messageText.toLowerCase().includes('book') || 
         messageText.toLowerCase().includes('reservation') ||
         messageText.toLowerCase().includes('reserve') ||
         messageText.toLowerCase().includes('table') ||
-        messageText.toLowerCase().includes('party');
-
+        messageText.toLowerCase().includes('party') ||
+        botResponse.toLowerCase().includes('booking') ||
+        botResponse.toLowerCase().includes('reservation');
+      
+      // Generate navigation buttons based on user message
+      const navigationButtons = getNavigationButtonsForMessage(messageText);
+      
+      // Add custom booking buttons if it's a booking context
+      let customButtons = navigationButtons;
       if (isBookingContext) {
-        // Handle booking conversation intelligently
-        await handleBookingConversation(messageText);
-      } else {
-        // Handle general conversation with AI
-        let botResponse;
-        
-        if (isAIConfigured) {
-          // Use real OpenAI API with KIIK69 context
-          botResponse = await generateAIResponse(messageText, messages);
-        } else {
-          // Fallback response if OpenAI not configured
-          botResponse = "I'm currently in demo mode. Please configure your OpenAI API key to get real AI responses!";
-        }
-        
-        // Generate navigation buttons based on user message
-        const navigationButtons = getNavigationButtonsForMessage(messageText);
-        
-        const botMessage = {
-          id: Date.now() + 1,
-          text: botResponse,
-          sender: 'bot',
-          timestamp: new Date().toISOString(),
-          navigationButtons: navigationButtons
-        };
+        customButtons = [...navigationButtons, 'scroll_to_packages', 'scroll_to_menu'];
+      }
+      
+      const botMessage = {
+        id: Date.now() + 1,
+        text: botResponse,
+        sender: 'bot',
+        timestamp: new Date().toISOString(),
+        navigationButtons: customButtons
+      };
 
-        setMessages(prev => [...prev, botMessage]);
+      setMessages(prev => [...prev, botMessage]);
 
-        // Save chat message to database if user is logged in
-        if (currentUser) {
-          try {
-            await saveChatMessage(messageText, false);
-            await saveChatMessage(botResponse, true);
-          } catch (error) {
-            console.error('Failed to save chat:', error);
-          }
+      // Save chat message to database if user is logged in
+      if (currentUser) {
+        try {
+          await saveChatMessage(messageText, false);
+          await saveChatMessage(botResponse, true);
+        } catch (error) {
+          console.error('Failed to save chat:', error);
         }
       }
     } catch (error) {
@@ -362,105 +229,11 @@ const Chat = ({ isOpen, onClose }) => {
     }
   };
 
-  // Friendly, conversational booking handler - no rigid rules!
-  const handleBookingConversation = async (messageText) => {
-    // Parse the message for any details naturally
-    const parsedDetails = parseReservationDetails(messageText);
-    
-    // Update booking data with any found details
-    const updatedBookingData = { ...bookingData };
-    if (parsedDetails.people && !updatedBookingData.people) updatedBookingData.people = parsedDetails.people;
-    if (parsedDetails.date && !updatedBookingData.date) updatedBookingData.date = parsedDetails.date;
-    if (parsedDetails.time && !updatedBookingData.time) updatedBookingData.time = parsedDetails.time;
-    
-    setBookingData(prev => ({ ...prev, ...updatedBookingData, isActive: true, context: [...prev.context, messageText] }));
-
-    // Check if we have enough info to complete the booking
-    if (updatedBookingData.people && updatedBookingData.date && updatedBookingData.time) {
-      // We have all the info! Show confirmation and WhatsApp button
-      const botResponseText = `Awesome! 🎉 I've got everything I need:\n\n👥 **${updatedBookingData.people} people**\n📅 **${updatedBookingData.date}**\n🕔 **${updatedBookingData.time}**\n\nDoes this look right to you? If yes, I'll create a WhatsApp message for you to send! 😊`;
-      
-      const botResponse = {
-        id: Date.now() + 1,
-        text: botResponseText,
-        sender: 'bot',
-        timestamp: new Date().toISOString(),
-        navigationButtons: ['confirm_booking', 'modify_booking']
-      };
-      
-      setMessages(prev => [...prev, botResponse]);
-      return;
-    }
-
-    // If we don't have all info yet, just chat naturally
-    let botResponseText = '';
-    
-    if (!updatedBookingData.people && !updatedBookingData.date && !updatedBookingData.time) {
-      // Nothing yet - just be friendly
-      botResponseText = `Hey! 😊 I'd love to help you with your reservation! Tell me more about what you have in mind - like how many people, when you want to come, or anything else!`;
-    } else if (!updatedBookingData.people) {
-      botResponseText = `Great! I know you want to come on **${updatedBookingData.date}** at **${updatedBookingData.time}**! 😊 How many people will be joining us?`;
-    } else if (!updatedBookingData.date) {
-      botResponseText = `Perfect! **${updatedBookingData.people} people** sounds like a fun group! 🎉 When would you like to come?`;
-    } else if (!updatedBookingData.time) {
-      botResponseText = `Awesome! **${updatedBookingData.people} people** on **${updatedBookingData.date}** - that's going to be great! 🎊 What time works best for you?`;
-    }
-
-    const botResponse = {
-      id: Date.now() + 1,
-      text: botResponseText,
-      sender: 'bot',
-      timestamp: new Date().toISOString(),
-      navigationButtons: []
-    };
-
-    setMessages(prev => [...prev, botResponse]);
-  };
 
 
 
-  // Complete booking and show options with WhatsApp integration
-  const completeBooking = () => {
-    const { people, date, time } = bookingData;
-    
-    let botResponse;
-    let navigationButtons = [];
-    
-    if (people >= 20) {
-      botResponse = {
-        id: Date.now() + 1,
-        text: `Perfect! ${people} people is definitely a celebration! 🥳\n\nWe have amazing party packages with unlimited food & drinks. Want to see the options?`,
-        sender: 'bot',
-        timestamp: new Date().toISOString(),
-        navigationButtons: ['scroll_to_packages']
-      };
-    } else {
-      // Generate custom WhatsApp message
-      const whatsappMessage = `Hi, I'd like to book a reservation at KIIK 69 Sports Bar!\n\n👥 People: ${people}\n📅 Date: ${date}\n🕔 Time: ${time}\n\nCan you help me with this?`;
-      
-      // Encode the message for WhatsApp URL
-      const encodedMessage = encodeURIComponent(whatsappMessage);
-      const whatsappUrl = `https://wa.me/919247696969?text=${encodedMessage}`;
-      
-      botResponse = {
-        id: Date.now() + 1,
-        text: `Perfect! 🎉 Here's your booking summary:\n\n👥 **${people} people**\n📅 **${date}**\n🕔 **${time}**\n\nI've prepared a WhatsApp message for you to send to our team! Just click the button below and it'll open WhatsApp with everything ready to go! 😊`,
-        sender: 'bot',
-        timestamp: new Date().toISOString(),
-        navigationButtons: [],
-        whatsappUrl: whatsappUrl // Store WhatsApp URL for the button
-      };
-    }
-    
-    setMessages(prev => [...prev, botResponse]);
-    setBookingData({
-      people: null,
-      date: null,
-      time: null,
-      isActive: false,
-      context: []
-    });
-  };
+
+
 
   // Check if message is a greeting
   const isGreeting = (message) => {
