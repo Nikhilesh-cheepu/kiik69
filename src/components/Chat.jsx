@@ -358,46 +358,36 @@ const Chat = ({ isOpen, onClose }) => {
             background: 'linear-gradient(135deg, rgba(0, 0, 0, 0.95) 0%, rgba(255, 0, 60, 0.05) 50%, rgba(0, 0, 0, 0.95) 100%)',
             backdropFilter: 'blur(20px)',
             display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '1rem'
+            alignItems: 'stretch',
+            justifyContent: 'stretch',
+            padding: 0
           }}
-          onClick={onClose}
         >
           <motion.div
-            initial={{ scale: 0.9, opacity: 0, y: 20 }}
-            animate={{ scale: 1, opacity: 1, y: 0 }}
-            exit={{ scale: 0.9, opacity: 0, y: 20 }}
-            transition={{ duration: 0.3, ease: "easeOut" }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.25, ease: 'easeOut' }}
             style={{
-              width: '100%',
-              maxWidth: '1200px',
-              height: '90vh',
+              width: '100vw',
+              height: '100vh',
+              maxWidth: '100vw',
               maxHeight: '100vh',
-              background: 'rgba(0, 0, 0, 0.95)',
-              borderRadius: '20px',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
-              boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)',
+              background: 'rgba(0, 0, 0, 0.90)',
+              borderRadius: 0,
+              border: '1px solid rgba(255, 255, 255, 0.06)',
+              boxShadow: '0 10px 40px rgba(0,0,0,0.6)',
               overflow: 'hidden',
               display: 'flex',
-              flexDirection: 'column',
-              '@media (max-width: 768px)': {
-                width: '100vw',
-                height: '100vh',
-                maxWidth: '100vw',
-                maxHeight: '100vh',
-                borderRadius: '0',
-                margin: '0'
-              }
+              flexDirection: 'column'
             }}
-            onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
             <div style={{
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
-              padding: '1.5rem 2rem',
+              padding: '1rem 1.25rem',
               borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
               background: 'rgba(255, 255, 255, 0.05)'
             }}>
@@ -407,8 +397,8 @@ const Chat = ({ isOpen, onClose }) => {
                 gap: '1rem'
               }}>
                 <div style={{
-                  width: '50px',
-                  height: '50px',
+                  width: '44px',
+                  height: '44px',
                   background: 'linear-gradient(135deg, var(--color-primary), rgba(255, 0, 60, 0.8))',
                   borderRadius: '50%',
                   display: 'flex',
@@ -421,7 +411,7 @@ const Chat = ({ isOpen, onClose }) => {
                 <div>
                   <h2 style={{
                     fontFamily: 'var(--font-heading)',
-                    fontSize: '2rem',
+                    fontSize: '1.6rem',
                     color: 'var(--color-white)',
                     margin: 0,
                     letterSpacing: '0.02em'
@@ -589,10 +579,11 @@ const Chat = ({ isOpen, onClose }) => {
             <div style={{
               flex: 1,
               overflowY: 'auto',
-              padding: '2rem',
+              overflowX: 'hidden',
+              padding: '1rem',
               display: 'flex',
               flexDirection: 'column',
-              gap: '1.5rem'
+              gap: '0.75rem'
             }}>
               {messages.map((message) => (
                 <motion.div
@@ -607,9 +598,9 @@ const Chat = ({ isOpen, onClose }) => {
                 >
                   <div style={{
                     display: 'flex',
-                    alignItems: 'flex-start',
-                    gap: '1rem',
-                    maxWidth: '70%'
+                    alignItems: 'flex-end',
+                    gap: '0.6rem',
+                    maxWidth: '92%'
                   }}>
                     {message.sender === 'bot' && (
                       <div style={{
@@ -627,8 +618,8 @@ const Chat = ({ isOpen, onClose }) => {
                     )}
                     
                     <div style={{
-                      padding: '1rem 1.5rem',
-                      borderRadius: '18px',
+                      padding: '0.75rem 1rem',
+                      borderRadius: '16px',
                       background: message.sender === 'user' 
                         ? 'linear-gradient(135deg, var(--color-primary), rgba(255, 0, 60, 0.8))'
                         : 'rgba(255, 255, 255, 0.05)',
@@ -638,11 +629,14 @@ const Chat = ({ isOpen, onClose }) => {
                       color: 'var(--color-white)',
                       boxShadow: message.sender === 'user' 
                         ? '0 4px 20px rgba(255, 0, 60, 0.3)'
-                        : 'none'
+                        : 'none',
+                      overflowWrap: 'anywhere',
+                      wordBreak: 'break-word',
+                      whiteSpace: 'pre-wrap'
                     }}>
                       <p style={{
                         fontFamily: 'var(--font-body)',
-                        fontSize: '1rem',
+                        fontSize: '0.9rem',
                         lineHeight: 1.5,
                         margin: 0,
                         marginBottom: '0.5rem'
@@ -651,7 +645,7 @@ const Chat = ({ isOpen, onClose }) => {
                       </p>
                       <p style={{
                         fontFamily: 'var(--font-body)',
-                        fontSize: '0.8rem',
+                        fontSize: '0.75rem',
                         color: message.sender === 'user' ? 'rgba(255, 255, 255, 0.7)' : 'var(--color-gray)',
                         margin: 0
                       }}>
@@ -768,9 +762,9 @@ const Chat = ({ isOpen, onClose }) => {
 
             {/* Input Section */}
             <div style={{
-              padding: '1.5rem 2rem',
-              borderTop: '1px solid rgba(255, 255, 255, 0.1)',
-              background: 'rgba(0, 0, 0, 0.5)'
+              padding: '0.8rem 1rem',
+              borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+              background: 'rgba(0, 0, 0, 0.6)'
             }}>
               <div style={{
                 display: 'flex',
@@ -785,16 +779,16 @@ const Chat = ({ isOpen, onClose }) => {
                   value={inputMessage}
                   onChange={(e) => setInputMessage(e.target.value)}
                   onKeyPress={handleKeyPress}
-                  placeholder="Ask me about KIIK 69..."
+                  placeholder="Type a message"
                   style={{
                     flex: '1 1 auto',
                     minWidth: '0',
                     maxWidth: '100%',
-                    background: 'rgba(255, 255, 255, 0.05)',
+                    background: 'rgba(255, 255, 255, 0.06)',
                     backdropFilter: 'blur(10px)',
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
-                    borderRadius: '25px',
-                    padding: '1rem 1.5rem',
+                    border: '1px solid rgba(255, 255, 255, 0.12)',
+                    borderRadius: '24px',
+                    padding: '0.9rem 1.2rem',
                     color: 'var(--color-white)',
                     fontFamily: 'var(--font-body)',
                     fontSize: 'clamp(0.9rem, 2.5vw, 1rem)',
@@ -816,12 +810,12 @@ const Chat = ({ isOpen, onClose }) => {
                   onClick={handleSendMessage}
                   disabled={!inputMessage.trim() || isLoading}
                   style={{
-                    width: '55px',
-                    height: '55px',
-                    background: 'rgba(255, 0, 60, 0.25)',
+                    width: '48px',
+                    height: '48px',
+                    background: 'rgba(255, 0, 60, 0.28)',
                     backdropFilter: 'blur(10px)',
                     borderRadius: '50%',
-                    border: '1px solid rgba(255, 255, 255, 0.25)',
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
                     color: 'var(--color-white)',
                     cursor: 'pointer',
                     display: 'flex',
