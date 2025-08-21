@@ -368,6 +368,7 @@ const Chat = ({ isOpen, onClose }) => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.25, ease: 'easeOut' }}
+            className="chat-container"
             style={{
               width: '100vw',
               height: '100vh',
@@ -581,9 +582,11 @@ const Chat = ({ isOpen, onClose }) => {
               overflowY: 'auto',
               overflowX: 'hidden',
               padding: '1rem',
+              paddingBottom: '0.5rem',
               display: 'flex',
               flexDirection: 'column',
-              gap: '0.75rem'
+              gap: '0.75rem',
+              minHeight: 0
             }}>
               {messages.map((message) => (
                 <motion.div
@@ -764,7 +767,12 @@ const Chat = ({ isOpen, onClose }) => {
             <div style={{
               padding: '0.8rem 1rem',
               borderTop: '1px solid rgba(255, 255, 255, 0.08)',
-              background: 'rgba(0, 0, 0, 0.6)'
+              background: 'rgba(0, 0, 0, 0.6)',
+              position: 'sticky',
+              bottom: 0,
+              left: 0,
+              right: 0,
+              zIndex: 10
             }}>
               <div style={{
                 display: 'flex',
@@ -791,10 +799,12 @@ const Chat = ({ isOpen, onClose }) => {
                     padding: '0.9rem 1.2rem',
                     color: 'var(--color-white)',
                     fontFamily: 'var(--font-body)',
-                    fontSize: 'clamp(0.9rem, 2.5vw, 1rem)',
+                    fontSize: '16px',
                     outline: 'none',
                     transition: 'all 0.3s ease',
-                    boxSizing: 'border-box'
+                    boxSizing: 'border-box',
+                    WebkitAppearance: 'none',
+                    WebkitBorderRadius: '24px'
                   }}
                   onFocus={(e) => {
                     e.target.style.border = '1px solid var(--color-primary)';
