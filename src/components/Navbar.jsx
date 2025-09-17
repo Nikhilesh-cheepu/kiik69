@@ -360,12 +360,8 @@ const Navbar = () => {
         </nav>
       </div>
 
-      {/* Popup Chat */}
-      <AnimatePresence>
-        {isChatOpen && (
-          <Chat onClose={() => setIsChatOpen(false)} />
-        )}
-      </AnimatePresence>
+      {/* Chat Modal */}
+      <Chat isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} />
 
       {/* Floating Chat Button for Mobile - Bottom Right Corner */}
       {!isDesktop && (
@@ -510,9 +506,6 @@ const Navbar = () => {
           )}
         </AnimatePresence>
       )}
-      
-      {/* Chat Modal */}
-      <Chat isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} />
     </motion.header>
   );
 };

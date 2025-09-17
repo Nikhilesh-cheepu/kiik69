@@ -114,17 +114,13 @@ const TimingsSection = () => {
               zIndex: 2
             }} />
             
-            {/* Content Container */}
+            {/* Content Container - Centered on timeline */}
             <div style={{
-              background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.06))',
-              borderRadius: '20px',
-              padding: '2rem 2.5rem',
-              border: '1px solid rgba(255, 255, 255, 0.15)',
-              backdropFilter: 'blur(20px)',
-              boxShadow: '0 15px 40px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
               display: 'flex',
+              flexDirection: 'column',
               alignItems: 'center',
-              gap: '2rem',
+              justifyContent: 'center',
+              textAlign: 'center',
               maxWidth: '500px',
               width: '100%',
               transition: 'all 0.3s ease'
@@ -139,6 +135,7 @@ const TimingsSection = () => {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
+                marginBottom: '1rem',
                 flexShrink: 0
               }}>
                 <span style={{
@@ -149,8 +146,7 @@ const TimingsSection = () => {
 
               {/* Text Content */}
               <div style={{
-                flex: 1,
-                textAlign: 'left'
+                textAlign: 'center'
               }}>
                 <h3 style={{
                   fontFamily: 'Bebas Neue, Arial Black, sans-serif',
@@ -197,17 +193,13 @@ const TimingsSection = () => {
               zIndex: 2
             }} />
             
-            {/* Content Container */}
+            {/* Content Container - Centered on timeline */}
             <div style={{
-              background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.06))',
-              borderRadius: '20px',
-              padding: '2rem 2.5rem',
-              border: '1px solid rgba(255, 255, 255, 0.15)',
-              backdropFilter: 'blur(20px)',
-              boxShadow: '0 15px 40px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
               display: 'flex',
+              flexDirection: 'column',
               alignItems: 'center',
-              gap: '2rem',
+              justifyContent: 'center',
+              textAlign: 'center',
               maxWidth: '500px',
               width: '100%',
               transition: 'all 0.3s ease'
@@ -222,6 +214,7 @@ const TimingsSection = () => {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
+                marginBottom: '1rem',
                 flexShrink: 0
               }}>
                 <span style={{
@@ -232,8 +225,7 @@ const TimingsSection = () => {
 
               {/* Text Content */}
               <div style={{
-                flex: 1,
-                textAlign: 'left'
+                textAlign: 'center'
               }}>
                 <h3 style={{
                   fontFamily: 'Bebas Neue, Arial Black, sans-serif',

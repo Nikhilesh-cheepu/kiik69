@@ -10,125 +10,132 @@ const packages = [
     id: 1,
     title: "Power Play",
     price: "₹1300",
-    originalPrice: "₹1800",
-    discount: "28% OFF",
-    badge: "POPULAR",
+    originalPrice: "",
+    discount: "+ 5% Taxes",
+    badge: "FOOD ONLY",
     icon: "🏆",
     color: "from-green-500 to-emerald-600",
     items: [
-      { icon: <FaUtensils />, text: "Bar Snack: Peanut Masala (on table throughout)" },
-      { icon: <FaUtensils />, text: "Starters: 3 Veg & 3 Non-Veg (served for 90 mins)" },
-      { icon: <FaUtensils />, text: "Main Course (60 mins): 2 Veg, 2 Non-Veg, 1 Dal, Steam Rice, Roti & Naan Basket, 2 Salads" },
+      { icon: <FaUtensils />, text: "Bar Snack: Peanut Masala (on table throughout the party)" },
+      { icon: <FaUtensils />, text: "Starters: 3 Veg & 3 Non-Veg (passing around for 90 mins)" },
+      { icon: <FaUtensils />, text: "Main Course (60 mins): 2 Veg & 2 Non-Veg, 1 Dal, Steam Rice, Roti & Naan Basket, 2 Salads" },
       { icon: <FaUtensils />, text: "Dessert: 1 Ice Cream, 1 Gulab Jamun" },
-      { icon: <FaGamepad />, text: "Access to Carroms, Pool, Foosball" },
+      { icon: <FaGamepad />, text: "Access to all games included" },
+      { icon: <FaGamepad />, text: "Bowling: ₹300 extra (Mon-Thu) | ₹400 extra (Fri-Sun)" },
     ],
   },
   {
     id: 2,
     title: "Super Sixer",
     price: "₹1800",
-    originalPrice: "₹2400",
-    discount: "25% OFF",
+    originalPrice: "",
+    discount: "+ 5% Taxes",
     badge: "BEST VALUE",
-    icon: "🎯",
+    icon: "🏏",
     color: "from-blue-500 to-cyan-600",
     items: [
-      { icon: <FaWineGlassAlt />, text: "Drinks: 3 KF & Bud Craft Beers per head" },
-      { icon: <FaUtensils />, text: "Bar Snack: Peanut Masala" },
-      { icon: <FaUtensils />, text: "Starters: 3 Veg & 3 Non-Veg (90 mins)" },
-      { icon: <FaUtensils />, text: "Main Course: Same as above" },
-      { icon: <FaUtensils />, text: "Dessert: 1 Ice Cream + 1 Gulab Jamun" },
-      { icon: <FaGamepad />, text: "Access to all indoor games" },
+      { icon: <FaWineGlassAlt />, text: "Drinks: 3 KF & BUD Craft Beers per head" },
+      { icon: <FaUtensils />, text: "Bar Snack: Peanut Masala (on table throughout the party)" },
+      { icon: <FaUtensils />, text: "Starters: 3 Veg & 3 Non-Veg (passing around for 90 mins)" },
+      { icon: <FaUtensils />, text: "Main Course (60 mins): 2 Veg & 2 Non-Veg, 1 Dal, Steam Rice, Roti & Naan Basket, 2 Salads" },
+      { icon: <FaUtensils />, text: "Dessert: 1 Ice Cream, 1 Gulab Jamun" },
+      { icon: <FaGamepad />, text: "Access to all games included" },
+      { icon: <FaGamepad />, text: "Bowling: ₹300 extra (Mon-Thu) | ₹400 extra (Fri-Sun)" },
     ],
   },
   {
     id: 3,
-    title: "The Hat-trick",
+    title: "Hat-Trick Hero",
     price: "₹2100",
-    originalPrice: "₹2800",
-    discount: "25% OFF",
+    originalPrice: "",
+    discount: "+ 5% Taxes",
     badge: "PREMIUM",
     icon: "⚽",
     color: "from-purple-500 to-violet-600",
     items: [
-      { icon: <FaWineGlassAlt />, text: "Drinks: Unlimited Indian Made Liquor + Craft Beers (120 mins)" },
-      { icon: <FaUtensils />, text: "Bar Snack: Peanut Masala" },
-      { icon: <FaUtensils />, text: "Starters: 3 Veg & 3 Non-Veg (90 mins)" },
-      { icon: <FaUtensils />, text: "Main Course: Same as above" },
-      { icon: <FaUtensils />, text: "Dessert: 1 Ice Cream + 1 Gulab Jamun" },
-      { icon: <FaGamepad />, text: "Games + Dance Floor Access" },
+      { icon: <FaWineGlassAlt />, text: "Unlimited Indian Made Liquor for 120 mins (Blenders Pride & Equivalent + KF & BUD Craft Beers)" },
+      { icon: <FaUtensils />, text: "Bar Snack: Peanut Masala (on table throughout the party)" },
+      { icon: <FaUtensils />, text: "Starters: 3 Veg & 3 Non-Veg (passing around for 90 mins)" },
+      { icon: <FaUtensils />, text: "Main Course (60 mins): 2 Veg & 2 Non-Veg, 1 Dal, Steam Rice, Roti & Naan Basket, 2 Salads" },
+      { icon: <FaUtensils />, text: "Dessert: 1 Ice Cream, 1 Gulab Jamun" },
+      { icon: <FaGamepad />, text: "Access to all games included" },
+      { icon: <FaGamepad />, text: "Bowling: ₹300 extra (Mon-Thu) | ₹400 extra (Fri-Sun)" },
     ],
   },
   {
     id: 4,
     title: "Master Blaster",
     price: "₹2500",
-    originalPrice: "₹3200",
-    discount: "22% OFF",
+    originalPrice: "",
+    discount: "+ 5% Taxes",
     badge: "ELITE",
     icon: "🏏",
     color: "from-orange-500 to-amber-600",
     items: [
-      { icon: <FaWineGlassAlt />, text: "Drinks: Unlimited Indian Made Foreign Liquor + Craft Beers (120 mins)" },
-      { icon: <FaUtensils />, text: "Bar Snack: Peanut Masala" },
-      { icon: <FaUtensils />, text: "Starters: 3 Veg & 3 Non-Veg (90 mins)" },
-      { icon: <FaUtensils />, text: "Main Course: Same as above" },
-      { icon: <FaUtensils />, text: "Dessert: 1 Ice Cream + 1 Gulab Jamun" },
-      { icon: <FaGamepad />, text: "Games + Dance Floor" },
+      { icon: <FaWineGlassAlt />, text: "Unlimited Indian Made Foreign Liquor for 120 mins (100 Pipers & Equivalent + KF & BUD Craft Beers)" },
+      { icon: <FaUtensils />, text: "Bar Snack: Peanut Masala (on table throughout the party)" },
+      { icon: <FaUtensils />, text: "Starters: 3 Veg & 3 Non-Veg (passing around for 90 mins)" },
+      { icon: <FaUtensils />, text: "Main Course (60 mins): 2 Veg & 2 Non-Veg, 1 Dal, Steam Rice, Roti & Naan Basket, 2 Salads" },
+      { icon: <FaUtensils />, text: "Dessert: 1 Ice Cream, 1 Gulab Jamun" },
+      { icon: <FaGamepad />, text: "Access to all games included" },
+      { icon: <FaGamepad />, text: "Bowling: ₹300 extra (Mon-Thu) | ₹400 extra (Fri-Sun)" },
     ],
   },
   {
     id: 5,
     title: "Champions League",
     price: "₹2900",
-    originalPrice: "₹3800",
-    discount: "24% OFF",
+    originalPrice: "",
+    discount: "+ 5% Taxes",
     badge: "VIP",
     icon: "🏆",
     color: "from-yellow-500 to-orange-600",
     items: [
-      { icon: <FaWineGlassAlt />, text: "Drinks: Unlimited Imported Liquor (Ballantine's & equivalents) + Craft Beers" },
-      { icon: <FaUtensils />, text: "Bar Snack: Peanut Masala" },
-      { icon: <FaUtensils />, text: "Starters: 3 Veg & 3 Non-Veg (90 mins)" },
-      { icon: <FaUtensils />, text: "Main Course: Same as above" },
-      { icon: <FaUtensils />, text: "Dessert: 1 Ice Cream + 1 Gulab Jamun" },
-      { icon: <FaGamepad />, text: "Games + Dance Floor" },
+      { icon: <FaWineGlassAlt />, text: "Unlimited Foreign Liquor for 120 mins (Ballantine's & Equivalent + KF & BUD Craft Beers)" },
+      { icon: <FaUtensils />, text: "Bar Snack: Peanut Masala (on table throughout the party)" },
+      { icon: <FaUtensils />, text: "Starters: 3 Veg & 3 Non-Veg (passing around for 90 mins)" },
+      { icon: <FaUtensils />, text: "Main Course (60 mins): 2 Veg & 2 Non-Veg, 1 Dal, Steam Rice, Roti & Naan Basket, 2 Salads" },
+      { icon: <FaUtensils />, text: "Dessert: 1 Ice Cream, 1 Gulab Jamun" },
+      { icon: <FaGamepad />, text: "Access to all games included" },
+      { icon: <FaGamepad />, text: "Bowling: ₹300 extra (Mon-Thu) | ₹400 extra (Fri-Sun)" },
     ],
   },
   {
     id: 6,
     title: "Hall of Fame",
     price: "₹3200",
-    originalPrice: "₹4200",
-    discount: "24% OFF",
+    originalPrice: "",
+    discount: "+ 5% Taxes",
     badge: "LUXURY",
     icon: "👑",
     color: "from-amber-500 to-yellow-600",
     items: [
-      { icon: <FaWineGlassAlt />, text: "Drinks: Unlimited Imported Liquor (JD, Jameson) + Craft Beers" },
-      { icon: <FaUtensils />, text: "Bar Snack: Peanut Masala" },
-      { icon: <FaUtensils />, text: "Starters: 3 Veg & 3 Non-Veg (90 mins)" },
-      { icon: <FaUtensils />, text: "Main Course: Same as above" },
-      { icon: <FaUtensils />, text: "Dessert: 1 Ice Cream + 1 Gulab Jamun" },
-      { icon: <FaGamepad />, text: "Games + Dance Floor" },
+      { icon: <FaWineGlassAlt />, text: "Unlimited Foreign Liquor for 120 mins (Jack Daniels, Jameson & Equivalent + KF & BUD Craft Beers)" },
+      { icon: <FaUtensils />, text: "Bar Snack: Peanut Masala (on table throughout the party)" },
+      { icon: <FaUtensils />, text: "Starters: 3 Veg & 3 Non-Veg (passing around for 90 mins)" },
+      { icon: <FaUtensils />, text: "Main Course (60 mins): 2 Veg & 2 Non-Veg, 1 Dal, Steam Rice, Roti & Naan Basket, 2 Salads" },
+      { icon: <FaUtensils />, text: "Dessert: 1 Ice Cream, 1 Gulab Jamun" },
+      { icon: <FaGamepad />, text: "Access to all games included" },
+      { icon: <FaGamepad />, text: "Bowling: ₹300 extra (Mon-Thu) | ₹400 extra (Fri-Sun)" },
     ],
   },
   {
     id: 7,
     title: "World Cup Edition",
     price: "₹3900",
-    originalPrice: "₹5200",
-    discount: "25% OFF",
+    originalPrice: "",
+    discount: "+ 5% Taxes",
     badge: "ULTIMATE",
     icon: "🌍",
     color: "from-red-500 to-pink-600",
     items: [
-      { icon: <FaWineGlassAlt />, text: "Drinks: Unlimited Premium Imported Liquor (Dewars 15, Black Label, JD, Jameson) + Craft & Bottled Beers" },
-      { icon: <FaUtensils />, text: "Bar Snack: Peanut Masala" },
-      { icon: <FaUtensils />, text: "Starters: 3 Veg & 3 Non-Veg (90 mins)" },
-      { icon: <FaUtensils />, text: "Main Course: Same as above" },
-      { icon: <FaUtensils />, text: "Dessert: 1 Ice Cream + 1 Gulab Jamun" },
-      { icon: <FaGamepad />, text: "Games + Dance Floor" },
+      { icon: <FaWineGlassAlt />, text: "Unlimited Premium Foreign Liquor for 120 mins (Dewars 15 Years, Black Label, JD, Jameson & Equivalent + KF & BUD Craft & Bottled Beers)" },
+      { icon: <FaUtensils />, text: "Bar Snack: Peanut Masala (on table throughout the party)" },
+      { icon: <FaUtensils />, text: "Starters: 3 Veg & 3 Non-Veg (passing around for 90 mins)" },
+      { icon: <FaUtensils />, text: "Main Course (60 mins): 2 Veg & 2 Non-Veg, 1 Dal, Steam Rice, Roti & Naan Basket, 2 Salads" },
+      { icon: <FaUtensils />, text: "Dessert: 1 Ice Cream, 1 Gulab Jamun" },
+      { icon: <FaGamepad />, text: "Access to all games included" },
+      { icon: <FaGamepad />, text: "Bowling: ₹300 extra (Mon-Thu) | ₹400 extra (Fri-Sun)" },
     ],
   },
 ];
@@ -247,21 +254,6 @@ export default function PartyPackages() {
                   {pkg.badge}
                 </div>
 
-                {/* Discount Badge */}
-                <div style={{
-                  position: 'absolute',
-                  top: '1rem',
-                  left: '1rem',
-                  padding: '0.5rem 1rem',
-                  background: 'linear-gradient(135deg, #ff003c, #ff6b35)',
-                  borderRadius: '20px',
-                  fontSize: '0.8rem',
-                  fontWeight: 'bold',
-                  color: '#fff',
-                  zIndex: 10
-                }}>
-                  {pkg.discount}
-                </div>
 
                 {/* Package Header */}
                 <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
@@ -292,7 +284,8 @@ export default function PartyPackages() {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    gap: '0.5rem',
+                    flexDirection: 'column',
+                    gap: '0.25rem',
                     marginBottom: '0.5rem'
                   }}>
                     <span style={{
@@ -303,11 +296,14 @@ export default function PartyPackages() {
                       {pkg.price}
                     </span>
                     <span style={{
-                      fontSize: '1rem',
+                      fontSize: '0.9rem',
                       color: 'var(--color-gray)',
-                      textDecoration: 'line-through'
+                      background: 'rgba(255, 215, 0, 0.1)',
+                      padding: '0.25rem 0.75rem',
+                      borderRadius: '12px',
+                      border: '1px solid rgba(255, 215, 0, 0.2)'
                     }}>
-                      {pkg.originalPrice}
+                      {pkg.discount}
                     </span>
                   </div>
                   
@@ -316,7 +312,7 @@ export default function PartyPackages() {
                     color: 'var(--color-gray)',
                     margin: 0
                   }}>
-                    + 5% Taxes per person
+                    per person
                   </p>
                 </div>
 
