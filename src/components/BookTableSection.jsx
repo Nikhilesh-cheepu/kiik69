@@ -18,7 +18,9 @@ const BookTableSection = () => {
   const [formData, setFormData] = useState({
     name: '',
     mobile: '',
-    people: '2',
+    men: '',
+    women: '',
+    couples: '',
     date: '',
     time: ''
   });
@@ -57,10 +59,13 @@ const BookTableSection = () => {
       newErrors.mobile = 'Please enter a valid 10-digit mobile number';
     }
     
-    if (!formData.people.trim()) {
-      newErrors.people = 'Number of people is required';
-    } else if (isNaN(formData.people) || parseInt(formData.people) < 1) {
-      newErrors.people = 'Please enter a valid number of people';
+    // Check if at least one category has people
+    const totalPeople = (parseInt(formData.men) || 0) + (parseInt(formData.women) || 0) + (parseInt(formData.couples) || 0) * 2;
+    
+    if (totalPeople === 0) {
+      newErrors.people = 'Please enter number of people in at least one category';
+    } else if (totalPeople < 1) {
+      newErrors.people = 'Total number of people must be at least 1';
     }
     
     if (!formData.date) {
@@ -90,6 +95,11 @@ const BookTableSection = () => {
       hour12: true
     });
 
+    const men = parseInt(formData.men) || 0;
+    const women = parseInt(formData.women) || 0;
+    const couples = parseInt(formData.couples) || 0;
+    const totalPeople = men + women + (couples * 2);
+
     const message = `Hi! I would like to book a table at KIIK 69.
 
 **BOOKING DETAILS**
@@ -98,7 +108,11 @@ const BookTableSection = () => {
 
 **Mobile:** ${formData.mobile}
 
-**Number of People:** ${formData.people}
+**Guest Count:**
+• Men: ${men}
+• Women: ${women}
+• Couples: ${couples}
+• Total People: ${totalPeople}
 
 **Date:** ${formattedDate}
 
@@ -119,7 +133,7 @@ Please confirm my table reservation. Thank you!`;
 
   const isFormValid = formData.name.trim() && 
                      formData.mobile.trim() && 
-                     formData.people.trim() && 
+                     ((parseInt(formData.men) || 0) + (parseInt(formData.women) || 0) + (parseInt(formData.couples) || 0) * 2) > 0 &&
                      formData.date &&
                      formData.time &&
                      Object.keys(errors).length === 0;
@@ -368,60 +382,161 @@ Please confirm my table reservation. Thank you!`;
                 )}
               </div>
 
-              {/* Number of People Field */}
+              {/* Guest Count Fields - Men, Women, Couples */}
               <div style={{ marginBottom: '1.5rem' }}>
                 <label style={{
                   display: 'block',
                   fontSize: '0.9rem',
                   fontWeight: '600',
                   color: 'var(--color-white)',
-                  marginBottom: '0.5rem'
+                  marginBottom: '0.75rem'
                 }}>
-                  Number of People *
+                  Guest Count *
                 </label>
-                <div style={{ position: 'relative' }}>
-                  <FaUsers style={{
-                    position: 'absolute',
-                    left: '1rem',
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    color: 'var(--color-gray)',
-                    fontSize: '1rem'
-                  }} />
-                  <input
-                    type="number"
-                    name="people"
-                    value={formData.people}
-                    onChange={handleInputChange}
-                    placeholder="How many people?"
-                    min="1"
-                    max="20"
-                    style={{
-                      width: '100%',
-                      padding: '1rem 1rem 1rem 3rem',
-                      border: `1px solid ${errors.people ? '#ff003c' : 'rgba(255, 255, 255, 0.2)'}`,
-                      borderRadius: '12px',
-                      background: 'rgba(255, 255, 255, 0.05)',
-                      color: 'var(--color-white)',
-                      fontSize: '1rem',
-                      outline: 'none',
-                      transition: 'all 0.3s ease'
-                    }}
-                    onFocus={(e) => {
-                      e.target.style.borderColor = '#ff003c';
-                      e.target.style.background = 'rgba(255, 255, 255, 0.08)';
-                    }}
-                    onBlur={(e) => {
-                      e.target.style.borderColor = errors.people ? '#ff003c' : 'rgba(255, 255, 255, 0.2)';
-                      e.target.style.background = 'rgba(255, 255, 255, 0.05)';
-                    }}
-                  />
+                <div style={{
+                  display: 'grid',
+                  gridTemplateColumns: '1fr 1fr 1fr',
+                  gap: '0.75rem'
+                }}>
+                  {/* Men Count */}
+                  <div>
+                    <label style={{
+                      display: 'block',
+                      fontSize: '0.8rem',
+                      fontWeight: '500',
+                      color: 'rgba(255, 255, 255, 0.8)',
+                      marginBottom: '0.5rem'
+                    }}>
+                      Men
+                    </label>
+                    <input
+                      type="number"
+                      name="men"
+                      value={formData.men}
+                      onChange={handleInputChange}
+                      min="0"
+                      max="20"
+                      placeholder="0"
+                      style={{
+                        width: '100%',
+                        padding: '0.75rem',
+                        border: `1px solid rgba(255, 255, 255, 0.2)`,
+                        borderRadius: '8px',
+                        background: 'rgba(255, 255, 255, 0.08)',
+                        color: 'var(--color-white)',
+                        fontSize: '0.9rem',
+                        outline: 'none',
+                        transition: 'all 0.2s ease',
+                        textAlign: 'center'
+                      }}
+                      onFocus={(e) => {
+                        e.target.style.borderColor = '#ff003c';
+                        e.target.style.background = 'rgba(255, 255, 255, 0.12)';
+                      }}
+                      onBlur={(e) => {
+                        e.target.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+                        e.target.style.background = 'rgba(255, 255, 255, 0.08)';
+                      }}
+                    />
+                  </div>
+
+                  {/* Women Count */}
+                  <div>
+                    <label style={{
+                      display: 'block',
+                      fontSize: '0.8rem',
+                      fontWeight: '500',
+                      color: 'rgba(255, 255, 255, 0.8)',
+                      marginBottom: '0.5rem'
+                    }}>
+                      Women
+                    </label>
+                    <input
+                      type="number"
+                      name="women"
+                      value={formData.women}
+                      onChange={handleInputChange}
+                      min="0"
+                      max="20"
+                      placeholder="0"
+                      style={{
+                        width: '100%',
+                        padding: '0.75rem',
+                        border: `1px solid rgba(255, 255, 255, 0.2)`,
+                        borderRadius: '8px',
+                        background: 'rgba(255, 255, 255, 0.08)',
+                        color: 'var(--color-white)',
+                        fontSize: '0.9rem',
+                        outline: 'none',
+                        transition: 'all 0.2s ease',
+                        textAlign: 'center'
+                      }}
+                      onFocus={(e) => {
+                        e.target.style.borderColor = '#ff003c';
+                        e.target.style.background = 'rgba(255, 255, 255, 0.12)';
+                      }}
+                      onBlur={(e) => {
+                        e.target.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+                        e.target.style.background = 'rgba(255, 255, 255, 0.08)';
+                      }}
+                    />
+                  </div>
+
+                  {/* Couples Count */}
+                  <div>
+                    <label style={{
+                      display: 'block',
+                      fontSize: '0.8rem',
+                      fontWeight: '500',
+                      color: 'rgba(255, 255, 255, 0.8)',
+                      marginBottom: '0.5rem'
+                    }}>
+                      Couples
+                    </label>
+                    <input
+                      type="number"
+                      name="couples"
+                      value={formData.couples}
+                      onChange={handleInputChange}
+                      min="0"
+                      max="10"
+                      placeholder="0"
+                      style={{
+                        width: '100%',
+                        padding: '0.75rem',
+                        border: `1px solid rgba(255, 255, 255, 0.2)`,
+                        borderRadius: '8px',
+                        background: 'rgba(255, 255, 255, 0.08)',
+                        color: 'var(--color-white)',
+                        fontSize: '0.9rem',
+                        outline: 'none',
+                        transition: 'all 0.2s ease',
+                        textAlign: 'center'
+                      }}
+                      onFocus={(e) => {
+                        e.target.style.borderColor = '#ff003c';
+                        e.target.style.background = 'rgba(255, 255, 255, 0.12)';
+                      }}
+                      onBlur={(e) => {
+                        e.target.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+                        e.target.style.background = 'rgba(255, 255, 255, 0.08)';
+                      }}
+                    />
+                  </div>
                 </div>
                 {errors.people && (
-                  <p style={{ color: '#ff003c', fontSize: '0.8rem', marginTop: '0.25rem' }}>
+                  <p style={{ color: '#ff003c', fontSize: '0.8rem', marginTop: '0.5rem' }}>
                     {errors.people}
                   </p>
                 )}
+                <p style={{ 
+                  color: 'rgba(255, 255, 255, 0.6)', 
+                  fontSize: '0.75rem', 
+                  marginTop: '0.5rem',
+                  textAlign: 'center'
+                }}>
+                  Total: {((parseInt(formData.men) || 0) + (parseInt(formData.women) || 0) + (parseInt(formData.couples) || 0) * 2)} people
+                </p>
               </div>
 
               {/* Date and Time Selection - Clickable Dropdowns */}

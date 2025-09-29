@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaBars, FaTimes, FaComments } from 'react-icons/fa';
+import { FaBars, FaTimes, FaComments, FaUtensils, FaCalendarAlt, FaPhone, FaHome } from 'react-icons/fa';
 import Chat from './Chat';
 
 const Navbar = () => {
@@ -124,11 +124,19 @@ const Navbar = () => {
   };
 
   const navLinks = [
-    { id: 'home', label: 'Home' },
-    { id: 'menu-section', label: 'Menu' },
-    { id: 'party-packages', label: 'Party Packages' },
-    { id: 'book-table', label: 'Book Table' },
-    { id: 'contact-section', label: 'Contact' }
+    { id: 'home', label: 'Home', icon: FaHome },
+    { id: 'menu-section', label: 'Menu', icon: FaUtensils },
+    { id: 'party-packages', label: 'Party Packages', icon: FaUtensils },
+    { id: 'book-table', label: 'Book Table', icon: FaCalendarAlt },
+    { id: 'contact-section', label: 'Contact', icon: FaPhone }
+  ];
+
+  // Quick access icons for mobile (most important sections)
+  const quickAccessIcons = [
+    { id: 'home', icon: FaHome, label: 'Home' },
+    { id: 'menu-section', icon: FaUtensils, label: 'Menu' },
+    { id: 'book-table', icon: FaCalendarAlt, label: 'Book Table' },
+    { id: 'contact-section', icon: FaPhone, label: 'Contact' }
   ];
 
   return (
@@ -329,31 +337,108 @@ const Navbar = () => {
               </motion.button>
             )}
 
-            {/* Mobile Menu Button - Only visible on mobile */}
+            {/* Mobile Navigation - Quick Access Icons + Hamburger */}
             {!isDesktop && (
-              <motion.button
-                whileTap={{ scale: 0.9 }}
-                onClick={toggleMenu}
-                style={{
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem'
+              }}>
+                {/* Quick Access Icons */}
+                <div style={{
                   display: 'flex',
                   alignItems: 'center',
-                  justifyContent: 'center',
-                  background: 'rgba(255, 255, 255, 0.1)',
-                  border: '1px solid rgba(255, 255, 255, 0.2)',
-                  borderRadius: '50%',
-                  color: 'var(--color-white)',
-                  fontSize: '1.2rem',
-                  cursor: 'pointer',
-                  padding: '0.5rem',
-                  width: '40px',
-                  height: '40px',
-                  transition: 'all 0.3s ease',
-                  flexShrink: 0
-                }}
-                aria-label="Toggle navigation menu"
-              >
-                {isMenuOpen ? <FaTimes /> : <FaBars />}
-              </motion.button>
+                  gap: '0.25rem'
+                }}>
+                  {quickAccessIcons.map((item, index) => {
+                    const IconComponent = item.icon;
+                    return (
+                      <motion.button
+                        key={item.id}
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: index * 0.1, duration: 0.3 }}
+                        whileHover={{ 
+                          scale: 1.1,
+                          y: -2,
+                          boxShadow: '0 4px 15px rgba(255, 0, 60, 0.3)',
+                          transition: { duration: 0.2 }
+                        }}
+                        whileTap={{ scale: 0.9 }}
+                        onClick={() => handleNavClick(item.id)}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          background: activeSection === item.id 
+                            ? 'rgba(255, 0, 60, 0.2)' 
+                            : 'rgba(255, 255, 255, 0.1)',
+                          border: `1px solid ${activeSection === item.id 
+                            ? 'rgba(255, 0, 60, 0.4)' 
+                            : 'rgba(255, 255, 255, 0.2)'}`,
+                          borderRadius: '50%',
+                          color: activeSection === item.id 
+                            ? 'var(--color-primary)' 
+                            : 'var(--color-white)',
+                          fontSize: '0.9rem',
+                          cursor: 'pointer',
+                          padding: '0.4rem',
+                          width: '36px',
+                          height: '36px',
+                          transition: 'all 0.3s ease',
+                          flexShrink: 0,
+                          position: 'relative'
+                        }}
+                        title={item.label}
+                        aria-label={`Navigate to ${item.label}`}
+                      >
+                        <IconComponent />
+                        {activeSection === item.id && (
+                          <motion.div
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            style={{
+                              position: 'absolute',
+                              bottom: '-2px',
+                              right: '-2px',
+                              width: '8px',
+                              height: '8px',
+                              background: 'var(--color-primary)',
+                              borderRadius: '50%',
+                              border: '2px solid rgba(0, 0, 0, 0.8)'
+                            }}
+                          />
+                        )}
+                      </motion.button>
+                    );
+                  })}
+                </div>
+
+                {/* Hamburger Menu Button */}
+                <motion.button
+                  whileTap={{ scale: 0.9 }}
+                  onClick={toggleMenu}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    background: 'rgba(255, 255, 255, 0.1)',
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                    borderRadius: '50%',
+                    color: 'var(--color-white)',
+                    fontSize: '1rem',
+                    cursor: 'pointer',
+                    padding: '0.4rem',
+                    width: '36px',
+                    height: '36px',
+                    transition: 'all 0.3s ease',
+                    flexShrink: 0
+                  }}
+                  aria-label="Toggle full navigation menu"
+                >
+                  {isMenuOpen ? <FaTimes /> : <FaBars />}
+                </motion.button>
+              </div>
             )}
           </div>
 
@@ -430,46 +515,60 @@ const Navbar = () => {
                 flexDirection: 'column',
                 gap: '0.25rem'
               }}>
-                {navLinks.map((link, index) => (
-                  <motion.button
-                    key={link.id}
-                    initial={{ x: -20, opacity: 0 }}
-                    animate={{ x: 0, opacity: 1 }}
-                    exit={{ x: -20, opacity: 0 }}
-                    transition={{ duration: 0.2, delay: index * 0.1 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={() => handleNavClick(link.id)}
-                    style={{
-                      background: 'none',
-                      border: 'none',
-                      color: activeSection === link.id ? 'var(--color-primary)' : 'var(--color-white)',
-                      fontSize: '1rem',
-                      fontWeight: activeSection === link.id ? '600' : '400',
-                      cursor: 'pointer',
-                      padding: '1rem',
-                      textAlign: 'left',
-                      borderRadius: '12px',
-                      transition: 'all 0.3s ease',
-                      fontFamily: 'var(--font-body)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '0.5rem'
-                    }}
-                  >
-                    {link.label}
-                    {activeSection === link.id && (
-                      <motion.div
-                        style={{
-                          width: '4px',
-                          height: '4px',
-                          borderRadius: '50%',
-                          background: 'var(--color-primary)',
-                          marginLeft: 'auto'
-                        }}
-                      />
-                    )}
-                  </motion.button>
-                ))}
+                {navLinks.map((link, index) => {
+                  const IconComponent = link.icon;
+                  return (
+                    <motion.button
+                      key={link.id}
+                      initial={{ x: -20, opacity: 0 }}
+                      animate={{ x: 0, opacity: 1 }}
+                      exit={{ x: -20, opacity: 0 }}
+                      transition={{ duration: 0.2, delay: index * 0.1 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => handleNavClick(link.id)}
+                      style={{
+                        background: activeSection === link.id 
+                          ? 'rgba(255, 0, 60, 0.1)' 
+                          : 'none',
+                        border: 'none',
+                        color: activeSection === link.id ? 'var(--color-primary)' : 'var(--color-white)',
+                        fontSize: '1rem',
+                        fontWeight: activeSection === link.id ? '600' : '400',
+                        cursor: 'pointer',
+                        padding: '1rem',
+                        textAlign: 'left',
+                        borderRadius: '12px',
+                        transition: 'all 0.3s ease',
+                        fontFamily: 'var(--font-body)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.75rem',
+                        width: '100%'
+                      }}
+                    >
+                      <IconComponent style={{ 
+                        fontSize: '1.1rem',
+                        flexShrink: 0,
+                        opacity: activeSection === link.id ? 1 : 0.8
+                      }} />
+                      {link.label}
+                      {activeSection === link.id && (
+                        <motion.div
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                          style={{
+                            width: '6px',
+                            height: '6px',
+                            borderRadius: '50%',
+                            background: 'var(--color-primary)',
+                            marginLeft: 'auto',
+                            flexShrink: 0
+                          }}
+                        />
+                      )}
+                    </motion.button>
+                  );
+                })}
                 
                 {/* Chat Button in Mobile Menu */}
                 <motion.button
