@@ -2,11 +2,11 @@ import React from 'react';
 
 const GamesSection = () => {
   return (
-    <section style={{
-      padding: '80px 2rem',
-      background: 'linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0a0a0a 100%)',
-      minHeight: '60vh'
-    }}>
+      <section style={{
+        padding: '80px 2rem',
+        background: 'linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0a0a0a 100%)',
+        minHeight: '60vh'
+      }}>
       <div style={{
         maxWidth: '1200px',
         margin: '0 auto',
@@ -40,8 +40,8 @@ const GamesSection = () => {
 
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-          gap: '2rem',
+          gridTemplateColumns: 'repeat(6, 1fr)',
+          gap: '1rem',
           marginTop: '3rem'
         }}>
           <div style={{

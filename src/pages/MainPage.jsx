@@ -13,11 +13,14 @@ const MainPage = () => {
   return (
     <div className="main-page">
       <Navbar />
-      <main>
+      <main style={{ paddingTop: '120px' }}>
         <section id="home" aria-label="Hero section">
           <HeroSection />
         </section>
         <LiveStatusBar />
+        <section id="book-table" aria-label="Book a table reservation">
+          <BookTableSection />
+        </section>
         <section id="timings-section" aria-label="Opening hours and timings">
           <TimingsSection />
         </section>
@@ -29,9 +32,6 @@ const MainPage = () => {
         </section>
         <section id="party-packages" aria-label="Party packages and deals">
           <PartyPackages />
-        </section>
-        <section id="book-table" aria-label="Book a table reservation">
-          <BookTableSection />
         </section>
         <section id="contact-section" aria-label="Contact information and social links">
           <Footer />

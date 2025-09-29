@@ -4,7 +4,7 @@ import React from 'react';
 const TimingsSection = () => {
   return (
     <section id="timings-section" style={{
-      padding: '6rem 2rem',
+      padding: '3rem 2rem',
       background: 'linear-gradient(180deg, #1a1a1a 0%, #0a0a0a 100%)',
       position: 'relative',
       overflow: 'hidden'
