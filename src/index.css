@@ -49,6 +49,55 @@
   }
 }
 
+/* Party Package Cards - Uniform Sizes */
+.party-package-card {
+  display: flex;
+  flex-direction: column;
+  min-height: 500px;
+  height: 100%;
+}
+
+.party-package-card .card-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.party-package-card .card-footer {
+  margin-top: auto;
+}
+
+/* Mobile Layout with Important Info */
+@media (max-width: 767px) {
+  .party-packages-container {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .party-packages-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+  
+  .important-info-mobile {
+    display: block;
+    margin-top: 1rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .important-info-mobile {
+    display: none;
+  }
+  
+  .important-info-desktop {
+    display: block;
+  }
+}
+
 /* Reset and base styles */
 * {
   margin: 0;

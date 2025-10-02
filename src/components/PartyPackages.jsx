@@ -214,23 +214,25 @@ export default function PartyPackages() {
         </motion.div>
 
         {/* Package Cards */}
-        <div className="party-packages-grid">
-          {packages.map((pkg, index) => (
-            <motion.div
-              key={pkg.id}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 + index * 0.1 }}
-              style={{
-                position: 'relative',
-                cursor: 'pointer',
-                transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)'
-              }}
-              onClick={() => setSelectedPackage(selectedPackage === pkg.id ? null : pkg.id)}
-              whileHover={{ scale: 1.02, y: -5 }}
-            >
+        <div className="party-packages-container">
+          <div className="party-packages-grid">
+            {packages.map((pkg, index) => (
+              <motion.div
+                key={pkg.id}
+                className="party-package-card"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.2 + index * 0.1 }}
+                style={{
+                  position: 'relative',
+                  cursor: 'pointer',
+                  transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)'
+                }}
+                onClick={() => setSelectedPackage(selectedPackage === pkg.id ? null : pkg.id)}
+                whileHover={{ scale: 1.02, y: -5 }}
+              >
               {/* Card Container */}
-              <div style={{
+              <div className="card-content" style={{
                 background: 'rgba(255, 255, 255, 0.06)',
                 backdropFilter: 'blur(15px)',
                 borderRadius: '20px',
@@ -238,7 +240,10 @@ export default function PartyPackages() {
                 padding: '2rem',
                 position: 'relative',
                 overflow: 'hidden',
-                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.08)'
+                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.08)',
+                height: '100%',
+                display: 'flex',
+                flexDirection: 'column'
               }}>
                 {/* Badge */}
                 <div style={{
@@ -407,46 +412,129 @@ export default function PartyPackages() {
                 )}
 
                 {/* Action Button */}
-                                 <motion.button
-                   style={{
-                     width: '100%',
-                     padding: '1rem',
-                     marginTop: '1.5rem',
-                     border: '1px solid rgba(255, 255, 255, 0.2)',
-                     borderRadius: '12px',
-                     background: selectedPackage === pkg.id 
-                       ? `linear-gradient(135deg, ${pkg.color})`
-                       : 'rgba(255, 255, 255, 0.1)',
-                     color: 'var(--color-white)',
-                     fontSize: '1rem',
-                     fontWeight: '600',
-                     cursor: 'pointer',
-                     transition: 'all 0.3s ease'
-                   }}
-                  whileHover={{
-                    background: selectedPackage === pkg.id 
-                      ? `linear-gradient(135deg, ${pkg.color})`
-                      : 'rgba(255, 255, 255, 0.15)',
-                    transform: 'translateY(-2px)'
-                  }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  {selectedPackage === pkg.id ? (
-                    <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
-                      <FaCheckCircle />
-                      Selected
-                    </span>
-                  ) : (
-                    'Select Package'
-                  )}
-                </motion.button>
+                <div className="card-footer">
+                  <motion.button
+                    style={{
+                      width: '100%',
+                      padding: '1rem',
+                      marginTop: '1.5rem',
+                      border: '1px solid rgba(255, 255, 255, 0.2)',
+                      borderRadius: '12px',
+                      background: selectedPackage === pkg.id 
+                        ? `linear-gradient(135deg, ${pkg.color})`
+                        : 'rgba(255, 255, 255, 0.1)',
+                      color: 'var(--color-white)',
+                      fontSize: '1rem',
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                      transition: 'all 0.3s ease'
+                    }}
+                    whileHover={{
+                      background: selectedPackage === pkg.id 
+                        ? `linear-gradient(135deg, ${pkg.color})`
+                        : 'rgba(255, 255, 255, 0.15)',
+                      transform: 'translateY(-2px)'
+                    }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    {selectedPackage === pkg.id ? (
+                      <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
+                        <FaCheckCircle />
+                        Selected
+                      </span>
+                    ) : (
+                      'Select Package'
+                    )}
+                  </motion.button>
+                </div>
               </div>
             </motion.div>
           ))}
+          </div>
+          
+          {/* Mobile Important Information */}
+          <div className="important-info-mobile">
+            <div style={{
+              background: 'rgba(255, 255, 255, 0.06)',
+              backdropFilter: 'blur(15px)',
+              borderRadius: '20px',
+              border: '1px solid rgba(255, 255, 255, 0.15)',
+              padding: '1.5rem',
+              boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.08)'
+            }}>
+              <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
+                <div style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: '50px',
+                  height: '50px',
+                  background: 'linear-gradient(135deg, #ff003c, #ff6b35)',
+                  borderRadius: '12px',
+                  marginBottom: '1rem'
+                }}>
+                  <FaStar style={{ fontSize: '1.2rem', color: '#fff' }} />
+                </div>
+                <h3 style={{
+                  fontSize: '1.2rem',
+                  fontWeight: 'bold',
+                  color: 'var(--color-white)',
+                  marginBottom: '0.5rem'
+                }}>
+                  Important Info
+                </h3>
+              </div>
+              
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(2, 1fr)',
+                gap: '1rem'
+              }}>
+                {[
+                  { icon: <FaUsers />, title: "Group Size", text: "Min 25 pax" },
+                  { icon: <FaClock />, title: "Duration", text: "3 hours" },
+                  { icon: <FaUtensils />, title: "Service", text: "90 mins starters" },
+                  { icon: <FaWineGlassAlt />, title: "Age Limit", text: "21+ for alcohol" }
+                ].map((item, idx) => (
+                  <div key={idx} style={{
+                    textAlign: 'center',
+                    padding: '1rem',
+                    background: 'rgba(255, 255, 255, 0.05)',
+                    borderRadius: '12px',
+                    border: '1px solid rgba(255, 255, 255, 0.1)'
+                  }}>
+                    <div style={{
+                      color: '#ffd700',
+                      fontSize: '1.2rem',
+                      marginBottom: '0.5rem'
+                    }}>
+                      {item.icon}
+                    </div>
+                    <h4 style={{
+                      fontSize: '0.9rem',
+                      fontWeight: 'bold',
+                      color: 'var(--color-white)',
+                      marginBottom: '0.25rem'
+                    }}>
+                      {item.title}
+                    </h4>
+                    <p style={{
+                      fontSize: '0.8rem',
+                      color: 'var(--color-gray)',
+                      margin: 0
+                    }}>
+                      {item.text}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* Terms & Conditions */}
+        {/* Terms & Conditions - Desktop Only */}
         <motion.div
+          className="important-info-desktop"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.4 }}
