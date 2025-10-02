@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { FaUser, FaPhone, FaUsers, FaCalendarAlt, FaClock, FaWhatsapp } from 'react-icons/fa';
+import Calendar from './Calendar';
 
 const BookTableSection = () => {
   // Get tomorrow's date as default
@@ -10,9 +11,9 @@ const BookTableSection = () => {
     return tomorrow.toISOString().split('T')[0];
   };
 
-  // Get default time (7:00 PM)
+  // Get default time (12:00 PM)
   const getDefaultTime = () => {
-    return '19:00';
+    return '12:00';
   };
 
   const [formData, setFormData] = useState({
@@ -28,6 +29,7 @@ const BookTableSection = () => {
   const [errors, setErrors] = useState({});
   const [showDateDropdown, setShowDateDropdown] = useState(false);
   const [showTimeDropdown, setShowTimeDropdown] = useState(false);
+  const [showCalendar, setShowCalendar] = useState(false);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -102,21 +104,21 @@ const BookTableSection = () => {
 
     const message = `Hi! I would like to book a table at KIIK 69.
 
-**BOOKING DETAILS**
+BOOKING DETAILS
 
-**Name:** ${formData.name}
+Name: ${formData.name}
 
-**Mobile:** ${formData.mobile}
+Mobile: ${formData.mobile}
 
-**Guest Count:**
+Guest Count:
 • Men: ${men}
 • Women: ${women}
 • Couples: ${couples}
 • Total People: ${totalPeople}
 
-**Date:** ${formattedDate}
+Date: ${formattedDate}
 
-**Time:** ${formattedTime}
+Time: ${formattedTime}
 
 Please confirm my table reservation. Thank you!`;
 
@@ -163,19 +165,22 @@ Please confirm my table reservation. Thank you!`;
     return dates;
   };
 
-  // Generate time options (12 PM to 11 PM)
+  // Generate time options (12 PM to 11:45 PM in 15-minute slots)
   const generateTimeOptions = () => {
     const times = [];
     
     for (let hour = 12; hour <= 23; hour++) {
-      const displayHour = hour === 12 ? 12 : hour - 12;
-      const period = 'PM';
-      
-      times.push({
-        value: `${hour.toString().padStart(2, '0')}:00`,
-        label: `${displayHour} ${period}`,
-        available: true
-      });
+      for (let minute = 0; minute < 60; minute += 15) {
+        const displayHour = hour === 12 ? 12 : hour - 12;
+        const period = 'PM';
+        const minuteStr = minute.toString().padStart(2, '0');
+        
+        times.push({
+          value: `${hour.toString().padStart(2, '0')}:${minuteStr}`,
+          label: `${displayHour}:${minuteStr} ${period}`,
+          available: true
+        });
+      }
     }
     
     return times;
@@ -192,6 +197,15 @@ Please confirm my table reservation. Thank you!`;
   const handleTimeSelect = (time) => {
     setFormData(prev => ({ ...prev, time: time.value }));
     setShowTimeDropdown(false);
+  };
+
+  const handleCalendarDateSelect = (date) => {
+    setFormData(prev => ({ ...prev, date }));
+    setShowCalendar(false);
+  };
+
+  const handleCalendarClose = () => {
+    setShowCalendar(false);
   };
 
   // Close dropdowns when clicking outside
@@ -546,8 +560,8 @@ Please confirm my table reservation. Thank you!`;
                   gridTemplateColumns: '1fr 1fr',
                   gap: '1.5rem'
                 }}>
-                  {/* Date Picker */}
-                  <div data-dropdown>
+                  {/* Date Picker - Calendar */}
+                  <div>
                     <label style={{
                       display: 'block',
                       fontSize: '1rem',
@@ -559,7 +573,7 @@ Please confirm my table reservation. Thank you!`;
                     </label>
                     <div style={{ position: 'relative' }}>
                       <div
-                        onClick={() => setShowDateDropdown(!showDateDropdown)}
+                        onClick={() => setShowCalendar(true)}
                         style={{
                           width: '100%',
                           padding: '1rem',
@@ -587,8 +601,13 @@ Please confirm my table reservation. Thank you!`;
                           fontSize: '1rem'
                         }}>
                           {formData.date 
-                            ? dateOptions.find(d => d.value === formData.date)?.label || formData.date
-                            : 'dd/mm/yyyy'
+                            ? new Date(formData.date).toLocaleDateString('en-IN', {
+                                weekday: 'short',
+                                day: 'numeric',
+                                month: 'short',
+                                year: 'numeric'
+                              })
+                            : 'Select a date'
                           }
                         </span>
                         <FaCalendarAlt style={{ 
@@ -596,58 +615,6 @@ Please confirm my table reservation. Thank you!`;
                           fontSize: '1rem' 
                         }} />
                       </div>
-                      
-                      {showDateDropdown && (
-                        <div style={{
-                          position: 'absolute',
-                          top: '100%',
-                          left: 0,
-                          right: 0,
-                          background: 'rgba(0, 0, 0, 0.95)',
-                          backdropFilter: 'blur(10px)',
-                          border: '1px solid rgba(255, 255, 255, 0.2)',
-                          borderRadius: '8px',
-                          marginTop: '0.5rem',
-                          zIndex: 1000,
-                          maxHeight: '200px',
-                          overflowY: 'auto',
-                          boxShadow: '0 8px 25px rgba(0, 0, 0, 0.3)'
-                        }}>
-                          {dateOptions.map((date) => (
-                            <div
-                              key={date.value}
-                              onClick={() => handleDateSelect(date)}
-                              style={{
-                                padding: '0.75rem 1rem',
-                                cursor: date.available ? 'pointer' : 'not-allowed',
-                                background: formData.date === date.value 
-                                  ? 'rgba(255, 0, 60, 0.2)' 
-                                  : 'transparent',
-                                color: date.available ? 'var(--color-white)' : 'rgba(255, 255, 255, 0.5)',
-                                fontSize: '0.9rem',
-                                transition: 'all 0.2s ease',
-                                opacity: date.available ? 1 : 0.5
-                              }}
-                              onMouseEnter={(e) => {
-                                if (date.available) {
-                                  e.target.style.background = formData.date === date.value 
-                                    ? 'rgba(255, 0, 60, 0.3)' 
-                                    : 'rgba(255, 255, 255, 0.1)';
-                                }
-                              }}
-                              onMouseLeave={(e) => {
-                                if (date.available) {
-                                  e.target.style.background = formData.date === date.value 
-                                    ? 'rgba(255, 0, 60, 0.2)' 
-                                    : 'transparent';
-                                }
-                              }}
-                            >
-                              {date.label}
-                            </div>
-                          ))}
-                        </div>
-                      )}
                     </div>
                     {errors.date && (
                       <p style={{ color: '#ff003c', fontSize: '0.85rem', marginTop: '0.5rem' }}>
@@ -800,6 +767,15 @@ Please confirm my table reservation. Thank you!`;
           </div>
         </motion.div>
       </div>
+
+      {/* Calendar Modal */}
+      <Calendar
+        isOpen={showCalendar}
+        onClose={handleCalendarClose}
+        onDateSelect={handleCalendarDateSelect}
+        selectedDate={formData.date}
+        minDate={new Date().toISOString().split('T')[0]}
+      />
     </motion.section>
   );
 };

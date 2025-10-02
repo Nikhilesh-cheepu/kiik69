@@ -451,90 +451,10 @@ export default function PartyPackages() {
             </motion.div>
           ))}
           </div>
-          
-          {/* Mobile Important Information */}
-          <div className="important-info-mobile">
-            <div style={{
-              background: 'rgba(255, 255, 255, 0.06)',
-              backdropFilter: 'blur(15px)',
-              borderRadius: '20px',
-              border: '1px solid rgba(255, 255, 255, 0.15)',
-              padding: '1.5rem',
-              boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.08)'
-            }}>
-              <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
-                <div style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  width: '50px',
-                  height: '50px',
-                  background: 'linear-gradient(135deg, #ff003c, #ff6b35)',
-                  borderRadius: '12px',
-                  marginBottom: '1rem'
-                }}>
-                  <FaStar style={{ fontSize: '1.2rem', color: '#fff' }} />
-                </div>
-                <h3 style={{
-                  fontSize: '1.2rem',
-                  fontWeight: 'bold',
-                  color: 'var(--color-white)',
-                  marginBottom: '0.5rem'
-                }}>
-                  Important Info
-                </h3>
-              </div>
-              
-              <div style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(2, 1fr)',
-                gap: '1rem'
-              }}>
-                {[
-                  { icon: <FaUsers />, title: "Group Size", text: "Min 25 pax" },
-                  { icon: <FaClock />, title: "Duration", text: "3 hours" },
-                  { icon: <FaUtensils />, title: "Service", text: "90 mins starters" },
-                  { icon: <FaWineGlassAlt />, title: "Age Limit", text: "21+ for alcohol" }
-                ].map((item, idx) => (
-                  <div key={idx} style={{
-                    textAlign: 'center',
-                    padding: '1rem',
-                    background: 'rgba(255, 255, 255, 0.05)',
-                    borderRadius: '12px',
-                    border: '1px solid rgba(255, 255, 255, 0.1)'
-                  }}>
-                    <div style={{
-                      color: '#ffd700',
-                      fontSize: '1.2rem',
-                      marginBottom: '0.5rem'
-                    }}>
-                      {item.icon}
-                    </div>
-                    <h4 style={{
-                      fontSize: '0.9rem',
-                      fontWeight: 'bold',
-                      color: 'var(--color-white)',
-                      marginBottom: '0.25rem'
-                    }}>
-                      {item.title}
-                    </h4>
-                    <p style={{
-                      fontSize: '0.8rem',
-                      color: 'var(--color-gray)',
-                      margin: 0
-                    }}>
-                      {item.text}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
         </div>
 
-        {/* Terms & Conditions - Desktop Only */}
+        {/* Terms & Conditions */}
         <motion.div
-          className="important-info-desktop"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.4 }}
@@ -581,13 +501,9 @@ export default function PartyPackages() {
               </p>
             </div>
             
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-              gap: '1.5rem'
-            }}>
+            <div className="important-info-grid">
               {[
-                { icon: <FaUsers />, title: "Group Size", text: "Minimum 25 pax" },
+                { icon: <FaUsers />, title: "Group Size", text: "Minimum 15 pax" },
                 { icon: <FaClock />, title: "Duration", text: "3 hours party time" },
                 { icon: <FaUtensils />, title: "Service", text: "90 mins starters, 120 mins drinks" },
                 { icon: <FaWineGlassAlt />, title: "Age Limit", text: "21+ for alcohol" }

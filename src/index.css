@@ -67,7 +67,7 @@
   margin-top: auto;
 }
 
-/* Mobile Layout with Important Info */
+/* Mobile Layout */
 @media (max-width: 767px) {
   .party-packages-container {
     display: grid;
@@ -81,21 +81,238 @@
     gap: 1rem;
     margin-bottom: 1rem;
   }
-  
-  .important-info-mobile {
-    display: block;
-    margin-top: 1rem;
-  }
+}
+
+/* Important Information Responsive Grid */
+.important-info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
 }
 
 @media (min-width: 768px) {
-  .important-info-mobile {
-    display: none;
+  .important-info-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
   }
-  
-  .important-info-desktop {
-    display: block;
-  }
+}
+
+/* Apple-Style Calendar Component */
+.calendar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  padding: 1rem;
+}
+
+.calendar-modal {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  width: 100%;
+  max-width: 400px;
+  max-height: 90vh;
+  overflow: hidden;
+  color: #000;
+}
+
+.calendar-header {
+  padding: 1.5rem 1.5rem 1rem 1.5rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.calendar-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.calendar-title h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #000;
+  margin: 0;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  color: #666;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.close-button:hover {
+  background: rgba(0, 0, 0, 0.1);
+  color: #000;
+}
+
+.calendar-navigation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.nav-button {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  color: #007AFF;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+}
+
+.nav-button:hover {
+  background: rgba(0, 122, 255, 0.1);
+}
+
+.month-year {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #000;
+  margin: 0;
+}
+
+.calendar-body {
+  padding: 1rem 1.5rem;
+}
+
+.calendar-days-header {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.day-header {
+  text-align: center;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #666;
+  padding: 0.5rem 0;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.5rem;
+}
+
+.calendar-day {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  position: relative;
+  min-height: 44px;
+}
+
+.calendar-day:not(.empty):not(.disabled):hover {
+  background: rgba(0, 122, 255, 0.1);
+  color: #007AFF;
+}
+
+.calendar-day.today {
+  background: rgba(0, 122, 255, 0.1);
+  color: #007AFF;
+  font-weight: 600;
+}
+
+.calendar-day.selected {
+  background: #007AFF;
+  color: white;
+  font-weight: 600;
+}
+
+.calendar-day.disabled {
+  color: #ccc;
+  cursor: not-allowed;
+}
+
+.calendar-day.empty {
+  cursor: default;
+}
+
+.calendar-footer {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.selected-date-info {
+  margin-bottom: 1rem;
+}
+
+.selected-date-info p {
+  font-size: 0.9rem;
+  color: #666;
+  margin: 0;
+  text-align: center;
+}
+
+.calendar-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+}
+
+.cancel-button,
+.confirm-button {
+  padding: 0.75rem 1.5rem;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.cancel-button {
+  background: rgba(0, 0, 0, 0.1);
+  color: #000;
+}
+
+.cancel-button:hover {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.confirm-button {
+  background: #007AFF;
+  color: white;
+}
+
+.confirm-button:hover:not(:disabled) {
+  background: #0056CC;
+}
+
+.confirm-button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
 }
 
 /* Reset and base styles */
