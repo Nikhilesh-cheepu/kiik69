@@ -214,12 +214,7 @@ export default function PartyPackages() {
         </motion.div>
 
         {/* Package Cards */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-          gap: '2rem',
-          marginBottom: '3rem'
-        }}>
+        <div className="party-packages-grid">
           {packages.map((pkg, index) => (
             <motion.div
               key={pkg.id}
