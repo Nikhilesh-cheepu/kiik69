@@ -41,9 +41,9 @@ const GamesSection = () => {
         <div style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(2, 1fr)',
-          gap: '2rem',
+          gap: '1.5rem',
           marginTop: '3rem',
-          maxWidth: '800px',
+          maxWidth: '900px',
           margin: '3rem auto 0 auto'
         }}>
           <div style={{
@@ -90,6 +90,98 @@ const GamesSection = () => {
               color: '#888888',
               lineHeight: '1.4'
             }}>Professional pool table with cues and balls</p>
+          </div>
+
+          <div style={{
+            background: 'rgba(255, 255, 255, 0.05)',
+            borderRadius: '15px',
+            padding: '1.5rem',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            textAlign: 'center',
+            transition: 'all 0.3s ease'
+          }}>
+            <div style={{ fontSize: '2.5rem', marginBottom: '0.75rem' }}>⚽</div>
+            <h3 style={{
+              fontFamily: 'Bebas Neue, Arial Black, sans-serif',
+              fontSize: '1.25rem',
+              color: '#ffffff',
+              marginBottom: '0.5rem'
+            }}>Foosball</h3>
+            <p style={{
+              fontFamily: 'Manrope, Inter, Segoe UI, Arial, sans-serif',
+              fontSize: '0.9rem',
+              color: '#888888',
+              lineHeight: '1.4'
+            }}>Fast-paced table football game</p>
+          </div>
+
+          <div style={{
+            background: 'rgba(255, 255, 255, 0.05)',
+            borderRadius: '15px',
+            padding: '1.5rem',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            textAlign: 'center',
+            transition: 'all 0.3s ease'
+          }}>
+            <div style={{ fontSize: '2.5rem', marginBottom: '0.75rem' }}>🎳</div>
+            <h3 style={{
+              fontFamily: 'Bebas Neue, Arial Black, sans-serif',
+              fontSize: '1.25rem',
+              color: '#ffffff',
+              marginBottom: '0.5rem'
+            }}>Bowling</h3>
+            <p style={{
+              fontFamily: 'Manrope, Inter, Segoe UI, Arial, sans-serif',
+              fontSize: '0.9rem',
+              color: '#888888',
+              lineHeight: '1.4'
+            }}>Professional bowling lanes with automatic scoring</p>
+          </div>
+
+          <div style={{
+            background: 'rgba(255, 255, 255, 0.05)',
+            borderRadius: '15px',
+            padding: '1.5rem',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            textAlign: 'center',
+            transition: 'all 0.3s ease'
+          }}>
+            <div style={{ fontSize: '2.5rem', marginBottom: '0.75rem' }}>🎯</div>
+            <h3 style={{
+              fontFamily: 'Bebas Neue, Arial Black, sans-serif',
+              fontSize: '1.25rem',
+              color: '#ffffff',
+              marginBottom: '0.5rem'
+            }}>Darts</h3>
+            <p style={{
+              fontFamily: 'Manrope, Inter, Segoe UI, Arial, sans-serif',
+              fontSize: '0.9rem',
+              color: '#888888',
+              lineHeight: '1.4'
+            }}>Electronic dart boards for competitive play</p>
+          </div>
+
+          <div style={{
+            background: 'rgba(255, 255, 255, 0.05)',
+            borderRadius: '15px',
+            padding: '1.5rem',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            textAlign: 'center',
+            transition: 'all 0.3s ease'
+          }}>
+            <div style={{ fontSize: '2.5rem', marginBottom: '0.75rem' }}>♟️</div>
+            <h3 style={{
+              fontFamily: 'Bebas Neue, Arial Black, sans-serif',
+              fontSize: '1.25rem',
+              color: '#ffffff',
+              marginBottom: '0.5rem'
+            }}>Chess</h3>
+            <p style={{
+              fontFamily: 'Manrope, Inter, Segoe UI, Arial, sans-serif',
+              fontSize: '0.9rem',
+              color: '#888888',
+              lineHeight: '1.4'
+            }}>Strategic chess sets for intellectual challenges</p>
           </div>
         </div>
 
