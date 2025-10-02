@@ -40,135 +40,56 @@ const GamesSection = () => {
 
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(6, 1fr)',
-          gap: '1rem',
-          marginTop: '3rem'
+          gridTemplateColumns: 'repeat(2, 1fr)',
+          gap: '2rem',
+          marginTop: '3rem',
+          maxWidth: '800px',
+          margin: '3rem auto 0 auto'
         }}>
           <div style={{
             background: 'rgba(255, 255, 255, 0.05)',
-            borderRadius: '20px',
-            padding: '2rem',
-            border: '1px solid rgba(255, 255, 255, 0.1)'
+            borderRadius: '15px',
+            padding: '1.5rem',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            textAlign: 'center',
+            transition: 'all 0.3s ease'
           }}>
-            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🀄</div>
+            <div style={{ fontSize: '2.5rem', marginBottom: '0.75rem' }}>🀄</div>
             <h3 style={{
               fontFamily: 'Bebas Neue, Arial Black, sans-serif',
-              fontSize: '1.5rem',
+              fontSize: '1.25rem',
               color: '#ffffff',
               marginBottom: '0.5rem'
             }}>Carroms</h3>
             <p style={{
               fontFamily: 'Manrope, Inter, Segoe UI, Arial, sans-serif',
-              fontSize: '1rem',
+              fontSize: '0.9rem',
               color: '#888888',
-              marginBottom: '1rem'
+              lineHeight: '1.4'
             }}>Classic carrom board game for 2-4 players</p>
           </div>
 
           <div style={{
             background: 'rgba(255, 255, 255, 0.05)',
-            borderRadius: '20px',
-            padding: '2rem',
-            border: '1px solid rgba(255, 255, 255, 0.1)'
+            borderRadius: '15px',
+            padding: '1.5rem',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            textAlign: 'center',
+            transition: 'all 0.3s ease'
           }}>
-            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🎱</div>
+            <div style={{ fontSize: '2.5rem', marginBottom: '0.75rem' }}>🎱</div>
             <h3 style={{
               fontFamily: 'Bebas Neue, Arial Black, sans-serif',
-              fontSize: '1.5rem',
+              fontSize: '1.25rem',
               color: '#ffffff',
               marginBottom: '0.5rem'
             }}>Pool</h3>
             <p style={{
               fontFamily: 'Manrope, Inter, Segoe UI, Arial, sans-serif',
-              fontSize: '1rem',
+              fontSize: '0.9rem',
               color: '#888888',
-              marginBottom: '1rem'
+              lineHeight: '1.4'
             }}>Professional pool table with cues and balls</p>
-          </div>
-
-          <div style={{
-            background: 'rgba(255, 255, 255, 0.05)',
-            borderRadius: '20px',
-            padding: '2rem',
-            border: '1px solid rgba(255, 255, 255, 0.1)'
-          }}>
-            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>⚽</div>
-            <h3 style={{
-              fontFamily: 'Bebas Neue, Arial Black, sans-serif',
-              fontSize: '1.5rem',
-              color: '#ffffff',
-              marginBottom: '0.5rem'
-            }}>Foosball</h3>
-            <p style={{
-              fontFamily: 'Manrope, Inter, Segoe UI, Arial, sans-serif',
-              fontSize: '1rem',
-              color: '#888888',
-              marginBottom: '1rem'
-            }}>Fast-paced table football game</p>
-          </div>
-
-          {/* New Games Added */}
-          <div style={{
-            background: 'rgba(255, 255, 255, 0.05)',
-            borderRadius: '20px',
-            padding: '2rem',
-            border: '1px solid rgba(255, 255, 255, 0.1)'
-          }}>
-            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🎳</div>
-            <h3 style={{
-              fontFamily: 'Bebas Neue, Arial Black, sans-serif',
-              fontSize: '1.5rem',
-              color: '#ffffff',
-              marginBottom: '0.5rem'
-            }}>Bowling</h3>
-            <p style={{
-              fontFamily: 'Manrope, Inter, Segoe UI, Arial, sans-serif',
-              fontSize: '1rem',
-              color: '#888888',
-              marginBottom: '1rem'
-            }}>Professional bowling lanes with automatic scoring</p>
-          </div>
-
-          <div style={{
-            background: 'rgba(255, 255, 255, 0.05)',
-            borderRadius: '20px',
-            padding: '2rem',
-            border: '1px solid rgba(255, 255, 255, 0.1)'
-          }}>
-            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🎯</div>
-            <h3 style={{
-              fontFamily: 'Bebas Neue, Arial Black, sans-serif',
-              fontSize: '1.5rem',
-              color: '#ffffff',
-              marginBottom: '0.5rem'
-            }}>Darts</h3>
-            <p style={{
-              fontFamily: 'Manrope, Inter, Segoe UI, Arial, sans-serif',
-              fontSize: '1rem',
-              color: '#888888',
-              marginBottom: '1rem'
-            }}>Electronic dart boards for competitive play</p>
-          </div>
-
-          <div style={{
-            background: 'rgba(255, 255, 255, 0.05)',
-            borderRadius: '20px',
-            padding: '2rem',
-            border: '1px solid rgba(255, 255, 255, 0.1)'
-          }}>
-            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>♟️</div>
-            <h3 style={{
-              fontFamily: 'Bebas Neue, Arial Black, sans-serif',
-              fontSize: '1.5rem',
-              color: '#ffffff',
-              marginBottom: '0.5rem'
-            }}>Chess</h3>
-            <p style={{
-              fontFamily: 'Manrope, Inter, Segoe UI, Arial, sans-serif',
-              fontSize: '1rem',
-              color: '#888888',
-              marginBottom: '1rem'
-            }}>Strategic chess sets for intellectual challenges</p>
           </div>
         </div>
 
