@@ -14,6 +14,10 @@ const MenuSection = () => {
   const [isMenuImageModalOpen, setIsMenuImageModalOpen] = useState(false);
   const [selectedMenuImage, setSelectedMenuImage] = useState('');
   const [selectedMenuTitle, setSelectedMenuTitle] = useState('');
+  const [is128Menu, setIs128Menu] = useState(false);
+  const [current128Page, setCurrent128Page] = useState(0);
+  const [touchStart, setTouchStart] = useState(null);
+  const [touchEnd, setTouchEnd] = useState(null);
 
   // Add section IDs for navigation
   useEffect(() => {
@@ -222,12 +226,13 @@ const MenuSection = () => {
             justifyContent: 'center',
             gap: 'clamp(1rem, 3vw, 2rem)',
             marginBottom: '3rem',
-            flexWrap: 'nowrap'
+            flexWrap: 'wrap'
           }}
         >
           {/* Food Menu Button */}
           <motion.button
             onClick={() => {
+              setIs128Menu(false);
               setSelectedMenuImage('/menu/FoodMenu.jpeg');
               setSelectedMenuTitle('Food Menu');
               setIsMenuImageModalOpen(true);
@@ -300,6 +305,7 @@ const MenuSection = () => {
           {/* Liquor Menu Button */}
           <motion.button
             onClick={() => {
+              setIs128Menu(false);
               setSelectedMenuImage('/menu/LIquorMenu.jpeg');
               setSelectedMenuTitle('Liquor Menu');
               setIsMenuImageModalOpen(true);
@@ -366,6 +372,87 @@ const MenuSection = () => {
               }}>
                 View Liquor Menu
               </h3>
+            </div>
+          </motion.button>
+
+          {/* Eat & Drink @128 Menu - Swipeable */}
+          <motion.button
+            onClick={() => {
+              setIs128Menu(true);
+              setCurrent128Page(0);
+              setSelectedMenuImage('/menu/eat and drink anything@128 menu/eat & drink  -1 (1).png');
+              setSelectedMenuTitle('Eat & Drink @128');
+              setIsMenuImageModalOpen(true);
+            }}
+            style={{
+              position: 'relative',
+              width: 'clamp(200px, 35vw, 280px)',
+              height: 'clamp(130px, 25vw, 180px)',
+              borderRadius: '20px',
+              border: '2px solid rgba(255, 255, 255, 0.2)',
+              background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05))',
+              backdropFilter: 'blur(15px)',
+              cursor: 'pointer',
+              overflow: 'hidden',
+              transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+              boxShadow: '0 8px 25px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
+            }}
+            whileHover={{
+              scale: 1.05,
+              border: '2px solid rgba(255, 255, 255, 0.4)',
+              boxShadow: '0 12px 35px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2)',
+              transform: 'translateY(-5px)'
+            }}
+            whileTap={{ scale: 0.98 }}
+          >
+            {/* Background Image */}
+            <div style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundImage: 'url(/menu/eat and drink anything@128 menu/eat & drink  -1 (1).png)',
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              filter: 'brightness(0.7)',
+              transition: 'filter 0.3s ease'
+            }} />
+            
+            {/* Overlay */}
+            <div style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              background: 'linear-gradient(135deg, rgba(0, 255, 100, 0.3), rgba(0, 0, 0, 0.6))',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: 'white',
+              textAlign: 'center',
+              padding: 'clamp(0.5rem, 2vw, 1rem)'
+            }}>
+              <span style={{ fontSize: 'clamp(1.8rem, 4vw, 2.5rem)', marginBottom: '0.5rem' }}>🎉</span>
+              <h3 style={{
+                fontFamily: 'Bebas Neue, Arial Black, sans-serif',
+                fontSize: 'clamp(1.2rem, 3vw, 1.8rem)',
+                fontWeight: '400',
+                margin: '0',
+                letterSpacing: '0.02em',
+                textTransform: 'uppercase'
+              }}>
+                Eat & Drink @128
+              </h3>
+              <p style={{
+                fontSize: 'clamp(0.7rem, 1.5vw, 0.9rem)',
+                marginTop: '0.25rem',
+                opacity: 0.9
+              }}>
+                Swipe to view
+              </p>
             </div>
           </motion.button>
         </motion.div>
@@ -465,7 +552,11 @@ const MenuSection = () => {
                 justifyContent: 'center',
                 padding: '2rem'
               }}
-              onClick={() => setIsMenuImageModalOpen(false)}
+              onClick={() => {
+                setIsMenuImageModalOpen(false);
+                setIs128Menu(false);
+                setCurrent128Page(0);
+              }}
             >
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -474,15 +565,80 @@ const MenuSection = () => {
                 transition={{ duration: 0.3, delay: 0.1 }}
                 style={{
                   position: 'relative',
-                  maxWidth: '90vw',
-                  maxHeight: '90vh',
+                  maxWidth: is128Menu ? 'min(90vw, 360px)' : '90vw',
+                  maxHeight: is128Menu ? 'min(90vh, 640px)' : '90vh',
+                  width: is128Menu ? 'min(90vw, 360px)' : 'auto',
+                  height: is128Menu ? 'min(90vh, 640px)' : 'auto',
+                  aspectRatio: is128Menu ? '9/16' : 'auto',
                   borderRadius: '20px',
                   overflow: 'hidden',
                   boxShadow: '0 20px 60px rgba(0, 0, 0, 0.5)'
                 }}
                 onClick={(e) => e.stopPropagation()}
+                onTouchStart={(e) => {
+                  setTouchStart(e.targetTouches[0].clientX);
+                }}
+                onTouchMove={(e) => {
+                  setTouchEnd(e.targetTouches[0].clientX);
+                }}
+                onTouchEnd={() => {
+                  if (!touchStart || !touchEnd) return;
+                  const distance = touchStart - touchEnd;
+                  const isLeftSwipe = distance > 50;
+                  const isRightSwipe = distance < -50;
+                  
+                  if (is128Menu) {
+                    if (isLeftSwipe && current128Page < 1) {
+                      setCurrent128Page(current128Page + 1);
+                      setSelectedMenuImage('/menu/eat and drink anything@128 menu/eat & drink  -2.png');
+                    }
+                    if (isRightSwipe && current128Page > 0) {
+                      setCurrent128Page(current128Page - 1);
+                      setSelectedMenuImage('/menu/eat and drink anything@128 menu/eat & drink  -1 (1).png');
+                    }
+                  }
+                  setTouchStart(null);
+                  setTouchEnd(null);
+                }}
+                onMouseDown={(e) => {
+                  setTouchStart(e.clientX);
+                }}
+                onMouseMove={(e) => {
+                  if (touchStart !== null) {
+                    setTouchEnd(e.clientX);
+                  }
+                }}
+                onMouseUp={() => {
+                  if (touchStart !== null && touchEnd !== null) {
+                    const distance = touchStart - touchEnd;
+                    const isLeftSwipe = distance > 50;
+                    const isRightSwipe = distance < -50;
+                    
+                    if (is128Menu) {
+                      if (isLeftSwipe && current128Page < 1) {
+                        setCurrent128Page(current128Page + 1);
+                        setSelectedMenuImage('/menu/eat and drink anything@128 menu/eat & drink  -2.png');
+                      }
+                      if (isRightSwipe && current128Page > 0) {
+                        setCurrent128Page(current128Page - 1);
+                        setSelectedMenuImage('/menu/eat and drink anything@128 menu/eat & drink  -1 (1).png');
+                      }
+                    }
+                  }
+                  setTouchStart(null);
+                  setTouchEnd(null);
+                }}
+                onMouseLeave={() => {
+                  setTouchStart(null);
+                  setTouchEnd(null);
+                }}
               >
-                <img
+                <motion.img
+                  key={current128Page}
+                  initial={{ opacity: 0, x: current128Page === 0 ? -20 : 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: current128Page === 0 ? 20 : -20 }}
+                  transition={{ duration: 0.3 }}
                   src={selectedMenuImage}
                   alt={selectedMenuTitle}
                   style={{
@@ -492,8 +648,48 @@ const MenuSection = () => {
                     display: 'block'
                   }}
                 />
+                
+                {/* Navigation Dots for 128 Menu */}
+                {is128Menu && (
+                  <div style={{
+                    position: 'absolute',
+                    bottom: '1rem',
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    display: 'flex',
+                    gap: '0.5rem',
+                    zIndex: 10
+                  }}>
+                    {[0, 1].map((page) => (
+                      <div
+                        key={page}
+                        style={{
+                          width: current128Page === page ? '24px' : '8px',
+                          height: '8px',
+                          borderRadius: '4px',
+                          background: current128Page === page ? '#00ff64' : 'rgba(255, 255, 255, 0.5)',
+                          transition: 'all 0.3s ease',
+                          cursor: 'pointer'
+                        }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setCurrent128Page(page);
+                          setSelectedMenuImage(page === 0 
+                            ? '/menu/eat and drink anything@128 menu/eat & drink  -1 (1).png'
+                            : '/menu/eat and drink anything@128 menu/eat & drink  -2.png'
+                          );
+                        }}
+                      />
+                    ))}
+                  </div>
+                )}
+                
                 <button
-                  onClick={() => setIsMenuImageModalOpen(false)}
+                  onClick={() => {
+                    setIsMenuImageModalOpen(false);
+                    setIs128Menu(false);
+                    setCurrent128Page(0);
+                  }}
                   style={{
                     position: 'absolute',
                     top: '1rem',
@@ -510,7 +706,8 @@ const MenuSection = () => {
                     alignItems: 'center',
                     justifyContent: 'center',
                     backdropFilter: 'blur(10px)',
-                    transition: 'all 0.3s ease'
+                    transition: 'all 0.3s ease',
+                    zIndex: 10
                   }}
                   onMouseEnter={(e) => {
                     e.target.style.background = 'rgba(255, 255, 255, 0.3)';

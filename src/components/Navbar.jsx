@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { FaBars, FaTimes, FaComments, FaUtensils, FaCalendarAlt, FaPhone, FaHome, FaClock, FaGamepad } from 'react-icons/fa';
 import Chat from './Chat';
 
 const Navbar = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
@@ -64,6 +67,26 @@ const Navbar = () => {
   const handleNavClick = (sectionId) => {
     setIsMenuOpen(false);
     
+    // Handle booking page navigation
+    if (sectionId === 'book-table') {
+      navigate('/booking');
+      return;
+    }
+    
+    // If we're not on the home page, navigate to home first
+    if (location.pathname !== '/') {
+      navigate('/');
+      // Wait for navigation to complete before scrolling
+      setTimeout(() => {
+        if (sectionId === 'home') {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        } else {
+          handleScrollToSection(sectionId);
+        }
+      }, 100);
+      return;
+    }
+    
     // Add a small delay to ensure DOM is ready
     setTimeout(() => {
       if (sectionId === 'home') {
@@ -75,53 +98,58 @@ const Navbar = () => {
         return;
       }
       
-      // Try multiple ways to find the element
-      let element = document.getElementById(sectionId);
-      
-      // If not found, try alternative selectors
-      if (!element) {
-        element = document.querySelector(`[id="${sectionId}"]`);
-      }
-      if (!element) {
-        element = document.querySelector(`section[id="${sectionId}"]`);
-      }
-      
-      if (element) {
-        // Calculate offset for navbar height and main padding
-        const navbarHeight = 100; // Approximate navbar height
-        const mainPadding = 120; // Main content padding
-        const elementPosition = element.offsetTop - navbarHeight - mainPadding;
-        
-        // Try different scroll methods
-        try {
-          // Method 1: window.scrollTo
-          window.scrollTo({
-            top: elementPosition,
-            behavior: 'smooth'
-          });
-          
-          // Method 2: element.scrollIntoView as fallback
-          setTimeout(() => {
-            if (window.scrollY < elementPosition - 50) {
-              element.scrollIntoView({ 
-                behavior: 'smooth',
-                block: 'start'
-              });
-            }
-          }, 100);
-          
-          // Add highlight effect
-          element.style.transition = 'all 0.3s ease';
-          element.style.boxShadow = '0 0 30px rgba(255, 0, 60, 0.3)';
-          
-          setTimeout(() => {
-            element.style.boxShadow = '';
-          }, 2000);
-        } catch (error) {
-          console.error('Navigation error:', error);
-        }
-      }
+      handleScrollToSection(sectionId);
     }, 100); // Small delay to ensure DOM is ready
+  };
+
+  // Helper function to scroll to section
+  const handleScrollToSection = (sectionId) => {
+    // Try multiple ways to find the element
+    let element = document.getElementById(sectionId);
+    
+    // If not found, try alternative selectors
+    if (!element) {
+      element = document.querySelector(`[id="${sectionId}"]`);
+    }
+    if (!element) {
+      element = document.querySelector(`section[id="${sectionId}"]`);
+    }
+    
+    if (element) {
+      // Calculate offset for navbar height and main padding
+      const navbarHeight = 100; // Approximate navbar height
+      const mainPadding = 120; // Main content padding
+      const elementPosition = element.offsetTop - navbarHeight - mainPadding;
+      
+      // Try different scroll methods
+      try {
+        // Method 1: window.scrollTo
+        window.scrollTo({
+          top: elementPosition,
+          behavior: 'smooth'
+        });
+        
+        // Method 2: element.scrollIntoView as fallback
+        setTimeout(() => {
+          if (window.scrollY < elementPosition - 50) {
+            element.scrollIntoView({ 
+              behavior: 'smooth',
+              block: 'start'
+            });
+          }
+        }, 100);
+        
+        // Add highlight effect
+        element.style.transition = 'all 0.3s ease';
+        element.style.boxShadow = '0 0 30px rgba(255, 0, 60, 0.3)';
+        
+        setTimeout(() => {
+          element.style.boxShadow = '';
+        }, 2000);
+      } catch (error) {
+        console.error('Navigation error:', error);
+      }
+    }
   };
 
   const navLinks = [

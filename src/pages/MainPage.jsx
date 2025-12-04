@@ -6,7 +6,6 @@ import TimingsSection from '../components/TimingsSection';
 import GamesSection from '../components/GamesSection';
 import MenuSection from '../components/MenuSection';
 import PartyPackages from '../components/PartyPackages';
-import BookTableSection from '../components/BookTableSection';
 import Footer from '../components/Footer';
 
 const MainPage = () => {
@@ -18,9 +17,6 @@ const MainPage = () => {
           <HeroSection />
         </section>
         <LiveStatusBar />
-        <section id="book-table" aria-label="Book a table reservation">
-          <BookTableSection />
-        </section>
         <section id="timings-section" aria-label="Opening hours and timings">
           <TimingsSection />
         </section>

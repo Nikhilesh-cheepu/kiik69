@@ -296,6 +296,260 @@ const TimingsSection = () => {
             }} />
           </div>
         </div>
+
+        {/* Bowling Costs Section */}
+        <div style={{
+          marginTop: '5rem',
+          paddingTop: '4rem',
+          borderTop: '2px solid rgba(255, 255, 255, 0.1)'
+        }}>
+          {/* Bowling Badge */}
+          <div style={{
+            background: 'linear-gradient(135deg, #00ff64, #00cc51)',
+            borderRadius: '50px',
+            border: '2px solid rgba(255, 255, 255, 0.2)',
+            backdropFilter: 'blur(20px)',
+            padding: '0.8rem 2rem',
+            display: 'inline-block',
+            margin: '0 auto 2rem',
+            position: 'relative',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            boxShadow: '0 8px 32px rgba(0, 255, 100, 0.3)'
+          }}>
+            <span style={{
+              color: '#000000',
+              fontSize: 'clamp(0.9rem, 2.5vw, 1.1rem)',
+              fontWeight: '700',
+              fontFamily: 'Bebas Neue, Arial Black, sans-serif',
+              letterSpacing: '0.05em',
+              textTransform: 'uppercase'
+            }}>🎳 Bowling Costs</span>
+          </div>
+
+          {/* Bowling Title */}
+          <h2 style={{
+            fontFamily: 'Bebas Neue, Arial Black, sans-serif',
+            fontSize: 'clamp(2rem, 5vw, 3rem)',
+            color: '#ffffff',
+            textAlign: 'center',
+            marginBottom: '1.5rem',
+            textShadow: '0 4px 20px rgba(0, 0, 0, 0.8)',
+            letterSpacing: '0.02em'
+          }}>BOWLING PRICING</h2>
+
+          {/* Pricing Cards Container */}
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+            gap: '2rem',
+            marginTop: '3rem',
+            maxWidth: '900px',
+            margin: '3rem auto 0'
+          }}>
+            {/* Friday - Sunday & Holidays Card */}
+            <div style={{
+              background: 'linear-gradient(135deg, rgba(255, 0, 60, 0.15), rgba(255, 0, 60, 0.05))',
+              border: '2px solid rgba(255, 0, 60, 0.3)',
+              borderRadius: '20px',
+              padding: '2rem',
+              backdropFilter: 'blur(10px)',
+              boxShadow: '0 8px 32px rgba(255, 0, 60, 0.2)',
+              transition: 'transform 0.3s ease, box-shadow 0.3s ease'
+            }}>
+              <h3 style={{
+                fontFamily: 'Bebas Neue, Arial Black, sans-serif',
+                fontSize: 'clamp(1.5rem, 3.5vw, 2rem)',
+                color: '#ff003c',
+                marginBottom: '1.5rem',
+                textAlign: 'center',
+                letterSpacing: '0.02em',
+                textShadow: '0 2px 8px rgba(255, 0, 60, 0.4)'
+              }}>FRI - SUN & HOLIDAYS</h3>
+              
+              <div style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '1rem'
+              }}>
+                <div style={{
+                  padding: '1rem',
+                  background: 'rgba(0, 0, 0, 0.3)',
+                  borderRadius: '10px',
+                  border: '1px solid rgba(255, 0, 60, 0.2)'
+                }}>
+                  <div style={{
+                    fontFamily: 'Bebas Neue, Arial Black, sans-serif',
+                    fontSize: 'clamp(1.1rem, 2.5vw, 1.3rem)',
+                    color: '#ffffff',
+                    marginBottom: '0.5rem'
+                  }}>Per Head</div>
+                  <div style={{
+                    fontFamily: 'Manrope, sans-serif',
+                    fontSize: 'clamp(1.2rem, 3vw, 1.5rem)',
+                    color: '#ff003c',
+                    fontWeight: '700'
+                  }}>₹400/-</div>
+                </div>
+
+                <div style={{
+                  padding: '1rem',
+                  background: 'rgba(0, 0, 0, 0.3)',
+                  borderRadius: '10px',
+                  border: '1px solid rgba(255, 0, 60, 0.2)'
+                }}>
+                  <div style={{
+                    fontFamily: 'Bebas Neue, Arial Black, sans-serif',
+                    fontSize: 'clamp(1.1rem, 2.5vw, 1.3rem)',
+                    color: '#ffffff',
+                    marginBottom: '0.5rem'
+                  }}>30 Minutes</div>
+                  <div style={{
+                    fontFamily: 'Manrope, sans-serif',
+                    fontSize: 'clamp(1.2rem, 3vw, 1.5rem)',
+                    color: '#ff003c',
+                    fontWeight: '700',
+                    marginBottom: '0.3rem'
+                  }}>₹1,500/-</div>
+                  <div style={{
+                    fontFamily: 'Manrope, sans-serif',
+                    fontSize: 'clamp(0.9rem, 2vw, 1rem)',
+                    color: 'rgba(255, 255, 255, 0.7)',
+                    fontStyle: 'italic'
+                  }}>Max 4 people</div>
+                </div>
+
+                <div style={{
+                  padding: '1rem',
+                  background: 'rgba(0, 0, 0, 0.3)',
+                  borderRadius: '10px',
+                  border: '1px solid rgba(255, 0, 60, 0.2)'
+                }}>
+                  <div style={{
+                    fontFamily: 'Bebas Neue, Arial Black, sans-serif',
+                    fontSize: 'clamp(1.1rem, 2.5vw, 1.3rem)',
+                    color: '#ffffff',
+                    marginBottom: '0.5rem'
+                  }}>60 Minutes</div>
+                  <div style={{
+                    fontFamily: 'Manrope, sans-serif',
+                    fontSize: 'clamp(1.2rem, 3vw, 1.5rem)',
+                    color: '#ff003c',
+                    fontWeight: '700',
+                    marginBottom: '0.3rem'
+                  }}>₹3,000/-</div>
+                  <div style={{
+                    fontFamily: 'Manrope, sans-serif',
+                    fontSize: 'clamp(0.9rem, 2vw, 1rem)',
+                    color: 'rgba(255, 255, 255, 0.7)',
+                    fontStyle: 'italic'
+                  }}>Max 8 people</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Monday - Thursday Card */}
+            <div style={{
+              background: 'linear-gradient(135deg, rgba(0, 255, 100, 0.15), rgba(0, 255, 100, 0.05))',
+              border: '2px solid rgba(0, 255, 100, 0.3)',
+              borderRadius: '20px',
+              padding: '2rem',
+              backdropFilter: 'blur(10px)',
+              boxShadow: '0 8px 32px rgba(0, 255, 100, 0.2)',
+              transition: 'transform 0.3s ease, box-shadow 0.3s ease'
+            }}>
+              <h3 style={{
+                fontFamily: 'Bebas Neue, Arial Black, sans-serif',
+                fontSize: 'clamp(1.5rem, 3.5vw, 2rem)',
+                color: '#00ff64',
+                marginBottom: '1.5rem',
+                textAlign: 'center',
+                letterSpacing: '0.02em',
+                textShadow: '0 2px 8px rgba(0, 255, 100, 0.4)'
+              }}>MON - THU</h3>
+              
+              <div style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '1rem'
+              }}>
+                <div style={{
+                  padding: '1rem',
+                  background: 'rgba(0, 0, 0, 0.3)',
+                  borderRadius: '10px',
+                  border: '1px solid rgba(0, 255, 100, 0.2)'
+                }}>
+                  <div style={{
+                    fontFamily: 'Bebas Neue, Arial Black, sans-serif',
+                    fontSize: 'clamp(1.1rem, 2.5vw, 1.3rem)',
+                    color: '#ffffff',
+                    marginBottom: '0.5rem'
+                  }}>Per Head</div>
+                  <div style={{
+                    fontFamily: 'Manrope, sans-serif',
+                    fontSize: 'clamp(1.2rem, 3vw, 1.5rem)',
+                    color: '#00ff64',
+                    fontWeight: '700'
+                  }}>₹300/-</div>
+                </div>
+
+                <div style={{
+                  padding: '1rem',
+                  background: 'rgba(0, 0, 0, 0.3)',
+                  borderRadius: '10px',
+                  border: '1px solid rgba(0, 255, 100, 0.2)'
+                }}>
+                  <div style={{
+                    fontFamily: 'Bebas Neue, Arial Black, sans-serif',
+                    fontSize: 'clamp(1.1rem, 2.5vw, 1.3rem)',
+                    color: '#ffffff',
+                    marginBottom: '0.5rem'
+                  }}>30 Minutes</div>
+                  <div style={{
+                    fontFamily: 'Manrope, sans-serif',
+                    fontSize: 'clamp(1.2rem, 3vw, 1.5rem)',
+                    color: '#00ff64',
+                    fontWeight: '700',
+                    marginBottom: '0.3rem'
+                  }}>₹1,100/-</div>
+                  <div style={{
+                    fontFamily: 'Manrope, sans-serif',
+                    fontSize: 'clamp(0.9rem, 2vw, 1rem)',
+                    color: 'rgba(255, 255, 255, 0.7)',
+                    fontStyle: 'italic'
+                  }}>Max 4 people</div>
+                </div>
+
+                <div style={{
+                  padding: '1rem',
+                  background: 'rgba(0, 0, 0, 0.3)',
+                  borderRadius: '10px',
+                  border: '1px solid rgba(0, 255, 100, 0.2)'
+                }}>
+                  <div style={{
+                    fontFamily: 'Bebas Neue, Arial Black, sans-serif',
+                    fontSize: 'clamp(1.1rem, 2.5vw, 1.3rem)',
+                    color: '#ffffff',
+                    marginBottom: '0.5rem'
+                  }}>60 Minutes</div>
+                  <div style={{
+                    fontFamily: 'Manrope, sans-serif',
+                    fontSize: 'clamp(1.2rem, 3vw, 1.5rem)',
+                    color: '#00ff64',
+                    fontWeight: '700',
+                    marginBottom: '0.3rem'
+                  }}>₹2,200/-</div>
+                  <div style={{
+                    fontFamily: 'Manrope, sans-serif',
+                    fontSize: 'clamp(0.9rem, 2vw, 1rem)',
+                    color: 'rgba(255, 255, 255, 0.7)',
+                    fontStyle: 'italic'
+                  }}>Max 8 people</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   );
