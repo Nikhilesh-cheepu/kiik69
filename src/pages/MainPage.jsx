@@ -2,7 +2,7 @@ import React from 'react';
 import Navbar from '../components/Navbar';
 import HeroSection from '../components/HeroSection';
 import LiveStatusBar from '../components/LiveStatusBar';
-import TimingsSection from '../components/TimingsSection';
+import BowlingPricing from '../components/BowlingPricing';
 import GamesSection from '../components/GamesSection';
 import MenuSection from '../components/MenuSection';
 import PartyPackages from '../components/PartyPackages';
@@ -12,14 +12,12 @@ const MainPage = () => {
   return (
     <div className="main-page">
       <Navbar />
-      <main style={{ paddingTop: '120px' }}>
+      <main style={{ paddingTop: 0 }}>
         <section id="home" aria-label="Hero section">
           <HeroSection />
         </section>
         <LiveStatusBar />
-        <section id="timings-section" aria-label="Opening hours and timings">
-          <TimingsSection />
-        </section>
+        <BowlingPricing />
         <section id="games-section" aria-label="Games and entertainment">
           <GamesSection />
         </section>

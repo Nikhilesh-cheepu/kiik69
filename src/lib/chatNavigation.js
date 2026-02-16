@@ -249,7 +249,7 @@ export const handleNavigationClick = (action) => {
       scrollToSection('games-section');
       break;
     case NAVIGATION_ACTIONS.SCROLL_TO_TIMINGS:
-      scrollToSection('timings-section');
+      scrollToSection('home');
       break;
     case NAVIGATION_ACTIONS.SCROLL_TO_LOCATION:
       scrollToSection('home');

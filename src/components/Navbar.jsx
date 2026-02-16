@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { FaBars, FaTimes, FaComments, FaUtensils, FaCalendarAlt, FaPhone, FaHome, FaClock, FaGamepad } from 'react-icons/fa';
+import { FaBars, FaTimes, FaComments, FaUtensils, FaCalendarAlt, FaPhone, FaHome, FaGamepad } from 'react-icons/fa';
 import Chat from './Chat';
 
 const Navbar = () => {
@@ -35,7 +35,7 @@ const Navbar = () => {
       setIsScrolled(window.scrollY > 50);
       
       // Scrollspy effect - detect active section
-      const sections = ['home', 'book-table', 'timings-section', 'games-section', 'menu-section', 'party-packages', 'contact-section'];
+      const sections = ['home', 'book-table', 'games-section', 'menu-section', 'party-packages', 'contact-section'];
       const scrollPosition = window.scrollY + 200; // Increased offset to account for main padding
       
       for (let i = sections.length - 1; i >= 0; i--) {
@@ -155,7 +155,6 @@ const Navbar = () => {
   const navLinks = [
     { id: 'home', label: 'Home', icon: FaHome },
     { id: 'book-table', label: 'Book Table', icon: FaCalendarAlt },
-    { id: 'timings-section', label: 'Timings', icon: FaClock },
     { id: 'games-section', label: 'Games', icon: FaGamepad },
     { id: 'menu-section', label: 'Menu', icon: FaUtensils },
     { id: 'party-packages', label: 'Party Packages', icon: FaUtensils },
