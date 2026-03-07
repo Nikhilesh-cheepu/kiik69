@@ -1,8 +1,9 @@
 const { Pool } = require('pg');
+const connectionString = require('./connectionString');
 
 // Database configuration - using only PostgreSQL
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
+  connectionString,
   ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
 });
 
@@ -63,9 +64,26 @@ const initializeDatabase = async () => {
       )
     `);
 
+    // Create menu_items table
+    await db.query(`
+      CREATE TABLE IF NOT EXISTS menu_items (
+        id SERIAL PRIMARY KEY,
+        name TEXT NOT NULL,
+        price DECIMAL(10,2) NOT NULL,
+        category TEXT NOT NULL,
+        description TEXT,
+        image TEXT,
+        menu_type TEXT NOT NULL,
+        is_available BOOLEAN DEFAULT true,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+
     console.log('✅ PostgreSQL Database initialized successfully');
     console.log('💬 Chat tables created');
     console.log('🎉 Party packages table created');
+    console.log('📋 Menu items table created');
     console.log('🌐 Database: PostgreSQL (Cloud)');
     
   } catch (error) {

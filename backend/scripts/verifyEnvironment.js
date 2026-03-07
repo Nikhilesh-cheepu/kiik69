@@ -17,7 +17,8 @@ console.log('\n🔧 Backend Environment Variables:');
 console.log('NODE_ENV:', process.env.NODE_ENV || '❌ Missing (defaults to development)');
 console.log('PORT:', process.env.PORT || '❌ Missing (defaults to 5000)');
 console.log('FRONTEND_URL:', process.env.FRONTEND_URL ? '✅ Set' : '❌ Missing');
-console.log('DATABASE_URL:', process.env.DATABASE_URL ? '✅ Set' : '❌ Missing');
+const dbUrl = process.env.DATABASE_URL || process.env.DATABASE_URL_PRIVATE || process.env.DATABASE_URL_PUBLIC;
+console.log('DATABASE_URL / DATABASE_URL_PRIVATE / DATABASE_URL_PUBLIC:', dbUrl ? '✅ Set' : '❌ Missing');
 console.log('JWT_SECRET:', process.env.JWT_SECRET ? '✅ Set' : '❌ Missing');
 console.log('OPENAI_API_KEY:', process.env.OPENAI_API_KEY ? '✅ Set' : '❌ Missing');
 
@@ -26,13 +27,13 @@ console.log('INSTAGRAM_ACCESS_TOKEN:', process.env.INSTAGRAM_ACCESS_TOKEN ? '✅
 console.log('INSTAGRAM_APP_SECRET:', process.env.INSTAGRAM_APP_SECRET ? '✅ Set' : '❌ Missing (optional)');
 console.log('INSTAGRAM_VERIFY_TOKEN:', process.env.INSTAGRAM_VERIFY_TOKEN ? '✅ Set' : '❌ Missing (optional)');
 
-// Test database connection if DATABASE_URL is set
+// Test database connection if a database URL is set
 const testDatabaseConnection = async () => {
-  if (process.env.DATABASE_URL) {
+  if (dbUrl) {
     console.log('\n🗄️ Testing Database Connection...');
     
     const pool = new Pool({
-      connectionString: process.env.DATABASE_URL,
+      connectionString: dbUrl,
       ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
     });
 
@@ -62,7 +63,7 @@ const testDatabaseConnection = async () => {
       await pool.end();
     }
   } else {
-    console.log('\n❌ DATABASE_URL not set - cannot test database connection');
+    console.log('\n❌ No database URL set (DATABASE_URL, DATABASE_URL_PRIVATE, or DATABASE_URL_PUBLIC)');
   }
 };
 
@@ -74,10 +75,12 @@ const main = async () => {
   console.log('=====================================');
 
   const requiredFrontend = ['VITE_OPENAI_API_KEY', 'VITE_BACKEND_URL'];
-  const requiredBackend = ['DATABASE_URL', 'OPENAI_API_KEY'];
+  const requiredBackend = ['OPENAI_API_KEY'];
+  const hasDbUrl = dbUrl;
 
   const missingFrontend = requiredFrontend.filter(key => !process.env[key]);
   const missingBackend = requiredBackend.filter(key => !process.env[key]);
+  if (!hasDbUrl) missingBackend.push('DATABASE_URL / DATABASE_URL_PRIVATE / DATABASE_URL_PUBLIC');
 
   if (missingFrontend.length === 0) {
     console.log('✅ All required frontend variables are set');

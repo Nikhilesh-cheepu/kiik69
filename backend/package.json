@@ -7,7 +7,9 @@
     "start": "node server.js",
     "dev": "nodemon server.js",
     "build": "npm install --production",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "populate:menu": "node scripts/populateMenuItems.js",
+    "populate:packages": "node scripts/populatePartyPackages.js"
   },
   "keywords": [
     "restaurant",
