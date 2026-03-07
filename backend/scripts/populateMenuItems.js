@@ -1,4 +1,5 @@
 require('dotenv').config();
+require('dotenv').config({ path: require('path').resolve(__dirname, '../../.env.local') });
 const path = require('path');
 const { pathToFileURL } = require('url');
 const { Pool } = require('pg');
