@@ -1,8 +1,50 @@
 # Environment Variables Setup Guide
 
-This document explains all the environment variables needed for the KIIK 69 application.
+This document explains all the environment variables needed for the SkyHy Live Sports Brewery application (formerly KIIK 69 Sports Bar).
 
-## Frontend Environment Variables (Vite)
+## Next.js App & Admin (current stack)
+
+Used by the Next.js app (and admin panel).
+
+### Required for app + DB
+
+```bash
+# Postgres (use public URL for Vercel/serverless)
+DATABASE_URL_PUBLIC=postgresql://user:pass@host:port/db
+# Optional: private URL for backend (e.g. Railway internal)
+DATABASE_URL_PRIVATE=postgresql://...
+```
+
+If only one URL is set, the app uses `DATABASE_URL` or `DATABASE_URL_PUBLIC` or `DATABASE_URL_PRIVATE` (first available).
+
+### Required for admin
+
+```bash
+# JWT signing (use a long random string in production)
+ADMIN_JWT_SECRET=your-secret-at-least-32-chars
+```
+
+### One-time seed (first admin user)
+
+```bash
+# Set only when creating the first admin; remove or leave unset after
+ADMIN_SEED_TOKEN=your-one-time-secret-token
+```
+
+Call `POST /api/admin/seed` with header `Authorization: Bearer <ADMIN_SEED_TOKEN>` and body `{ "email": "admin@example.com", "password": "your-password" }`. Then remove or unset `ADMIN_SEED_TOKEN`.
+
+### Vercel Blob (media uploads)
+
+```bash
+# From Vercel: Storage → Blob → Create store, then copy token
+BLOB_READ_WRITE_TOKEN=vercel_blob_xxx
+```
+
+Add this in Vercel project → Settings → Environment Variables. For local dev, use `vercel env pull` or add to `.env.local`.
+
+---
+
+## Frontend Environment Variables (Vite – legacy)
 
 All frontend environment variables must start with `VITE_` to be accessible in the browser.
 

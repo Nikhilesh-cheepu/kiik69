@@ -4,7 +4,9 @@ const helmet = require('helmet');
 const morgan = require('morgan');
 const compression = require('compression');
 const path = require('path');
+// Load backend .env if present, then fall back to project .env.local
 require('dotenv').config();
+require('dotenv').config({ path: path.resolve(__dirname, '..', '.env.local') });
 
 const app = express();
 const PORT = process.env.PORT || 5000;
