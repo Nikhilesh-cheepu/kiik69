@@ -163,7 +163,7 @@ export default function MenuTeaserSection() {
                       className="flex items-center justify-between gap-2 rounded-xl border border-zinc-800 bg-zinc-900/80 px-3 py-1.5"
                     >
                       <span className="truncate text-zinc-100">
-                        {"category" in item ? item.name : item.name}
+                        {item.name}
                       </span>
                       <span className="shrink-0 font-medium text-emerald-300">
                         ₹{openModal === "128" ? 128 : (item as any).price}
