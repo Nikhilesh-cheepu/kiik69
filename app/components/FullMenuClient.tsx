@@ -128,6 +128,7 @@ export default function FullMenuClient({ items }: Props) {
   const [search, setSearch] = useState("");
   const [cart, setCart] = useState<Record<number, CartItem>>({});
   const [cartOpen, setCartOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   const filteredByMain = useMemo(() => {
     if (mainMode === "all") return items;
@@ -206,6 +207,30 @@ export default function FullMenuClient({ items }: Props) {
       }
       return { ...prev, [id]: { ...existing, quantity: nextQty } };
     });
+  }
+
+  useEffect(() => {
+    if (typeof navigator === "undefined") return;
+    const ua =
+      navigator.userAgent ||
+      (navigator as any).vendor ||
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      ((window as any).opera as string | undefined) ||
+      "";
+    setIsMobile(/android|iphone|ipad|ipod|windows phone/i.test(ua.toLowerCase()));
+  }, []);
+
+  function handleUpiPay() {
+    if (total <= 0) return;
+    const amount = total.toFixed(0);
+    const upiUrl = `upi://pay?pa=paytmqr5xq1gp@ptys&pn=${encodeURIComponent(
+      "SkyHy Live Sports Brewery"
+    )}&am=${encodeURIComponent(amount)}&cu=INR&tn=${encodeURIComponent(
+      "SkyHy Menu Order"
+    )}`;
+    if (typeof window !== "undefined") {
+      window.location.href = upiUrl;
+    }
   }
 
   const subFilters =
@@ -495,6 +520,18 @@ export default function FullMenuClient({ items }: Props) {
                 >
                   Proceed to checkout
                 </button>
+                <button
+                  type="button"
+                  onClick={handleUpiPay}
+                  className="mt-2 w-full rounded-full bg-emerald-600 py-2 text-[11px] font-semibold uppercase tracking-wider text-black shadow-[0_10px_30px_rgba(16,185,129,0.7)]"
+                >
+                  Pay via UPI (Instant)
+                </button>
+                {!isMobile && (
+                  <p className="mt-2 text-center text-[11px] text-zinc-400">
+                    Scan QR or open this link on your phone to pay via UPI.
+                  </p>
+                )}
               </div>
             </motion.div>
           </>
