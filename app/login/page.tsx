@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { firebaseAuth } from "@/lib/firebaseClient";
 import {
   RecaptchaVerifier,
@@ -11,8 +11,7 @@ import {
 
 export default function LoginPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const returnTo = searchParams.get("returnTo") || "/";
+  const [returnTo, setReturnTo] = useState<string>("/");
 
   const [phone, setPhone] = useState("");
   const [otp, setOtp] = useState("");
@@ -24,6 +23,11 @@ export default function LoginPage() {
 
   // set up invisible reCAPTCHA
   useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      setReturnTo(params.get("returnTo") || "/");
+    }
+
     if (typeof window === "undefined") return;
     if ((window as any).recaptchaVerifier) return;
 
