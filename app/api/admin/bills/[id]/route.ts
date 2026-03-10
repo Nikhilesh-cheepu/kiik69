@@ -84,7 +84,7 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
   }
 
   // If marking as PAID and no explicit paidAmount provided, set to amount later
-  const updated = await prisma.$transaction(async (tx) => {
+  const updated = await prisma.$transaction(async (tx: any) => {
     const existing = await tx.bill.findUnique({ where: { id } });
     if (!existing) {
       throw new Error("NOT_FOUND");
