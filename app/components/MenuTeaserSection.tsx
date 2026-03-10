@@ -25,6 +25,7 @@ function buildRotatingNames(): string[] {
 
 export default function MenuTeaserSection() {
   const [openModal, setOpenModal] = useState<MenuModal>(null);
+  const [quantities, setQuantities] = useState<Record<string, number>>({});
   const [rotateIndex, setRotateIndex] = useState(0);
 
   const rotatingNames = useMemo(() => buildRotatingNames(), []);
@@ -37,9 +38,26 @@ export default function MenuTeaserSection() {
     return () => clearInterval(t);
   }, [rotatingNames.length]);
 
-  const foodPreview = dataSource.food.items.slice(0, 10);
-  const liquorPreview = dataSource.liquor.items.slice(0, 10);
-  const menu128Preview = dataSource.eatAndDrink128.items.slice(0, 20);
+  const foodItems = dataSource.food.items;
+  const liquorItems = dataSource.liquor.items;
+  const menu128Items = dataSource.eatAndDrink128.items;
+
+  const addedCount = useMemo(
+    () => Object.values(quantities).reduce((sum, q) => sum + q, 0),
+    [quantities],
+  );
+
+  function adjustQty(name: string, delta: 1 | -1) {
+    setQuantities((prev) => {
+      const current = prev[name] ?? 0;
+      const next = Math.max(0, current + delta);
+      if (!next) {
+        const { [name]: _removed, ...rest } = prev;
+        return rest;
+      }
+      return { ...prev, [name]: next };
+    });
+  }
 
   return (
     <section className="relative w-full bg-gradient-to-b from-[#020617] via-[#020617] to-black py-8 px-4 sm:px-6 lg:px-8">
@@ -98,9 +116,11 @@ export default function MenuTeaserSection() {
         <div className="flex justify-center">
           <Link
             href="/menu"
-            className="inline-flex items-center justify-center rounded-full border border-emerald-500/50 bg-emerald-500/15 px-5 py-2.5 text-[13px] font-semibold uppercase tracking-[0.14em] text-emerald-200 shadow-[0_0_20px_rgba(34,197,94,0.2)] transition-all hover:border-emerald-400/70 hover:bg-emerald-500/25 hover:text-white"
+            className="inline-flex items-center justify-center rounded-full border border-emerald-400/70 bg-emerald-500/10 px-5 py-2.5 text-[13px] font-semibold uppercase tracking-[0.14em] text-emerald-200 shadow-[0_0_20px_rgba(16,185,129,0.35)] transition-all hover:border-emerald-300 hover:bg-emerald-500/20 hover:text-white"
           >
-            View Menu & Pricing
+            {addedCount > 0
+              ? `View menu & pricing · ${addedCount}`
+              : "View menu & pricing"}
           </Link>
         </div>
       </div>
@@ -119,7 +139,7 @@ export default function MenuTeaserSection() {
               onClick={() => setOpenModal(null)}
             />
             <motion.div
-              className="fixed inset-x-0 bottom-0 z-50 mx-auto w-full max-w-md rounded-t-3xl border border-zinc-800 bg-zinc-950/98 pb-5 pt-3 shadow-[0_-20px_50px_rgba(0,0,0,0.9)]"
+              className="fixed inset-x-0 bottom-0 z-50 mx-auto w-full max-w-md max-h-[85vh] rounded-t-3xl border border-zinc-800 bg-zinc-950/98 pb-5 pt-3 shadow-[0_-20px_50px_rgba(0,0,0,0.9)]"
               initial={{ y: "100%" }}
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
@@ -151,12 +171,12 @@ export default function MenuTeaserSection() {
                   </button>
                 </div>
 
-                <div className="max-h-56 space-y-1.5 overflow-y-auto pr-1 text-[11px]">
+                <div className="max-h-[65vh] space-y-1.5 overflow-y-auto pr-1 text-[11px]">
                   {(openModal === "food"
-                    ? foodPreview
+                    ? foodItems
                     : openModal === "liquor"
-                    ? liquorPreview
-                    : menu128Preview
+                    ? liquorItems
+                    : menu128Items
                   ).map((item) => (
                     <div
                       key={item.name}
@@ -165,9 +185,30 @@ export default function MenuTeaserSection() {
                       <span className="truncate text-zinc-100">
                         {item.name}
                       </span>
-                      <span className="shrink-0 font-medium text-emerald-300">
-                        ₹{openModal === "128" ? 128 : (item as any).price}
-                      </span>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <span className="font-medium text-emerald-300">
+                          ₹{openModal === "128" ? 128 : (item as any).price}
+                        </span>
+                        <div className="inline-flex items-center gap-1 rounded-full border border-emerald-500/60 bg-emerald-500/5 px-1 py-0.5">
+                          <button
+                            type="button"
+                            onClick={() => adjustQty(item.name, -1)}
+                            className="h-5 w-5 rounded-full bg-zinc-900 text-center text-[10px] text-emerald-200"
+                          >
+                            −
+                          </button>
+                          <span className="min-w-[1rem] text-center text-[11px] font-semibold text-emerald-100">
+                            {quantities[item.name] ?? 0}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => adjustQty(item.name, 1)}
+                            className="h-5 w-5 rounded-full bg-emerald-500 text-center text-[10px] text-black"
+                          >
+                            +
+                          </button>
+                        </div>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -182,9 +223,11 @@ export default function MenuTeaserSection() {
                         ? "/menu?mode=liquor"
                         : "/menu?mode=128";
                   }}
-                  className="mt-3 w-full rounded-full bg-emerald-400 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-black shadow-[0_14px_40px_rgba(22,163,74,0.85)]"
+                  className="mt-3 w-full rounded-full bg-emerald-400 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-black shadow-[0_14px_40px_rgba(16,185,129,0.85)]"
                 >
-                  Open full menu
+                  {addedCount > 0
+                    ? `Explore full menu · ${addedCount}`
+                    : "Explore full menu & prices"}
                 </button>
               </div>
             </motion.div>
