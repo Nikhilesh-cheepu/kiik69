@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import type { BillStatus } from "@prisma/client";
+
+type BillStatus = "PENDING" | "PARTIAL" | "PAID";
 
 type BillWithStatus = {
   id: string;
