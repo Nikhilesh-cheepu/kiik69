@@ -1,19 +1,27 @@
-// Make sure Prisma uses the stable "library" engine instead of experimental "client"
-if (!process.env.PRISMA_CLIENT_ENGINE_TYPE) {
-  process.env.PRISMA_CLIENT_ENGINE_TYPE = "library";
-}
+import { PrismaClient } from "@prisma/client";
+import { Pool } from "pg";
+import { PrismaPg } from "@prisma/adapter-pg";
 
-// Import PrismaClient at runtime (after env override above has been applied)
-// eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/consistent-type-imports
-const { PrismaClient } = require("@prisma/client") as typeof import("@prisma/client");
+const connectionString =
+  process.env.DATABASE_URL_PRIVATE ||
+  process.env.DATABASE_URL_PUBLIC ||
+  process.env.DATABASE_URL ||
+  "";
+
+const pool = new Pool({
+  connectionString,
+});
+
+const adapter = new PrismaPg(pool);
 
 const globalForPrisma = globalThis as unknown as {
-  prisma?: InstanceType<typeof PrismaClient>;
+  prisma?: PrismaClient;
 };
 
 export const prisma =
   globalForPrisma.prisma ??
   new PrismaClient({
+    adapter,
     log:
       process.env.NODE_ENV === "development"
         ? ["query", "error", "warn"]
