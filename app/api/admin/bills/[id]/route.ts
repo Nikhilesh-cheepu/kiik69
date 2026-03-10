@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
-import { BillStatus } from "@prisma/client";
+
+type BillStatus = "PENDING" | "PARTIAL" | "PAID";
 
 async function requireAdmin() {
   const session = await getSession();
