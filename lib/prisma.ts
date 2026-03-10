@@ -1,3 +1,5 @@
+// @ts-ignore PrismaClient type may not be available in some environments,
+// but the runtime export exists when Prisma client is generated.
 import { PrismaClient } from "@prisma/client";
 
 const globalForPrisma = globalThis as unknown as {
