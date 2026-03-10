@@ -2,6 +2,8 @@
 
 import { useSearchParams, useRouter } from "next/navigation";
 
+export const dynamic = "force-dynamic";
+
 export default function BillPaymentSuccessPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
