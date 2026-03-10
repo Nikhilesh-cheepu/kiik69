@@ -29,7 +29,7 @@ export async function GET(request: NextRequest) {
     });
 
     return NextResponse.json({
-      users: users.map((u) => ({
+      users: users.map((u: { id: string; phone: string; createdAt: Date }) => ({
         id: u.id,
         phone: u.phone,
         createdAt: u.createdAt,
