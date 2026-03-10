@@ -91,36 +91,27 @@ INSTAGRAM_VERIFY_TOKEN=your_instagram_verify_token
 
 ### Vercel Build Configuration
 
-The `vercel.json` file is already configured with:
-- Build command: `npm run build`
-- Output directory: `dist`
-- Framework: `vite`
+This project is a **Next.js app**.
+
+- **Framework preset**: Next.js  
+- **Root directory**: `/` (project root)  
+- **Build command**: `npm run build`  
+- **Install command**: `npm install`  
+- **Output directory**: leave as the default that Vercel sets for Next.js (no manual override needed)
 
 ## Local Development
 
-### Creating .env file
+### Creating `.env.local`
 
-1. Create a `.env` file in your project root
-2. Add the required environment variables
-3. Never commit the `.env` file (it's already in `.gitignore`)
+1. Create a `.env.local` file in your project root.
+2. Add the required environment variables listed earlier in this document (database, Vercel Blob, etc.).
+3. Never commit `.env.local` (it's already in `.gitignore`).
 
-### Example .env file
+### Basic dev commands
 
 ```bash
-# Frontend
-VITE_OPENAI_API_KEY=sk-your-key-here
-VITE_BACKEND_URL=http://localhost:5000
-VITE_OPENAI_MODEL=gpt-3.5-turbo
-VITE_OPENAI_MAX_TOKENS=600
-VITE_OPENAI_TEMPERATURE=0.7
-VITE_OPENAI_TIMEOUT=30000
-
-# Backend
-NODE_ENV=development
-FRONTEND_URL=http://localhost:5173
-DATABASE_URL=your_local_database_url
-JWT_SECRET=your_local_jwt_secret
-OPENAI_API_KEY=sk-your-key-here
+npm install
+npm run dev
 ```
 
 ## Environment Validation
