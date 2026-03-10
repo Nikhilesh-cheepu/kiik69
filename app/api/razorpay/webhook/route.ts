@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
     const orderId: string | undefined = payment.order_id;
 
     if (orderId) {
-      await prisma.$transaction(async (tx) => {
+      await prisma.$transaction(async (tx: any) => {
         const bill = await tx.bill.findFirst({
           where: { razorpayOrderId: orderId },
         });

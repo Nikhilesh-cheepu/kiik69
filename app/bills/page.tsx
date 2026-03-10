@@ -2,9 +2,22 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import type { Bill, BillStatus } from "@prisma/client";
+type BillStatus = "PENDING" | "PARTIAL" | "PAID";
 
-type BillWithStatus = Bill & { status: BillStatus };
+type BillWithStatus = {
+  id: string;
+  userId: string;
+  amount: number;
+  billType: string;
+  notes: string | null;
+  status: BillStatus;
+  paidAmount: number;
+  paidAt: string | Date | null;
+  razorpayOrderId: string | null;
+  razorpayPaymentId: string | null;
+  createdAt: string | Date;
+  updatedAt: string | Date;
+};
 
 export default function BillsPage() {
   const router = useRouter();
