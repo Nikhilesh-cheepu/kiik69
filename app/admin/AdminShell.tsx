@@ -19,7 +19,7 @@ export default function AdminShell({
 
   useEffect(() => {
     if (!mounted || pathname === "/admin/login") return;
-    fetch("/api/admin/auth/session")
+    fetch("/api/admin/session")
       .then((r) => {
         if (r.status === 401) router.replace("/admin/login");
       })
@@ -27,7 +27,7 @@ export default function AdminShell({
   }, [mounted, pathname, router]);
 
   async function handleLogout() {
-    await fetch("/api/admin/auth/logout", { method: "POST" });
+    await fetch("/api/admin/logout", { method: "POST" });
     router.replace("/admin/login");
     router.refresh();
   }
@@ -61,6 +61,7 @@ export default function AdminShell({
       items: [
         { href: "/admin/media", label: "Media library" },
         { href: "/admin/bookings", label: "Bookings" },
+        { href: "/admin/bills", label: "Bills" },
         { href: "/admin/analytics", label: "Analytics" },
       ],
     },
@@ -78,21 +79,33 @@ export default function AdminShell({
       {/* Top app bar */}
       <header className="sticky top-0 z-40 border-b border-zinc-900 bg-black/80 backdrop-blur-xl">
         <div className="mx-auto flex max-w-3xl items-center justify-between px-4 py-3">
-          <div className="flex flex-col leading-tight">
-            <span className="text-[10px] font-semibold uppercase tracking-[0.24em] text-zinc-500">
-              SkyHy Live Sports Brewery
-            </span>
-            <span className="text-sm font-semibold text-zinc-50">
-              Admin
-              {pathname && pathname !== "/admin" && (
-                <span className="ml-1 text-xs font-normal text-zinc-400">
-                  · {pathname.replace("/admin", "").replace(/\//g, " / ") || "Dashboard"}
-                </span>
-              )}
-            </span>
-            <span className="text-[10px] text-zinc-500">
-              Formerly known as KIIK 69 Sports Bar
-            </span>
+          <div className="flex items-center gap-3">
+            {pathname !== "/admin" && pathname !== "/admin/login" && (
+              <button
+                type="button"
+                onClick={() => router.push("/admin")}
+                className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-zinc-700 bg-zinc-900 text-xs text-zinc-200"
+                aria-label="Back to admin dashboard"
+              >
+                ←
+              </button>
+            )}
+            <div className="flex flex-col leading-tight">
+              <span className="text-[10px] font-semibold uppercase tracking-[0.24em] text-zinc-500">
+                SkyHy Live Sports Brewery
+              </span>
+              <span className="text-sm font-semibold text-zinc-50">
+                Admin
+                {pathname && pathname !== "/admin" && (
+                  <span className="ml-1 text-xs font-normal text-zinc-400">
+                    · {pathname.replace("/admin", "").replace(/\//g, " / ") || "Dashboard"}
+                  </span>
+                )}
+              </span>
+              <span className="text-[10px] text-zinc-500">
+                Formerly known as KIIK 69 Sports Bar
+              </span>
+            </div>
           </div>
           <button
             type="button"

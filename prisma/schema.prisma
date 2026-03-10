@@ -1,0 +1,64 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String         @id @default(cuid())
+  phone     String         @unique
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+
+  bookings  EventBooking[]
+  bills     Bill[]
+}
+
+model EventBooking {
+  id              String    @id @default(cuid())
+  eventId         String?
+  fullName        String
+  mobile          String
+  userId          String?
+  user            User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+  date            DateTime
+  time            String
+  people          Int
+  ticketPrice     Int       @default(0)
+  paymentStatus   String    @default("BOOKING_CREATED")
+  razorpayOrderId String?
+  createdAt       DateTime  @default(now())
+
+  @@index([date, time])
+  @@index([razorpayOrderId])
+}
+
+enum BillStatus {
+  PENDING
+  PARTIAL
+  PAID
+}
+
+model Bill {
+  id                String     @id @default(cuid())
+  userId            String
+  user              User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  amount            Int
+  billType          String     @default("a_la_carte")
+  notes             String?
+  status            BillStatus @default(PENDING)
+  paidAmount        Int        @default(0)
+  paidAt            DateTime?
+  razorpayOrderId   String?
+  razorpayPaymentId String?
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @updatedAt
+
+  @@index([userId])
+  @@index([status])
+  @@index([razorpayOrderId])
+}
+
+

@@ -3,6 +3,7 @@ import { requireAdmin } from "@/lib/admin-api";
 import { query } from "@/lib/db";
 import type { MenuItemRow } from "@/lib/db";
 import { ensureCoreTables } from "@/lib/dbInit";
+import { ensureMenuSeeded } from "@/lib/menuSeed";
 
 export async function GET() {
   const auth = await requireAdmin();
@@ -11,6 +12,10 @@ export async function GET() {
   const { rows } = await query<MenuItemRow>(
     "SELECT id, name, price, category, description, image, menu_type, is_available, created_at, updated_at FROM menu_items ORDER BY menu_type, category, name"
   );
+  if (!rows.length) {
+    const seeded = await ensureMenuSeeded();
+    return NextResponse.json(seeded);
+  }
   return NextResponse.json(rows);
 }
 

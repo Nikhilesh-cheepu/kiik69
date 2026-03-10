@@ -5,7 +5,7 @@ import { buildMenuItemsForUI } from "@/SKYHY_MENU_DATA";
 let seeded = false;
 
 export async function ensureMenuSeeded(): Promise<MenuItemRow[]> {
-  let { rows } = await query<MenuItemRow>(
+  const { rows } = await query<MenuItemRow>(
     "SELECT id, name, price, category, description, image, menu_type, is_available, created_at, updated_at FROM menu_items ORDER BY menu_type, category, name"
   );
 

@@ -38,25 +38,7 @@ export default function HeroActionBar() {
       transition={{ duration: 0.5, delay: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
       className="fixed bottom-0 left-0 right-0 z-40 px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-3 md:px-6 md:pb-6 md:pt-4"
     >
-      <motion.div
-        className="mx-auto flex max-w-md items-stretch gap-2.5 rounded-3xl px-2.5 py-2.5 md:gap-3 md:px-3 md:py-3"
-        style={{
-          background:
-            "radial-gradient(circle at 0% 0%, rgba(34,197,94,0.18), transparent 55%), radial-gradient(circle at 100% 100%, rgba(239,68,68,0.22), transparent 55%), rgba(8,8,12,0.9)",
-          backdropFilter: "blur(26px)",
-          WebkitBackdropFilter: "blur(26px)",
-          border: "1px solid rgba(248,250,252,0.10)",
-        }}
-        initial={{ boxShadow: "0 10px 28px rgba(0,0,0,0.65)" }}
-        animate={{
-          boxShadow: [
-            "0 10px 28px rgba(0,0,0,0.65), 0 0 0 0 rgba(56,189,248,0.0)",
-            "0 16px 40px rgba(0,0,0,0.85), 0 0 0 6px rgba(56,189,248,0.22)",
-            "0 10px 28px rgba(0,0,0,0.65), 0 0 0 0 rgba(56,189,248,0.0)",
-          ],
-        }}
-        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-      >
+      <div className="mx-auto flex max-w-md items-stretch gap-2.5 rounded-3xl border border-zinc-800 bg-black/80 px-2.5 py-2.5 shadow-[0_14px_40px_rgba(0,0,0,0.9)] md:gap-3 md:px-3 md:py-3">
         <motion.div
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
@@ -101,11 +83,9 @@ export default function HeroActionBar() {
           className="flex flex-1"
         >
           <Link
-            href="https://wa.me/919274696969?text=Hi%2C%20I%20would%20like%20to%20pay%20my%20bill."
-            target="_blank"
-            rel="noopener noreferrer"
+            href="/bills"
             className={`${btnBase} text-white/90`}
-            onClick={() => trackEvent("whatsapp_click", { intent: "pay_bill" })}
+            onClick={() => trackEvent("nav_click", { intent: "pay_bill" })}
             style={{
               background:
                 "linear-gradient(135deg, rgba(168,85,247,0.22), rgba(56,189,248,0.18))",
@@ -141,7 +121,7 @@ export default function HeroActionBar() {
           className="relative flex flex-1"
         >
           <Link
-            href="/booking"
+            href="/reserve"
             className={`${btnBase} text-white`}
             style={{
               background:
@@ -155,26 +135,12 @@ export default function HeroActionBar() {
             <motion.span
               aria-hidden
               className="pointer-events-none absolute inset-0 rounded-full"
-              initial={{ opacity: 0.5 }}
+              initial={{ opacity: 0.3 }}
               animate={{
-                opacity: [0.45, 0.9, 0.45],
-                boxShadow: [
-                  "0 0 0 0 rgba(248,250,252,0.9)",
-                  "0 0 0 10px rgba(248,250,252,0.0)",
-                  "0 0 0 0 rgba(248,250,252,0.0)",
-                ],
+                opacity: [0.3, 0.7, 0.3],
               }}
               transition={{ duration: 2.4, repeat: Infinity, ease: "easeOut" }}
             />
-            <span
-              className="absolute -top-1 right-2 rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white md:right-2.5 md:text-[11px]"
-              style={{
-                background: "linear-gradient(135deg, #00e676 0%, #00c853 100%)",
-                boxShadow: "0 0 14px rgba(0,230,118,0.5)",
-              }}
-            >
-              10% OFF
-            </span>
             <span className="relative flex items-center gap-2">
               <span className="text-lg opacity-95" aria-hidden>
                 📅
@@ -182,6 +148,17 @@ export default function HeroActionBar() {
               <span>Book Table</span>
             </span>
           </Link>
+          {/* Floating 10% OFF chip slightly outside the button */}
+          <motion.div
+            initial={{ opacity: 0, y: 4 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4, duration: 0.35 }}
+            className="pointer-events-none absolute -top-2 right-1 md:-top-2.5 md:right-2"
+          >
+            <div className="rounded-full border border-emerald-300/80 bg-emerald-500 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-[0.14em] text-black shadow-[0_0_10px_rgba(16,185,129,0.7)]">
+              10% off
+            </div>
+          </motion.div>
         </motion.div>
 
         <AnimatePresence>
@@ -254,7 +231,7 @@ export default function HeroActionBar() {
             </>
           )}
         </AnimatePresence>
-      </motion.div>
+      </div>
     </motion.div>
   );
 }
