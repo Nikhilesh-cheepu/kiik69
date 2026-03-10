@@ -47,6 +47,7 @@ export default function LoginPage() {
 
   async function handleSendOtp(e: React.FormEvent) {
     e.preventDefault();
+    if (loading) return;
     setError(null);
     const digits = phone.replace(/\D/g, "");
     if (digits.length !== 10) {
@@ -55,8 +56,9 @@ export default function LoginPage() {
     }
     setLoading(true);
     try {
-      const verifier = (window as any)
-        .recaptchaVerifier as RecaptchaVerifier | null;
+      const verifier = (typeof window !== "undefined"
+        ? (window as any).recaptchaVerifier
+        : null) as RecaptchaVerifier | null;
       if (!verifier) {
         setError("Unable to start verification. Please try again.");
         return;
@@ -70,10 +72,15 @@ export default function LoginPage() {
       setStep("otp");
     } catch (err: any) {
       console.error(err);
-      const message =
-        typeof err?.code === "string" && err.code.includes("too-many-requests")
-          ? "Too many OTP requests to this number. Please wait a few minutes before trying again."
-          : "Failed to send OTP. Please try again.";
+      const code = typeof err?.code === "string" ? err.code : "";
+      let message = "Failed to send OTP. Please try again.";
+      if (code.includes("too-many-requests")) {
+        message =
+          "Too many OTP requests to this number. Please wait a few minutes before trying again.";
+      } else if (code.includes("invalid-app-credential")) {
+        message =
+          "Login is temporarily unavailable. Please refresh the page and try again in a minute.";
+      }
       setError(message);
     } finally {
       setLoading(false);

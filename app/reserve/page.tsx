@@ -264,6 +264,8 @@ export default function ReservePage() {
     selectedOfferId && OFFERS.find((o) => o.id === selectedOfferId);
 
   async function handleLoginSendOtp() {
+    // basic throttle to avoid hammering the endpoint
+    if (loginStep === "otp") return;
     setLoginError(null);
     const raw = phoneInput.replace(/\D/g, "");
     if (raw.length !== 10) {
@@ -287,9 +289,18 @@ export default function ReservePage() {
       );
       setConfirmationResult(result);
       setLoginStep("otp");
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
-      setLoginError("Failed to send OTP. Please try again.");
+      const code = typeof error?.code === "string" ? error.code : "";
+      let message = "Failed to send OTP. Please try again.";
+      if (code.includes("too-many-requests")) {
+        message =
+          "Too many OTP requests to this number. Please wait a few minutes before trying again.";
+      } else if (code.includes("invalid-app-credential")) {
+        message =
+          "Login is temporarily unavailable. Please refresh the page and try again in a minute.";
+      }
+      setLoginError(message);
     }
   }
 
