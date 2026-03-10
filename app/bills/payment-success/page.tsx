@@ -1,16 +1,23 @@
 "use client";
 
-import { useSearchParams, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 export const dynamic = "force-dynamic";
 
 export default function BillPaymentSuccessPage() {
-  const searchParams = useSearchParams();
   const router = useRouter();
+  const [status, setStatus] = useState("paid");
+  const [total, setTotal] = useState("");
+  const [paymentId, setPaymentId] = useState("");
 
-  const status = searchParams.get("status") ?? "paid";
-  const total = searchParams.get("total") ?? "";
-  const paymentId = searchParams.get("paymentId") ?? "";
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    setStatus(params.get("status") ?? "paid");
+    setTotal(params.get("total") ?? "");
+    setPaymentId(params.get("paymentId") ?? "");
+  }, []);
 
   const isPaid = status === "paid";
 
