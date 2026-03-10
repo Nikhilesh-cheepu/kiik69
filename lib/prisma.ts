@@ -2,6 +2,11 @@
 // but the runtime export exists when Prisma client is generated.
 import { PrismaClient } from "@prisma/client";
 
+// Ensure Prisma doesn't use the experimental "client" engine type that expects an adapter.
+if (!process.env.PRISMA_CLIENT_ENGINE_TYPE) {
+  process.env.PRISMA_CLIENT_ENGINE_TYPE = "library";
+}
+
 const globalForPrisma = globalThis as unknown as {
   prisma?: PrismaClient;
 };
