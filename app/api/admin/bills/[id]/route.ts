@@ -11,17 +11,16 @@ async function requireAdmin() {
   return session;
 }
 
-export async function PATCH(
-  request: NextRequest,
-  { params }: { params: { id: string } },
-) {
+type RouteContext = { params: Promise<{ id: string }> };
+
+export async function PATCH(request: NextRequest, context: RouteContext) {
   try {
     await requireAdmin();
   } catch {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const id = params.id;
+  const { id } = await context.params;
   const body = await request.json();
 
   const data: any = {};
@@ -111,17 +110,15 @@ export async function PATCH(
   return NextResponse.json(updated);
 }
 
-export async function DELETE(
-  _request: NextRequest,
-  { params }: { params: { id: string } },
-) {
+export async function DELETE(_request: NextRequest, context: RouteContext) {
   try {
     await requireAdmin();
   } catch {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  await prisma.bill.delete({ where: { id: params.id } });
+  const { id } = await context.params;
+  await prisma.bill.delete({ where: { id } });
   return NextResponse.json({ ok: true });
 }
 
