@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getUserSession } from "@/lib/userSession";
-import { BillStatus } from "@prisma/client";
+
+type BillStatus = "PENDING" | "PARTIAL" | "PAID";
 
 export async function GET() {
   const session = await getUserSession();
@@ -14,7 +15,7 @@ export async function GET() {
       where: {
         userId: session.sub,
         status: {
-          in: [BillStatus.PENDING, BillStatus.PARTIAL],
+          in: ["PENDING" as BillStatus, "PARTIAL" as BillStatus],
         },
       },
       orderBy: { createdAt: "desc" },
@@ -22,7 +23,7 @@ export async function GET() {
     prisma.bill.findMany({
       where: {
         userId: session.sub,
-        status: BillStatus.PAID,
+        status: "PAID",
       },
       orderBy: { paidAt: "desc" },
     }),
