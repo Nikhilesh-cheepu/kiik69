@@ -1,9 +1,22 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import type { Bill, BillStatus } from "@prisma/client";
+import type { BillStatus } from "@prisma/client";
 
-type BillWithStatus = Bill & { status: BillStatus };
+type BillWithStatus = {
+  id: string;
+  userId: string;
+  amount: number;
+  billType: string;
+  notes: string | null;
+  status: BillStatus;
+  paidAmount: number;
+  paidAt: string | Date | null;
+  razorpayOrderId: string | null;
+  razorpayPaymentId: string | null;
+  createdAt: string | Date;
+  updatedAt: string | Date;
+};
 
 async function fetchJson<T>(input: RequestInfo, init?: RequestInit): Promise<T> {
   const res = await fetch(input, init);
