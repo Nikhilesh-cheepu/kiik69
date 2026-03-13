@@ -19,6 +19,9 @@ export const metadata: Metadata = {
     "SkyHy Live Sports Brewery | Live Sports, Bowling, Food & Drinks in Gachibowli",
   description:
     "SkyHy Live Sports Brewery — live sports, bowling, gourmet food, craft drinks, and parties in Gachibowli, Hyderabad. Formerly known as KIIK 69 Sports Bar.",
+  icons: {
+    icon: "/favicon.ico",
+  },
 };
 
 export default function RootLayout({
