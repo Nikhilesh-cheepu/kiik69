@@ -3,9 +3,11 @@
 import { useState } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
+import { track } from "@vercel/analytics/react";
 
 async function trackEvent(eventType: string, metadata?: Record<string, unknown>) {
   try {
+    // Send to our internal events API
     await fetch("/api/events/track", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -16,6 +18,17 @@ async function trackEvent(eventType: string, metadata?: Record<string, unknown>)
         metadata,
       }),
       keepalive: true,
+    });
+  } catch {
+    // ignore
+  }
+
+  try {
+    // Also send as a custom event to Vercel Analytics
+    track(eventType, {
+      page: "home",
+      section: "hero_action_bar",
+      ...metadata,
     });
   } catch {
     // ignore

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Analytics } from "@vercel/analytics/next";
 import { Bebas_Neue, Syne } from "next/font/google";
 import "./globals.css";
 
@@ -31,6 +32,7 @@ export default function RootLayout({
         className={`${bebasNeue.variable} ${syne.variable} antialiased bg-black text-white`}
       >
         {children}
+        <Analytics />
       </body>
     </html>
   );
